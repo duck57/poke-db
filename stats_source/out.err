@@ -1,0 +1,7 @@
+Error: translate: Error with parser 'SQL::Translator::Parser::SQLite': Unable to parse line 1:
+'CREATE TABLE IF NOT EXISTS `rotation_dates` ('
+'	`num`	integer PRIMARY KEY AUTOINCREMENT,'
+'	`date`	text NOT NULL,'
+'	`special_note`	text'
+');'
+...

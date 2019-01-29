@@ -1,0 +1,810 @@
+# 	MS 	Name 	English category 	Japanese category (kana) 	Japanese category (translated)
+1	Bulbasaur 	Bulbasaur 	Seed 	たねポケモン 	Seed
+2	Ivysaur 	Ivysaur 	Seed 	たねポケモン 	Seed
+3	Venusaur 	Venusaur 	Seed 	たねポケモン 	Seed
+4	Charmander 	Charmander 	Lizard 	とかげポケモン 	Lizard
+5	Charmeleon 	Charmeleon 	Flame 	かえんポケモン 	Flame
+6	Charizard 	Charizard 	Flame 	かえんポケモン 	Flame
+7	Squirtle 	Squirtle 	Tiny Turtle 	かめのこポケモン 	Young Turtle
+8	Wartortle 	Wartortle 	Turtle 	かめポケモン 	Turtle
+9	Blastoise 	Blastoise 	Shellfish 	こうらポケモン 	Shell
+10	Caterpie 	Caterpie 	Worm 	いもむしポケモン 	Caterpillar
+11	Metapod 	Metapod 	Cocoon 	さなぎポケモン 	Chrysalis
+12	Butterfree 	Butterfree 	Butterfly 	ちょうちょポケモン 	Butterfly
+13	Weedle 	Weedle 	Hairy Bug 	けむしポケモン 	Hairy Caterpillar
+14	Kakuna 	Kakuna 	Cocoon 	さなぎポケモン 	Pupa
+15	Beedrill 	Beedrill 	Poison Bee 	どくばちポケモン 	Poison Bee
+16	Pidgey 	Pidgey 	Tiny Bird 	ことりポケモン 	Small Bird
+17	Pidgeotto 	Pidgeotto 	Bird 	とりポケモン 	Bird
+18	Pidgeot 	Pidgeot 	Bird 	とりポケモン 	Bird
+19	Rattata 	Rattata 	Mouse 	ねずみポケモン 	Mouse
+20	Raticate 	Raticate 	Mouse 	ねずみポケモン 	Mouse
+21	Spearow 	Spearow 	Tiny Bird 	ことりポケモン 	Small Bird
+22	Fearow 	Fearow 	Beak 	くちばしポケモン 	Beak
+23	Ekans 	Ekans 	Snake 	へびポケモン 	Snake
+24	Arbok 	Arbok 	Cobra 	コブラポケモン 	Cobra
+25	Pikachu 	Pikachu 	Mouse 	ねずみポケモン 	Mouse
+26	Raichu 	Raichu 	Mouse 	ねずみポケモン 	Mouse
+27	Sandshrew 	Sandshrew 	Mouse 	ねずみポケモン 	Mouse
+28	Sandslash 	Sandslash 	Mouse 	ねずみポケモン 	Mouse
+29	Nidoran♀ 	Nidoran♀ 	Poison Pin 	どくばりポケモン 	Poison Needle
+30	Nidorina 	Nidorina 	Poison Pin 	どくばりポケモン 	Poison Needle
+31	Nidoqueen 	Nidoqueen 	Drill 	ドリルポケモン 	Drill
+32	Nidoran♂ 	Nidoran♂ 	Poison Pin 	どくばりポケモン 	Poison Needle
+33	Nidorino 	Nidorino 	Poison Pin 	どくばりポケモン 	Poison Needle
+34	Nidoking 	Nidoking 	Drill 	ドリルポケモン 	Drill
+35	Clefairy 	Clefairy 	Fairy 	ようせいポケモン 	Fairy
+36	Clefable 	Clefable 	Fairy 	ようせいポケモン 	Fairy
+37	Vulpix 	Vulpix 	Fox 	きつねポケモン 	Fox
+38	Ninetales 	Ninetales 	Fox 	きつねポケモン 	Fox
+39	Jigglypuff 	Jigglypuff 	Balloon 	ふうせんポケモン 	Balloon
+40	Wigglytuff 	Wigglytuff 	Balloon 	ふうせんポケモン 	Balloon
+41	Zubat 	Zubat 	Bat 	こうもりポケモン 	Bat
+42	Golbat 	Golbat 	Bat 	こうもりポケモン 	Bat
+43	Oddish 	Oddish 	Weed 	ざっそうポケモン 	Weed
+44	Gloom 	Gloom 	Weed 	ざっそうポケモン 	Weed
+45	Vileplume 	Vileplume 	Flower 	フラワーポケモン 	Flower
+46	Paras 	Paras 	Mushroom 	きのこポケモン 	Mushroom
+47	Parasect 	Parasect 	Mushroom 	きのこポケモン 	Mushroom
+48	Venonat 	Venonat 	Insect 	こんちゅうポケモン 	Insect
+49	Venomoth 	Venomoth 	Poison Moth 	どくがポケモン 	Poison Moth
+50	Diglett 	Diglett 	Mole 	もぐらポケモン 	Mole
+51	Dugtrio 	Dugtrio 	Mole 	もぐらポケモン 	Mole
+52	Meowth 	Meowth 	Scratch Cat 	ばけねこポケモン 	Bakeneko
+53	Persian 	Persian 	Classy Cat 	シャムネコポケモン 	Siamese Cat
+54	Psyduck 	Psyduck 	Duck 	あひるポケモン 	Duck
+55	Golduck 	Golduck 	Duck 	あひるポケモン 	Duck
+56	Mankey 	Mankey 	Pig Monkey 	ぶたざるポケモン 	Pig Monkey
+57	Primeape 	Primeape 	Pig Monkey 	ぶたざるポケモン 	Pig Monkey
+58	Growlithe 	Growlithe 	Puppy 	こいぬポケモン 	Puppy
+59	Arcanine 	Arcanine 	Legendary 	でんせつポケモン 	Legend
+60	Poliwag 	Poliwag 	Tadpole 	おたまポケモン 	Tadpole
+61	Poliwhirl 	Poliwhirl 	Tadpole 	おたまポケモン 	Tadpole
+62	Poliwrath 	Poliwrath 	Tadpole 	おたまポケモン 	Tadpole
+63	Abra 	Abra 	Psi 	ねんりきポケモン 	Telekinesis
+64	Kadabra 	Kadabra 	Psi 	ねんりきポケモン 	Telekinesis
+65	Alakazam 	Alakazam 	Psi 	ねんりきポケモン 	Telekinesis
+66	Machop 	Machop 	Superpower 	かいりきポケモン 	Superhuman Strength
+67	Machoke 	Machoke 	Superpower 	かいりきポケモン 	Superhuman Strength
+68	Machamp 	Machamp 	Superpower 	かいりきポケモン 	Superhuman Strength
+69	Bellsprout 	Bellsprout 	Flower 	フラワーポケモン 	Flower
+70	Weepinbell 	Weepinbell 	Flycatcher 	ハエとりポケモン 	Flycatcher
+71	Victreebel 	Victreebel 	Flycatcher 	ハエとりポケモン 	Flycatcher
+72	Tentacool 	Tentacool 	Jellyfish 	くらげポケモン 	Jellyfish
+73	Tentacruel 	Tentacruel 	Jellyfish 	くらげポケモン 	Jellyfish
+74	Geodude 	Geodude 	Rock 	がんせきポケモン 	Rock
+75	Graveler 	Graveler 	Rock 	がんせきポケモン 	Rock
+76	Golem 	Golem 	Megaton 	メガトンポケモン 	Megaton
+77	Ponyta 	Ponyta 	Fire Horse 	ひのうまポケモン 	Fire Horse
+78	Rapidash 	Rapidash 	Fire Horse 	ひのうまポケモン 	Fire Horse
+79	Slowpoke 	Slowpoke 	Dopey 	まぬけポケモン 	Stupid
+80	Slowbro 	Slowbro 	Hermit Crab 	やどかりポケモン 	Hermit Crab
+81	Magnemite 	Magnemite 	Magnet 	じしゃくポケモン 	Magnet
+82	Magneton 	Magneton 	Magnet 	じしゃくポケモン 	Magnet
+83	Farfetch'd 	Farfetch'd 	Wild Duck 	かるがもポケモン 	Spot-Billed Duck
+84	Doduo 	Doduo 	Twin Bird 	ふたごどりポケモン 	Twin Bird
+85	Dodrio 	Dodrio 	Triple Bird 	みつごどりポケモン 	Triplet Bird
+86	Seel 	Seel 	Sea Lion 	あしかポケモン 	Sea Lion
+87	Dewgong 	Dewgong 	Sea Lion 	あしかポケモン 	Sea Lion
+88	Grimer 	Grimer 	Sludge 	ヘドロポケモン 	Sludge
+89	Muk 	Muk 	Sludge 	ヘドロポケモン 	Sludge
+90	Shellder 	Shellder 	Bivalve 	2まいがいポケモン 	Bivalve
+91	Cloyster 	Cloyster 	Bivalve 	2まいがいポケモン 	Bivalve
+92	Gastly 	Gastly 	Gas 	ガスじょうポケモン 	Gaseous
+93	Haunter 	Haunter 	Gas 	ガスじょうポケモン 	Gaseous
+94	Gengar 	Gengar 	Shadow 	シャドーポケモン 	Shadow
+95	Onix 	Onix 	Rock Snake 	いわへびポケモン 	Rock Snake
+96	Drowzee 	Drowzee 	Hypnosis 	さいみんポケモン 	Hypnosis
+97	Hypno 	Hypno 	Hypnosis 	さいみんポケモン 	Hypnosis
+98	Krabby 	Krabby 	River Crab 	さわがにポケモン 	Freshwater Crab
+99	Kingler 	Kingler 	Pincer 	はさみポケモン 	Pincer
+100	Voltorb 	Voltorb 	Ball 	ボールポケモン 	Ball
+101	Electrode 	Electrode 	Ball 	ボールポケモン 	Ball
+102	Exeggcute 	Exeggcute 	Egg 	たまごポケモン 	Egg
+103	Exeggutor 	Exeggutor 	Coconut 	やしのみポケモン 	Coconut
+104	Cubone 	Cubone 	Lonely 	こどくポケモン 	Lonely
+105	Marowak 	Marowak 	Bone Keeper 	ほねずきポケモン 	Bone Lover
+106	Hitmonlee 	Hitmonlee 	Kicking 	キックポケモン 	Kick
+107	Hitmonchan 	Hitmonchan 	Punching 	パンチポケモン 	Punch
+108	Lickitung 	Lickitung 	Licking 	なめまわしポケモン 	Licking
+109	Koffing 	Koffing 	Poison Gas 	どくガスポケモン 	Poison Gas
+110	Weezing 	Weezing 	Poison Gas 	どくガスポケモン 	Poison Gas
+111	Rhyhorn 	Rhyhorn 	Spikes 	とげとげポケモン 	Spiky
+112	Rhydon 	Rhydon 	Drill 	ドリルポケモン 	Drill
+113	Chansey 	Chansey 	Egg 	たまごポケモン 	Egg
+114	Tangela 	Tangela 	Vine 	ツルじょうポケモン 	Tendril
+115	Kangaskhan 	Kangaskhan 	Parent 	おやこポケモン 	Parent and Child
+116	Horsea 	Horsea 	Dragon 	ドラゴンポケモン 	Dragon
+117	Seadra 	Seadra 	Dragon 	ドラゴンポケモン 	Dragon
+118	Goldeen 	Goldeen 	Goldfish 	きんぎょポケモン 	Goldfish
+119	Seaking 	Seaking 	Goldfish 	きんぎょポケモン 	Goldfish
+120	Staryu 	Staryu 	Star Shape 	ほしがたポケモン 	Star Shape
+121	Starmie 	Starmie 	Mysterious 	なぞのポケモン 	Mysterious
+122	Mr. Mime 	Mr. Mime 	Barrier 	バリアーポケモン 	Barrier
+123	Scyther 	Scyther 	Mantis 	かまきりポケモン 	Praying Mantis
+124	Jynx 	Jynx 	Human Shape 	ひとがたポケモン 	Humanoid
+125	Electabuzz 	Electabuzz 	Electric 	でんげきポケモン 	Electric Shock
+126	Magmar 	Magmar 	Spitfire 	ひふきポケモン 	Fire-Blowing
+127	Pinsir 	Pinsir 	Stag Beetle 	くわがたポケモン 	Stag Beetle
+128	Tauros 	Tauros 	Wild Bull 	あばれうしポケモン 	Rampaging Bull
+129	Magikarp 	Magikarp 	Fish 	さかなポケモン 	Fish
+130	Gyarados 	Gyarados 	Atrocious 	きょうあくポケモン 	Atrocious
+131	Lapras 	Lapras 	Transport 	のりものポケモン 	Transport
+132	Ditto 	Ditto 	Transform 	へんしんポケモン 	Transformation
+133	Eevee 	Eevee 	Evolution 	しんかポケモン 	Evolution
+134	Vaporeon 	Vaporeon 	Bubble Jet 	あわはきポケモン 	Foam-Spitting
+135	Jolteon 	Jolteon 	Lightning 	かみなりポケモン 	Thunder
+136	Flareon 	Flareon 	Flame 	ほのおポケモン 	Flame
+137	Porygon 	Porygon 	Virtual 	バーチャルポケモン 	Virtual
+138	Omanyte 	Omanyte 	Spiral 	うずまきポケモン 	Spiral
+139	Omastar 	Omastar 	Spiral 	うずまきポケモン 	Spiral
+140	Kabuto 	Kabuto 	Shellfish 	こうらポケモン 	Shell
+141	Kabutops 	Kabutops 	Shellfish 	こうらポケモン 	Shell
+142	Aerodactyl 	Aerodactyl 	Fossil 	かせきポケモン 	Fossil
+143	Snorlax 	Snorlax 	Sleeping 	いねむりポケモン 	Dozing
+144	Articuno 	Articuno 	Freeze 	れいとうポケモン 	Freezing
+145	Zapdos 	Zapdos 	Electric 	でんげきポケモン 	Electric Shock
+146	Moltres 	Moltres 	Flame 	かえんポケモン 	Flame
+147	Dratini 	Dratini 	Dragon 	ドラゴンポケモン 	Dragon
+148	Dragonair 	Dragonair 	Dragon 	ドラゴンポケモン 	Dragon
+149	Dragonite 	Dragonite 	Dragon 	ドラゴンポケモン 	Dragon
+150	Mewtwo 	Mewtwo 	Genetic 	いでんしポケモン 	Genetic
+151	Mew 	Mew 	New Species 	しんしゅポケモン 	New Species
+152	Chikorita 	Chikorita 	Leaf 	はっぱポケモン 	Leaf
+153	Bayleef 	Bayleef 	Leaf 	はっぱポケモン 	Leaf
+154	Meganium 	Meganium 	Herb 	ハーブポケモン 	Herb
+155	Cyndaquil 	Cyndaquil 	Fire Mouse 	ひねずみポケモン 	Fire Mouse
+156	Quilava 	Quilava 	Volcano 	かざんポケモン 	Volcano
+157	Typhlosion 	Typhlosion 	Volcano 	かざんポケモン 	Volcano
+158	Totodile 	Totodile 	Big Jaw 	おおあごポケモン 	Big Jaw
+159	Croconaw 	Croconaw 	Big Jaw 	おおあごポケモン 	Big Jaw
+160	Feraligatr 	Feraligatr 	Big Jaw 	おおあごポケモン 	Big Jaw
+161	Sentret 	Sentret 	Scout 	みはりポケモン 	Lookout
+162	Furret 	Furret 	Long Body 	どうながポケモン 	Long Torso
+163	Hoothoot 	Hoothoot 	Owl 	ふくろうポケモン 	Owl
+164	Noctowl 	Noctowl 	Owl 	ふくろうポケモン 	Owl
+165	Ledyba 	Ledyba 	Five Star 	いつつぼしポケモン 	Five Star
+166	Ledian 	Ledian 	Five Star 	いつつぼしポケモン 	Five Star
+167	Spinarak 	Spinarak 	String Spit 	いとはきポケモン 	String-Spitting
+168	Ariados 	Ariados 	Long Leg 	あしながポケモン 	Long Leg
+169	Crobat 	Crobat 	Bat 	こうもりポケモン 	Bat
+170	Chinchou 	Chinchou 	Angler 	あんこうポケモン 	Anglerfish
+171	Lanturn 	Lanturn 	Light 	ライトポケモン 	Light
+172	Pichu 	Pichu 	Tiny Mouse 	こねずみポケモン 	Small Mouse
+173	Cleffa 	Cleffa 	Star Shape 	ほしがたポケモン 	Star Shape
+174	Igglybuff 	Igglybuff 	Balloon 	ふうせんポケモン 	Balloon
+175	Togepi 	Togepi 	Spike Ball 	はりたまポケモン 	Spike Ball
+176	Togetic 	Togetic 	Happiness 	しあわせポケモン 	Happiness
+177	Natu 	Natu 	Tiny Bird 	ことりポケモン 	Small Bird
+178	Xatu 	Xatu 	Mystic 	せいれいポケモン 	Spirit
+179	Mareep 	Mareep 	Wool 	わたげポケモン 	Fluff
+180	Flaaffy 	Flaaffy 	Wool 	わたげポケモン 	Fluff
+181	Ampharos 	Ampharos 	Light 	ライトポケモン 	Light
+182	Bellossom 	Bellossom 	Flower 	フラワーポケモン 	Flower
+183	Marill 	Marill 	Aqua Mouse 	みずねずみポケモン 	Water Mouse
+184	Azumarill 	Azumarill 	Aqua Rabbit 	みずうさぎポケモン 	Water Rabbit
+185	Sudowoodo 	Sudowoodo 	Imitation 	まねポケモン 	Imitation
+186	Politoed 	Politoed 	Frog 	かえるポケモン 	Frog
+187	Hoppip 	Hoppip 	Cottonweed 	わたくさポケモン 	Cottonweed
+188	Skiploom 	Skiploom 	Cottonweed 	わたくさポケモン 	Cottonweed
+189	Jumpluff 	Jumpluff 	Cottonweed 	わたくさポケモン 	Cottonweed
+190	Aipom 	Aipom 	Long Tail 	おながポケモン 	Long Tail
+191	Sunkern 	Sunkern 	Seed 	たねポケモン 	Seed
+192	Sunflora 	Sunflora 	Sun 	たいようポケモン 	Sun
+193	Yanma 	Yanma 	Clear Wing 	うすばねポケモン 	Thin Wing
+194	Wooper 	Wooper 	Water Fish 	みずうおポケモン 	Water Fish
+195	Quagsire 	Quagsire 	Water Fish 	みずうおポケモン 	Water Fish
+196	Espeon 	Espeon 	Sun 	たいようポケモン 	Sun
+197	Umbreon 	Umbreon 	Moonlight 	げっこうポケモン 	Moonlight
+198	Murkrow 	Murkrow 	Darkness 	くらやみポケモン 	Darkness
+199	Slowking 	Slowking 	Royal 	おうじゃポケモン 	Monarch
+200	Misdreavus 	Misdreavus 	Screech 	よなきポケモン 	Night Cry
+201	Unown 	Unown 	Symbol 	シンボルポケモン 	Symbol
+202	Wobbuffet 	Wobbuffet 	Patient 	がまんポケモン 	Endurance
+203	Girafarig 	Girafarig 	Long Neck 	くびながポケモン 	Long Neck
+204	Pineco 	Pineco 	Bagworm 	みのむしポケモン 	Bagworm
+205	Forretress 	Forretress 	Bagworm 	みのむしポケモン 	Bagworm
+206	Dunsparce 	Dunsparce 	Land Snake 	つちへびポケモン 	Land Snake
+207	Gligar 	Gligar 	Fly Scorpion 	とびさそりポケモン 	Flying Scorpion
+208	Steelix 	Steelix 	Iron Snake 	てつへびポケモン 	Iron Snake
+209	Snubbull 	Snubbull 	Fairy 	ようせいポケモン 	Fairy
+210	Granbull 	Granbull 	Fairy 	ようせいポケモン 	Fairy
+211	Qwilfish 	Qwilfish 	Balloon 	ふうせんポケモン 	Balloon
+212	Scizor 	Scizor 	Pincer 	はさみポケモン 	Pincer
+213	Shuckle 	Shuckle 	Mold 	はっこうポケモン 	Fermentation
+214	Heracross 	Heracross 	Single Horn 	1ぽんヅノポケモン 	Single Horn
+215	Sneasel 	Sneasel 	Sharp Claw 	かぎづめポケモン 	Claw
+216	Teddiursa 	Teddiursa 	Little Bear 	こぐまポケモン 	Small Bear
+217	Ursaring 	Ursaring 	Hibernator 	とうみんポケモン 	Hibernation
+218	Slugma 	Slugma 	Lava 	ようがんポケモン 	Lava
+219	Magcargo 	Magcargo 	Lava 	ようがんポケモン 	Lava
+220	Swinub 	Swinub 	Pig 	いのぶたポケモン 	Pig Boar
+221	Piloswine 	Piloswine 	Swine 	いのししポケモン 	Wild Boar
+222	Corsola 	Corsola 	Coral 	さんごポケモン 	Coral
+223	Remoraid 	Remoraid 	Jet 	ふんしゃポケモン 	Jet
+224	Octillery 	Octillery 	Jet 	ふんしゃポケモン 	Jet
+225	Delibird 	Delibird 	Delivery 	はこびやポケモン 	Courier
+226	Mantine 	Mantine 	Kite 	カイトポケモン 	Kite
+227	Skarmory 	Skarmory 	Armor Bird 	よろいどりポケモン 	Armor Bird
+228	Houndour 	Houndour 	Dark 	ダークポケモン 	Dark
+229	Houndoom 	Houndoom 	Dark 	ダークポケモン 	Dark
+230	Kingdra 	Kingdra 	Dragon 	ドラゴンポケモン 	Dragon
+231	Phanpy 	Phanpy 	Long Nose 	ながはなポケモン 	Long Nose
+232	Donphan 	Donphan 	Armor 	よろいポケモン 	Armor
+233	Porygon2 	Porygon2 	Virtual 	バーチャルポケモン 	Virtual
+234	Stantler 	Stantler 	Big Horn 	おおツノポケモン 	Big Horn
+235	Smeargle 	Smeargle 	Painter 	えかきポケモン 	Painter
+236	Tyrogue 	Tyrogue 	Scuffle 	けんかポケモン 	Scuffle
+237	Hitmontop 	Hitmontop 	Handstand 	さかだちポケモン 	Headstand
+238	Smoochum 	Smoochum 	Kiss 	くちづけポケモン 	Kiss
+239	Elekid 	Elekid 	Electric 	でんきポケモン 	Electric
+240	Magby 	Magby 	Live Coal 	ひだねポケモン 	Live Coal
+241	Miltank 	Miltank 	Milk Cow 	ちちうしポケモン 	Dairy Cow
+242	Blissey 	Blissey 	Happiness 	しあわせポケモン 	Happiness
+243	Raikou 	Raikou 	Thunder 	いかずちポケモン 	Thunder
+244	Entei 	Entei 	Volcano 	かざんポケモン 	Volcano
+245	Suicune 	Suicune 	Aurora 	オーロラポケモン 	Aurora
+246	Larvitar 	Larvitar 	Rock Skin 	いわはだポケモン 	Rock Skin
+247	Pupitar 	Pupitar 	Hard Shell 	だんがんポケモン 	Bullet
+248	Tyranitar 	Tyranitar 	Armor 	よろいポケモン 	Armor
+249	Lugia 	Lugia 	Diving 	せんすいポケモン 	Diving
+250	Ho-Oh 	Ho-Oh 	Rainbow 	にじいろポケモン 	Rainbow-Colored
+251	Celebi 	Celebi 	Time Travel 	ときわたりポケモン 	Time Traveling
+252	Treecko 	Treecko 	Wood Gecko 	もりトカゲポケモン 	Forest Lizard
+253	Grovyle 	Grovyle 	Wood Gecko 	もりトカゲポケモン 	Forest Lizard
+254	Sceptile 	Sceptile 	Forest 	みつりんポケモン 	Jungle
+255	Torchic 	Torchic 	Chick 	ひよこポケモン 	Chick
+256	Combusken 	Combusken 	Young Fowl 	わかどりポケモン 	Chicken
+257	Blaziken 	Blaziken 	Blaze 	もうかポケモン 	Raging Flames
+258	Mudkip 	Mudkip 	Mud Fish 	ぬまうおポケモン 	Swamp Fish
+259	Marshtomp 	Marshtomp 	Mud Fish 	ぬまうおポケモン 	Swamp Fish
+260	Swampert 	Swampert 	Mud Fish 	ぬまうおポケモン 	Swamp Fish
+261	Poochyena 	Poochyena 	Bite 	かみつきポケモン 	Bite
+262	Mightyena 	Mightyena 	Bite 	かみつきポケモン 	Bite
+263	Zigzagoon 	Zigzagoon 	Tiny Raccoon 	まめだぬきポケモン 	Tiny Raccoon Dog
+264	Linoone 	Linoone 	Rushing 	とっしんポケモン 	Rushing
+265	Wurmple 	Wurmple 	Worm 	いもむしポケモン 	Caterpillar
+266	Silcoon 	Silcoon 	Cocoon 	さなぎポケモン 	Chrysalis
+267	Beautifly 	Beautifly 	Butterfly 	ちょうちょポケモン 	Butterfly
+268	Cascoon 	Cascoon 	Cocoon 	さなぎポケモン 	Chrysalis
+269	Dustox 	Dustox 	Poison Moth 	どくがポケモン 	Poison Moth
+270	Lotad 	Lotad 	Water Weed 	うきくさポケモン 	Floating Weed
+271	Lombre 	Lombre 	Jolly 	ようきポケモン 	Cheerful
+272	Ludicolo 	Ludicolo 	Carefree 	のうてんきポケモン 	Optimistic
+273	Seedot 	Seedot 	Acorn 	どんぐりポケモン 	Acorn
+274	Nuzleaf 	Nuzleaf 	Wily 	いじわるポケモン 	Malicious
+275	Shiftry 	Shiftry 	Wicked 	よこしまポケモン 	Wicked
+276	Taillow 	Taillow 	Tiny Swallow 	こツバメポケモン 	Small Swallow
+277	Swellow 	Swellow 	Swallow 	ツバメポケモン 	Swallow
+278	Wingull 	Wingull 	Seagull 	うみねこポケモン 	Black-Tailed Gull
+279	Pelipper 	Pelipper 	Water Bird 	みずどりポケモン 	Waterfowl
+280	Ralts 	Ralts 	Feeling 	きもちポケモン 	Feeling
+281	Kirlia 	Kirlia 	Emotion 	かんじょうポケモン 	Emotion
+282	Gardevoir 	Gardevoir 	Embrace 	ほうようポケモン 	Embrace
+283	Surskit 	Surskit 	Pond Skater 	あめんぼポケモン 	Water Strider
+284	Masquerain 	Masquerain 	Eyeball 	めだまポケモン 	Eyeball
+285	Shroomish 	Shroomish 	Mushroom 	きのこポケモン 	Mushroom
+286	Breloom 	Breloom 	Mushroom 	きのこポケモン 	Mushroom
+287	Slakoth 	Slakoth 	Slacker 	なまけものポケモン 	Sloth
+288	Vigoroth 	Vigoroth 	Wild Monkey 	あばれザルポケモン 	Rampaging Monkey
+289	Slaking 	Slaking 	Lazy 	ものぐさポケモン 	Lazy
+290	Nincada 	Nincada 	Trainee 	したづみポケモン 	Lowest-Class
+291	Ninjask 	Ninjask 	Ninja 	しのびポケモン 	Ninja
+292	Shedinja 	Shedinja 	Shed 	ぬけがらポケモン 	Husk
+293	Whismur 	Whismur 	Whisper 	ささやきポケモン 	Whisper
+294	Loudred 	Loudred 	Big Voice 	おおごえポケモン 	Large Voice
+295	Exploud 	Exploud 	Loud Noise 	そうおんポケモン 	Noise
+296	Makuhita 	Makuhita 	Guts 	こんじょうポケモン 	Guts
+297	Hariyama 	Hariyama 	Arm Thrust 	つっぱりポケモン 	Palm Thrust
+298	Azurill 	Azurill 	Polka Dot 	みずたまポケモン 	Polka Dot
+299	Nosepass 	Nosepass 	Compass 	コンパスポケモン 	Compass
+300	Skitty 	Skitty 	Kitten 	こねこポケモン 	Kitten
+301	Delcatty 	Delcatty 	Prim 	おすましポケモン 	Prim and Proper
+302	Sableye 	Sableye 	Darkness 	くらやみポケモン 	Darkness
+303	Mawile 	Mawile 	Deceiver 	あざむきポケモン 	Deceiver
+304	Aron 	Aron 	Iron Armor 	てつヨロイポケモン 	Iron Armor
+305	Lairon 	Lairon 	Iron Armor 	てつヨロイポケモン 	Iron Armor
+306	Aggron 	Aggron 	Iron Armor 	てつヨロイポケモン 	Iron Armor
+307	Meditite 	Meditite 	Meditate 	めいそうポケモン 	Meditation
+308	Medicham 	Medicham 	Meditate 	めいそうポケモン 	Meditation
+309	Electrike 	Electrike 	Lightning 	いなずまポケモン 	Lightning
+310	Manectric 	Manectric 	Discharge 	ほうでんポケモン 	Discharge
+311	Plusle 	Plusle 	Cheering 	おうえんポケモン 	Cheering
+312	Minun 	Minun 	Cheering 	おうえんポケモン 	Cheering
+313	Volbeat 	Volbeat 	Firefly 	ほたるポケモン 	Firefly
+314	Illumise 	Illumise 	Firefly 	ほたるポケモン 	Firefly
+315	Roselia 	Roselia 	Thorn 	いばらポケモン 	Thorn
+316	Gulpin 	Gulpin 	Stomach 	いぶくろポケモン 	Stomach
+317	Swalot 	Swalot 	Poison Bag 	どくぶくろポケモン 	Poison Bag
+318	Carvanha 	Carvanha 	Savage 	どうもうポケモン 	Ferocious
+319	Sharpedo 	Sharpedo 	Brutal 	きょうぼうポケモン 	Brutal
+320	Wailmer 	Wailmer 	Ball Whale 	たまくじらポケモン 	Ball Whale
+321	Wailord 	Wailord 	Float Whale 	うきくじらポケモン 	Float Whale
+322	Numel 	Numel 	Numb 	どんかんポケモン 	Thickheaded
+323	Camerupt 	Camerupt 	Eruption 	ふんかポケモン 	Eruption
+324	Torkoal 	Torkoal 	Coal 	せきたんポケモン 	Coal
+325	Spoink 	Spoink 	Bounce 	とびはねポケモン 	Hopping
+326	Grumpig 	Grumpig 	Manipulate 	あやつりポケモン 	Manipulation
+327	Spinda 	Spinda 	Spot Panda 	ぶちパンダポケモン 	Spot Panda
+328	Trapinch 	Trapinch 	Ant Pit 	ありじごくポケモン 	Antlion Larva
+329	Vibrava 	Vibrava 	Vibration 	しんどうポケモン 	Vibration
+330	Flygon 	Flygon 	Mystic 	せいれいポケモン 	Spirit
+331	Cacnea 	Cacnea 	Cactus 	サボテンポケモン 	Cactus
+332	Cacturne 	Cacturne 	Scarecrow 	カカシぐさポケモン 	Scarecrow Plant
+333	Swablu 	Swablu 	Cotton Bird 	わたどりポケモン 	Cotton Bird
+334	Altaria 	Altaria 	Humming 	ハミングポケモン 	Humming
+335	Zangoose 	Zangoose 	Cat Ferret 	ネコイタチポケモン 	Cat Weasel
+336	Seviper 	Seviper 	Fang Snake 	キバへびポケモン 	Fang Snake
+337	Lunatone 	Lunatone 	Meteorite 	いんせきポケモン 	Meteorite
+338	Solrock 	Solrock 	Meteorite 	いんせきポケモン 	Meteorite
+339	Barboach 	Barboach 	Whiskers 	ひげうおポケモン 	Whisker Fish
+340	Whiscash 	Whiscash 	Whiskers 	ひげうおポケモン 	Whisker Fish
+341	Corphish 	Corphish 	Ruffian 	ごろつきポケモン 	Rogue
+342	Crawdaunt 	Crawdaunt 	Rogue 	ならずものポケモン 	Ruffian
+343	Baltoy 	Baltoy 	Clay Doll 	どぐうポケモン 	Clay Figure
+344	Claydol 	Claydol 	Clay Doll 	どぐうポケモン 	Clay Figure
+345	Lileep 	Lileep 	Sea Lily 	ウミユリポケモン 	Sea Lily
+346	Cradily 	Cradily 	Barnacle 	いわつぼポケモン 	Stone Cup
+347	Anorith 	Anorith 	Old Shrimp 	むかしエビポケモン 	Ancient Shrimp
+348	Armaldo 	Armaldo 	Plate 	かっちゅうポケモン 	Armor
+349	Feebas 	Feebas 	Fish 	さかなポケモン 	Fish
+350	Milotic 	Milotic 	Tender 	いつくしみポケモン 	Affection
+351	Castform 	Castform 	Weather 	てんきポケモン 	Weather
+352	Kecleon 	Kecleon 	Color Swap 	いろへんげポケモン 	Color Change
+353	Shuppet 	Shuppet 	Puppet 	にんぎょうポケモン 	Doll
+354	Banette 	Banette 	Marionette 	ぬいぐるみポケモン 	Stuffed Toy
+355	Duskull 	Duskull 	Requiem 	おむかえポケモン 	Approaching Death
+356	Dusclops 	Dusclops 	Beckon 	てまねきポケモン 	Beckoning
+357	Tropius 	Tropius 	Fruit 	フルーツポケモン 	Fruit
+358	Chimecho 	Chimecho 	Wind Chime 	ふうりんポケモン 	Wind Chime
+359	Absol 	Absol 	Disaster 	わざわいポケモン 	Calamity
+360	Wynaut 	Wynaut 	Bright 	ほがらかポケモン 	Merry
+361	Snorunt 	Snorunt 	Snow Hat 	ゆきかさポケモン 	Snow Umbrella
+362	Glalie 	Glalie 	Face 	がんめんポケモン 	Face
+363	Spheal 	Spheal 	Clap 	てたたきポケモン 	Clap
+364	Sealeo 	Sealeo 	Ball Roll 	たままわしポケモン 	Ball Roll
+365	Walrein 	Walrein 	Ice Break 	こおりわりポケモン 	Ice Breaker
+366	Clamperl 	Clamperl 	Bivalve 	2まいがいポケモン 	Bivalve
+367	Huntail 	Huntail 	Deep Sea 	しんかいポケモン 	Deep Sea
+368	Gorebyss 	Gorebyss 	South Sea 	なんかいポケモン 	South Sea
+369	Relicanth 	Relicanth 	Longevity 	ちょうじゅポケモン 	Longevity
+370	Luvdisc 	Luvdisc 	Rendezvous 	ランデブーポケモン 	Rendezvous
+371	Bagon 	Bagon 	Rock Head 	いしあたまポケモン 	Hard-Headed
+372	Shelgon 	Shelgon 	Endurance 	にんたいポケモン 	Patient
+373	Salamence 	Salamence 	Dragon 	ドラゴンポケモン 	Dragon
+374	Beldum 	Beldum 	Iron Ball 	てっきゅうポケモン 	Iron Ball
+375	Metang 	Metang 	Iron Claw 	てつツメポケモン 	Iron Claw
+376	Metagross 	Metagross 	Iron Leg 	てつあしポケモン 	Iron Leg
+377	Regirock 	Regirock 	Rock Peak 	いわやまポケモン 	Rocky Mountain
+378	Regice 	Regice 	Iceberg 	ひょうざんポケモン 	Iceberg
+379	Registeel 	Registeel 	Iron 	くろがねポケモン 	Iron
+380	Latias 	Latias 	Eon 	むげんポケモン 	Infinity
+381	Latios 	Latios 	Eon 	むげんポケモン 	Infinity
+382	Kyogre 	Kyogre 	Sea Basin 	かいていポケモン 	Seabed
+383	Groudon 	Groudon 	Continent 	たいりくポケモン 	Continent
+384	Rayquaza 	Rayquaza 	Sky High 	てんくうポケモン 	Sky
+385	Jirachi 	Jirachi 	Wish 	ねがいごとポケモン 	Wish
+386	Deoxys 	Deoxys 	DNA 	DNAポケモン 	DNA
+387	Turtwig 	Turtwig 	Tiny Leaf 	わかばポケモン 	New Leaf
+388	Grotle 	Grotle 	Grove 	こだちポケモン 	Grove
+389	Torterra 	Torterra 	Continent 	たいりくポケモン 	Continent
+390	Chimchar 	Chimchar 	Chimp 	こざるポケモン 	Small Monkey
+391	Monferno 	Monferno 	Playful 	やんちゃポケモン 	Mischievous
+392	Infernape 	Infernape 	Flame 	かえんポケモン 	Flame
+393	Piplup 	Piplup 	Penguin 	ペンギンポケモン 	Penguin
+394	Prinplup 	Prinplup 	Penguin 	ペンギンポケモン 	Penguin
+395	Empoleon 	Empoleon 	Emperor 	こうていポケモン 	Emperor
+396	Starly 	Starly 	Starling 	むくどりポケモン 	Starling
+397	Staravia 	Staravia 	Starling 	むくどりポケモン 	Starling
+398	Staraptor 	Staraptor 	Predator 	もうきんポケモン 	Bird of Prey
+399	Bidoof 	Bidoof 	Plump Mouse 	まるねずみポケモン 	Round Mouse
+400	Bibarel 	Bibarel 	Beaver 	ビーバーポケモン 	Beaver
+401	Kricketot 	Kricketot 	Cricket 	こおろぎポケモン 	Cricket
+402	Kricketune 	Kricketune 	Cricket 	こおろぎポケモン 	Cricket
+403	Shinx 	Shinx 	Flash 	せんこうポケモン 	Flash
+404	Luxio 	Luxio 	Spark 	でんこうポケモン 	Lightning
+405	Luxray 	Luxray 	Gleam Eyes 	がんこうポケモン 	Glinting Eyes
+406	Budew 	Budew 	Bud 	つぼみポケモン 	Bud
+407	Roserade 	Roserade 	Bouquet 	ブーケポケモン 	Bouquet
+408	Cranidos 	Cranidos 	Head Butt 	ずつきポケモン 	Head Butt
+409	Rampardos 	Rampardos 	Head Butt 	ずつきポケモン 	Head Butt
+410	Shieldon 	Shieldon 	Shield 	シールドポケモン 	Shield
+411	Bastiodon 	Bastiodon 	Shield 	シールドポケモン 	Shield
+412	Burmy 	Burmy 	Bagworm 	みのむしポケモン 	Bagworm
+413	Wormadam 	Wormadam 	Bagworm 	みのむしポケモン 	Bagworm
+414	Mothim 	Mothim 	Moth 	ミノガポケモン 	Bagworm Moth
+415	Combee 	Combee 	Tiny Bee 	はちのこポケモン 	Bee Larva
+416	Vespiquen 	Vespiquen 	Beehive 	はちのすポケモン 	Beehive
+417	Pachirisu 	Pachirisu 	EleSquirrel 	でんきリスポケモン 	Electric Squirrel
+418	Buizel 	Buizel 	Sea Weasel 	うみイタチポケモン 	Sea Weasel
+419	Floatzel 	Floatzel 	Sea Weasel 	うみイタチポケモン 	Sea Weasel
+420	Cherubi 	Cherubi 	Cherry 	さくらんぼポケモン 	Cherry
+421	Cherrim 	Cherrim 	Blossom 	サクラポケモン 	Cherry Blossom
+422	Shellos 	Shellos 	Sea Slug 	ウミウシポケモン 	Sea Slug
+423	Gastrodon 	Gastrodon 	Sea Slug 	ウミウシポケモン 	Sea Slug
+424	Ambipom 	Ambipom 	Long Tail 	おながポケモン 	Long Tail
+425	Drifloon 	Drifloon 	Balloon 	ふうせんポケモン 	Balloon
+426	Drifblim 	Drifblim 	Blimp 	ききゅうポケモン 	Blimp
+427	Buneary 	Buneary 	Rabbit 	うさぎポケモン 	Rabbit
+428	Lopunny 	Lopunny 	Rabbit 	うさぎポケモン 	Rabbit
+429	Mismagius 	Mismagius 	Magical 	マジカルポケモン 	Magical
+430	Honchkrow 	Honchkrow 	Big Boss 	おおボスポケモン 	Big Boss
+431	Glameow 	Glameow 	Catty 	ねこかぶりポケモン 	Beguiling
+432	Purugly 	Purugly 	Tiger Cat 	とらねこポケモン 	Tiger Cat
+433	Chingling 	Chingling 	Bell 	すずポケモン 	Bell
+434	Stunky 	Stunky 	Skunk 	スカンクポケモン 	Skunk
+435	Skuntank 	Skuntank 	Skunk 	スカンクポケモン 	Skunk
+436	Bronzor 	Bronzor 	Bronze 	せいどうポケモン 	Bronze
+437	Bronzong 	Bronzong 	Bronze Bell 	どうたくポケモン 	Bronze Bell
+438	Bonsly 	Bonsly 	Bonsai 	ぼんさいポケモン 	Bonsai
+439	Mime Jr. 	Mime Jr. 	Mime 	マイムポケモン 	Mime
+440	Happiny 	Happiny 	Playhouse 	ままごとポケモン 	Playing House
+441	Chatot 	Chatot 	Music Note 	おんぷポケモン 	Music Note
+442	Spiritomb 	Spiritomb 	Forbidden 	ふういんポケモン 	Sealed
+443	Gible 	Gible 	Land Shark 	りくザメポケモン 	Land Shark
+444	Gabite 	Gabite 	Cave 	ほらあなポケモン 	Cave
+445	Garchomp 	Garchomp 	Mach 	マッハポケモン 	Mach
+446	Munchlax 	Munchlax 	Big Eater 	おおぐいポケモン 	Gluttonous
+447	Riolu 	Riolu 	Emanation 	はもんポケモン 	Ripple
+448	Lucario 	Lucario 	Aura 	はどうポケモン 	Wave
+449	Hippopotas 	Hippopotas 	Hippo 	カバポケモン 	Hippo
+450	Hippowdon 	Hippowdon 	Heavyweight 	じゅうりょうポケモン 	Heavyweight
+451	Skorupi 	Skorupi 	Scorpion 	さそりポケモン 	Scorpion
+452	Drapion 	Drapion 	Ogre Scorpion 	ばけさそりポケモン 	Monster Scorpion
+453	Croagunk 	Croagunk 	Toxic Mouth 	どくづきポケモン 	Poison Stab
+454	Toxicroak 	Toxicroak 	Toxic Mouth 	どくづきポケモン 	Poison Stab
+455	Carnivine 	Carnivine 	Bug Catcher 	むしとりポケモン 	Bug Catcher
+456	Finneon 	Finneon 	Wing Fish 	はねうおポケモン 	Wing Fish
+457	Lumineon 	Lumineon 	Neon 	ネオンポケモン 	Neon
+458	Mantyke 	Mantyke 	Kite 	カイトポケモン 	Kite
+459	Snover 	Snover 	Frost Tree 	じゅひょうポケモン 	Frost-Covered Tree
+460	Abomasnow 	Abomasnow 	Frost Tree 	じゅひょうポケモン 	Frost-Covered Tree
+461	Weavile 	Weavile 	Sharp Claw 	かぎづめポケモン 	Claw
+462	Magnezone 	Magnezone 	Magnet Area 	じばポケモン 	Magnetic Field
+463	Lickilicky 	Lickilicky 	Licking 	なめまわしポケモン 	Licking
+464	Rhyperior 	Rhyperior 	Drill 	ドリルポケモン 	Drill
+465	Tangrowth 	Tangrowth 	Vine 	ツルじょうポケモン 	Tendril
+466	Electivire 	Electivire 	Thunderbolt 	らいでんポケモン 	Thunder and Lightning
+467	Magmortar 	Magmortar 	Blast 	ばくえんポケモン 	Explosion Fume
+468	Togekiss 	Togekiss 	Jubilee 	しゅくふくポケモン 	Blessing
+469	Yanmega 	Yanmega 	Ogre Darner 	オニトンボポケモン 	Ogre Dragonfly
+470	Leafeon 	Leafeon 	Verdant 	しんりょくポケモン 	Fresh Verdure
+471	Glaceon 	Glaceon 	Fresh Snow 	しんせつポケモン 	Fresh Snow
+472	Gliscor 	Gliscor 	Fang Scorpion 	キバさそりポケモン 	Fang Scorpion
+473	Mamoswine 	Mamoswine 	Twin Tusk 	2ほんキバポケモン 	Twin Tusk
+474	Porygon-Z 	Porygon-Z 	Virtual 	バーチャルポケモン 	Virtual
+475	Gallade 	Gallade 	Blade 	やいばポケモン 	Blade
+476	Probopass 	Probopass 	Compass 	コンパスポケモン 	Compass
+477	Dusknoir 	Dusknoir 	Gripper 	てづかみポケモン 	Grasping
+478	Froslass 	Froslass 	Snow Land 	ゆきぐにポケモン 	Snow Country
+479	Rotom 	Rotom 	Plasma 	プラズマポケモン 	Plasma
+480	Uxie 	Uxie 	Knowledge 	ちしきポケモン 	Knowledge
+481	Mesprit 	Mesprit 	Emotion 	かんじょうポケモン 	Emotion
+482	Azelf 	Azelf 	Willpower 	いしポケモン 	Will
+483	Dialga 	Dialga 	Temporal 	じかんポケモン 	Time
+484	Palkia 	Palkia 	Spatial 	くうかんポケモン 	Space
+485	Heatran 	Heatran 	Lava Dome 	かこうポケモン 	Caldera
+486	Regigigas 	Regigigas 	Colossal 	きょだいポケモン 	Huge
+487	Giratina 	Giratina 	Renegade 	はんこつポケモン 	Rebellious
+488	Cresselia 	Cresselia 	Lunar 	みかづきポケモン 	Crescent Moon
+489	Phione 	Phione 	Sea Drifter 	かいようポケモン 	Ocean
+490	Manaphy 	Manaphy 	Seafaring 	かいゆうポケモン 	Migration
+491	Darkrai 	Darkrai 	Pitch-Black 	あんこくポケモン 	Darkness
+492	Shaymin 	Shaymin 	Gratitude 	かんしゃポケモン 	Gratitude
+493	Arceus 	Arceus 	Alpha 	そうぞうポケモン 	Creation
+494	Victini 	Victini 	Victory 	しょうりポケモン 	Victory
+495	Snivy 	Snivy 	Grass Snake 	くさへびポケモン 	Grass Snake
+496	Servine 	Servine 	Grass Snake 	くさへびポケモン 	Grass Snake
+497	Serperior 	Serperior 	Regal 	ロイヤルポケモン 	Royal
+498	Tepig 	Tepig 	Fire Pig 	ひぶたポケモン 	Fire Pig
+499	Pignite 	Pignite 	Fire Pig 	ひぶたポケモン 	Fire Pig
+500	Emboar 	Emboar 	Mega Fire Pig 	おおひぶたポケモン 	Big Fire Pig
+501	Oshawott 	Oshawott 	Sea Otter 	ラッコポケモン 	Sea Otter
+502	Dewott 	Dewott 	Discipline 	しゅぎょうポケモン 	Training
+503	Samurott 	Samurott 	Formidable 	かんろくポケモン 	Dignified
+504	Patrat 	Patrat 	Scout 	みはりポケモン 	Lookout
+505	Watchog 	Watchog 	Lookout 	けいかいポケモン 	Vigilant
+506	Lillipup 	Lillipup 	Puppy 	こいぬポケモン 	Puppy
+507	Herdier 	Herdier 	Loyal Dog 	ちゅうけんポケモン 	Faithful Dog
+508	Stoutland 	Stoutland 	Big-Hearted 	かんだいポケモン 	Tolerant
+509	Purrloin 	Purrloin 	Devious 	しょうわるポケモン 	Ill-Natured
+510	Liepard 	Liepard 	Cruel 	れいこくポケモン 	Cruel
+511	Pansage 	Pansage 	Grass Monkey 	くさざるポケモン 	Grass Monkey
+512	Simisage 	Simisage 	Thorn Monkey 	とげざるポケモン 	Thorn Monkey
+513	Pansear 	Pansear 	High Temp 	こうおんポケモン 	High Temperature
+514	Simisear 	Simisear 	Ember 	ひのこポケモン 	Sparks
+515	Panpour 	Panpour 	Spray 	みずかけポケモン 	Water Splash
+516	Simipour 	Simipour 	Geyser 	ほうすいポケモン 	High Water
+517	Munna 	Munna 	Dream Eater 	ゆめくいポケモン 	Dream Eater
+518	Musharna 	Musharna 	Drowsing 	ゆめうつつポケモン 	Trance
+519	Pidove 	Pidove 	Tiny Pigeon 	こばとポケモン 	Small Pigeon
+520	Tranquill 	Tranquill 	Wild Pigeon 	のばとポケモン 	Wild Pigeon
+521	Unfezant 	Unfezant 	Proud 	プライドポケモン 	Pride
+522	Blitzle 	Blitzle 	Electrified 	たいでんポケモン 	Electrified
+523	Zebstrika 	Zebstrika 	Thunderbolt 	らいでんポケモン 	Thunder and Lightning
+524	Roggenrola 	Roggenrola 	Mantle 	マントルポケモン 	Mantle
+525	Boldore 	Boldore 	Ore 	こうせきポケモン 	Ore
+526	Gigalith 	Gigalith 	Compressed 	こうあつポケモン 	High Pressure
+527	Woobat 	Woobat 	Bat 	こうもりポケモン 	Bat
+528	Swoobat 	Swoobat 	Courting 	きゅうあいポケモン 	Courting
+529	Drilbur 	Drilbur 	Mole 	もぐらポケモン 	Mole
+530	Excadrill 	Excadrill 	Subterrene 	ちていポケモン 	Deep Earth
+531	Audino 	Audino 	Hearing 	ヒヤリングポケモン 	Hearing
+532	Timburr 	Timburr 	Muscular 	きんこつポケモン 	Muscle
+533	Gurdurr 	Gurdurr 	Muscular 	きんこつポケモン 	Muscle
+534	Conkeldurr 	Conkeldurr 	Muscular 	きんこつポケモン 	Muscle
+535	Tympole 	Tympole 	Tadpole 	おたまポケモン 	Tadpole
+536	Palpitoad 	Palpitoad 	Vibration 	しんどうポケモン 	Vibration
+537	Seismitoad 	Seismitoad 	Vibration 	しんどうポケモン 	Vibration
+538	Throh 	Throh 	Judo 	じゅうどうポケモン 	Judo
+539	Sawk 	Sawk 	Karate 	からてポケモン 	Karate
+540	Sewaddle 	Sewaddle 	Sewing 	さいほうポケモン 	Sewing
+541	Swadloon 	Swadloon 	Leaf-Wrapped 	はごもりポケモン 	Forest Cloak
+542	Leavanny 	Leavanny 	Nurturing 	こそだてポケモン 	Child-Raising
+543	Venipede 	Venipede 	Centipede 	ムカデポケモン 	Centipede
+544	Whirlipede 	Whirlipede 	Curlipede 	まゆムカデポケモン 	Cocoon Centipede
+545	Scolipede 	Scolipede 	Megapede 	メガムカデポケモン 	Mega Centipede
+546	Cottonee 	Cottonee 	Cotton Puff 	わたたまポケモン 	Cotton Ball
+547	Whimsicott 	Whimsicott 	Windveiled 	かぜかくれポケモン 	Wind-Hidden
+548	Petilil 	Petilil 	Bulb 	ねっこポケモン 	Root
+549	Lilligant 	Lilligant 	Flowering 	はなかざりポケモン 	Decorative Flower
+550	Basculin 	Basculin 	Hostile 	らんぼうポケモン 	Violent
+551	Sandile 	Sandile 	Desert Croc 	さばくワニポケモン 	Desert Crocodile
+552	Krokorok 	Krokorok 	Desert Croc 	さばくワニポケモン 	Desert Crocodile
+553	Krookodile 	Krookodile 	Intimidation 	いかくポケモン 	Menacing
+554	Darumaka 	Darumaka 	Zen Charm 	だるまポケモン 	Daruma
+555	Darmanitan 	Darmanitan 	Blazing 	えんじょうポケモン 	Blazing
+556	Maractus 	Maractus 	Cactus 	サボテンポケモン 	Cactus
+557	Dwebble 	Dwebble 	Rock Inn 	いしやどポケモン 	Stone Hermit
+558	Crustle 	Crustle 	Stone Home 	いわやどポケモン 	Rock Hermit
+559	Scraggy 	Scraggy 	Shedding 	だっぴポケモン 	Shedding
+560	Scrafty 	Scrafty 	Hoodlum 	あくとうポケモン 	Scoundrel
+561	Sigilyph 	Sigilyph 	Avianoid 	とりもどきポケモン 	Pseudo-Bird
+562	Yamask 	Yamask 	Spirit 	たましいポケモン 	Spirit
+563	Cofagrigus 	Cofagrigus 	Coffin 	かんおけポケモン 	Coffin
+564	Tirtouga 	Tirtouga 	Prototurtle 	こだいがめポケモン 	Ancient Turtle
+565	Carracosta 	Carracosta 	Prototurtle 	こだいがめポケモン 	Ancient Turtle
+566	Archen 	Archen 	First Bird 	さいこどりポケモン 	Oldest Bird
+567	Archeops 	Archeops 	First Bird 	さいこどりポケモン 	Oldest Bird
+568	Trubbish 	Trubbish 	Trash Bag 	ゴミぶくろポケモン 	Garbage Bag
+569	Garbodor 	Garbodor 	Trash Heap 	ゴミすてばポケモン 	Garbage Dump
+570	Zorua 	Zorua 	Tricky Fox 	わるぎつねポケモン 	Evil Fox
+571	Zoroark 	Zoroark 	Illusion Fox 	ばけぎつねポケモン 	Illusory Fox
+572	Minccino 	Minccino 	Chinchilla 	チンチラポケモン 	Chinchilla
+573	Cinccino 	Cinccino 	Scarf 	スカーフポケモン 	Scarf
+574	Gothita 	Gothita 	Fixation 	ぎょうしポケモン 	Stare
+575	Gothorita 	Gothorita 	Manipulate 	あやつりポケモン 	Manipulation
+576	Gothitelle 	Gothitelle 	Astral Body 	てんたいポケモン 	Heavenly Body
+577	Solosis 	Solosis 	Cell 	さいぼうポケモン 	Cell
+578	Duosion 	Duosion 	Mitosis 	ぶんかつポケモン 	Mitosis
+579	Reuniclus 	Reuniclus 	Multiplying 	ぞうふくポケモン 	Amplification
+580	Ducklett 	Ducklett 	Water Bird 	みずどりポケモン 	Waterfowl
+581	Swanna 	Swanna 	White Bird 	しらとりポケモン 	Swan
+582	Vanillite 	Vanillite 	Fresh Snow 	しんせつポケモン 	Fresh Snow
+583	Vanillish 	Vanillish 	Icy Snow 	ひょうせつポケモン 	Ice and Snow
+584	Vanilluxe 	Vanilluxe 	Snowstorm 	ブリザードポケモン 	Blizzard
+585	Deerling 	Deerling 	Season 	きせつポケモン 	Seasonal
+586	Sawsbuck 	Sawsbuck 	Season 	きせつポケモン 	Seasonal
+587	Emolga 	Emolga 	Sky Squirrel 	モモンガポケモン 	Flying Squirrel
+588	Karrablast 	Karrablast 	Clamping 	かぶりつきポケモン 	Bite Down
+589	Escavalier 	Escavalier 	Cavalry 	きへいポケモン 	Cavalry
+590	Foongus 	Foongus 	Mushroom 	きのこポケモン 	Mushroom
+591	Amoonguss 	Amoonguss 	Mushroom 	きのこポケモン 	Mushroom
+592	Frillish 	Frillish 	Floating 	ふゆうポケモン 	Floating
+593	Jellicent 	Jellicent 	Floating 	ふゆうポケモン 	Floating
+594	Alomomola 	Alomomola 	Caring 	かいほうポケモン 	Nursing
+595	Joltik 	Joltik 	Attaching 	くっつきポケモン 	Clinging
+596	Galvantula 	Galvantula 	EleSpider 	でんきグモポケモン 	Electric Spider
+597	Ferroseed 	Ferroseed 	Thorn Seed 	とげのみポケモン 	Spike Seed
+598	Ferrothorn 	Ferrothorn 	Thorn Pod 	とげだまポケモン 	Spike Ball
+599	Klink 	Klink 	Gear 	はぐるまポケモン 	Gear
+600	Klang 	Klang 	Gear 	はぐるまポケモン 	Gear
+601	Klinklang 	Klinklang 	Gear 	はぐるまポケモン 	Gear
+602	Tynamo 	Tynamo 	EleFish 	でんきうおポケモン 	Electric Fish
+603	Eelektrik 	Eelektrik 	EleFish 	でんきうおポケモン 	Electric Fish
+604	Eelektross 	Eelektross 	EleFish 	でんきうおポケモン 	Electric Fish
+605	Elgyem 	Elgyem 	Cerebral 	ブレインポケモン 	Brain
+606	Beheeyem 	Beheeyem 	Cerebral 	ブレインポケモン 	Brain
+607	Litwick 	Litwick 	Candle 	ろうそくポケモン 	Candle
+608	Lampent 	Lampent 	Lamp 	ランプポケモン 	Lamp
+609	Chandelure 	Chandelure 	Luring 	いざないポケモン 	Temptation
+610	Axew 	Axew 	Tusk 	キバポケモン 	Tusk
+611	Fraxure 	Fraxure 	Axe Jaw 	あごオノポケモン 	Jaw Ax
+612	Haxorus 	Haxorus 	Axe Jaw 	あごオノポケモン 	Jaw Ax
+613	Cubchoo 	Cubchoo 	Chill 	ひょうけつポケモン 	Freezing
+614	Beartic 	Beartic 	Freezing 	とうけつポケモン 	Frozen
+615	Cryogonal 	Cryogonal 	Crystallizing 	けっしょうポケモン 	Crystal
+616	Shelmet 	Shelmet 	Snail 	マイマイポケモン 	Snail
+617	Accelgor 	Accelgor 	Shell Out 	からぬけポケモン 	Deshelled
+618	Stunfisk 	Stunfisk 	Trap 	トラップポケモン 	Trap
+619	Mienfoo 	Mienfoo 	Martial Arts 	ぶじゅつポケモン 	Martial Arts
+620	Mienshao 	Mienshao 	Martial Arts 	ぶじゅつポケモン 	Martial Arts
+621	Druddigon 	Druddigon 	Cave 	ほらあなポケモン 	Cave
+622	Golett 	Golett 	Automaton 	ゴーレムポケモン 	Golem
+623	Golurk 	Golurk 	Automaton 	ゴーレムポケモン 	Golem
+624	Pawniard 	Pawniard 	Sharp Blade 	はものポケモン 	Sharp Edge
+625	Bisharp 	Bisharp 	Sword Blade 	とうじんポケモン 	Sword Blade
+626	Bouffalant 	Bouffalant 	Bash Buffalo 	ずつきうしポケモン 	Headbutt Bull
+627	Rufflet 	Rufflet 	Eaglet 	ヒナわしポケモン 	Eaglet
+628	Braviary 	Braviary 	Valiant 	ゆうもうポケモン 	Daring
+629	Vullaby 	Vullaby 	Diapered 	おむつポケモン 	Diaper
+630	Mandibuzz 	Mandibuzz 	Bone Vulture 	ほねわしポケモン 	Bone Eagle
+631	Heatmor 	Heatmor 	Anteater 	アリクイポケモン 	Anteater
+632	Durant 	Durant 	Iron Ant 	てつアリポケモン 	Iron Ant
+633	Deino 	Deino 	Irate 	そぼうポケモン 	Wild
+634	Zweilous 	Zweilous 	Hostile 	らんぼうポケモン 	Violent
+635	Hydreigon 	Hydreigon 	Brutal 	きょうぼうポケモン 	Brutal
+636	Larvesta 	Larvesta 	Torch 	たいまつポケモン 	Torch
+637	Volcarona 	Volcarona 	Sun 	たいようポケモン 	Sun
+638	Cobalion 	Cobalion 	Iron Will 	てっしんポケモン 	Iron Will
+639	Terrakion 	Terrakion 	Cavern 	がんくつポケモン 	Cavern
+640	Virizion 	Virizion 	Grassland 	そうげんポケモン 	Grassland
+641	Tornadus 	Tornadus 	Cyclone 	せんぷうポケモン 	Whirlwind
+642	Thundurus 	Thundurus 	Bolt Strike 	らいげきポケモン 	Lightning Strike
+643	Reshiram 	Reshiram 	Vast White 	はくようポケモン 	White Yang
+644	Zekrom 	Zekrom 	Deep Black 	こくいんポケモン 	Black Yin
+645	Landorus 	Landorus 	Abundance 	ほうじょうポケモン 	Fertility
+646	Kyurem 	Kyurem 	Boundary 	きょうかいポケモン 	Boundary
+647	Keldeo 	Keldeo 	Colt 	わかごまポケモン 	Young Colt
+648	Meloetta 	Meloetta 	Melody 	せんりつポケモン 	Melody
+649	Genesect 	Genesect 	Paleozoic 	こせいだいポケモン 	Paleozoic
+650	Chespin 	Chespin 	Spiny Nut 	いがぐりポケモン 	Shelled Chestnut
+651	Quilladin 	Quilladin 	Spiny Armor 	とげよろいポケモン 	Spiky Armor
+652	Chesnaught 	Chesnaught 	Spiny Armor 	とげよろいポケモン 	Spiky Armor
+653	Fennekin 	Fennekin 	Fox 	キツネポケモン 	Fox
+654	Braixen 	Braixen 	Fox 	キツネポケモン 	Fox
+655	Delphox 	Delphox 	Fox 	キツネポケモン 	Fox
+656	Froakie 	Froakie 	Bubble Frog 	あわがえるポケモン 	Foam Frog
+657	Frogadier 	Frogadier 	Bubble Frog 	あわがえるポケモン 	Foam Frog
+658	Greninja 	Greninja 	Ninja 	しのびポケモン 	Ninja
+659	Bunnelby 	Bunnelby 	Digging 	あなほりポケモン 	Burrowing
+660	Diggersby 	Diggersby 	Digging 	あなほりポケモン 	Burrowing
+661	Fletchling 	Fletchling 	Tiny Robin 	コマドリポケモン 	Japanese Robin
+662	Fletchinder 	Fletchinder 	Ember 	ひのこポケモン 	Sparks
+663	Talonflame 	Talonflame 	Scorching 	れっかポケモン 	Raging Fire
+664	Scatterbug 	Scatterbug 	Scatterdust 	こなふきポケモン 	Powder Blowing
+665	Spewpa 	Spewpa 	Scatterdust 	こなふきポケモン 	Powder Blowing
+666	Vivillon 	Vivillon 	Scale 	りんぷんポケモン 	Scale
+667	Litleo 	Litleo 	Lion Cub 	わかししポケモン 	Young Lion
+668	Pyroar 	Pyroar 	Royal 	おうじゃポケモン 	Monarch
+669	Flabébé 	Flabébé 	Single Bloom 	いちりんポケモン 	Single Flower
+670	Floette 	Floette 	Single Bloom 	いちりんポケモン 	Single Flower
+671	Florges 	Florges 	Garden 	ガーデンポケモン 	Garden
+672	Skiddo 	Skiddo 	Mount 	ライドポケモン 	Ride
+673	Gogoat 	Gogoat 	Mount 	ライドポケモン 	Ride
+674	Pancham 	Pancham 	Playful 	やんちゃポケモン 	Naughty
+675	Pangoro 	Pangoro 	Daunting 	こわもてポケモン 	Aggressive
+676	Furfrou 	Furfrou 	Poodle 	プードルポケモン 	Poodle
+677	Espurr 	Espurr 	Restraint 	じせいポケモン 	Self-control
+678	Meowstic 	Meowstic 	Constraint 	よくせいポケモン 	Restraint
+679	Honedge 	Honedge 	Sword 	とうけんポケモン 	Sword
+680	Doublade 	Doublade 	Sword 	とうけんポケモン 	Sword
+681	Aegislash 	Aegislash 	Royal Sword 	おうけんポケモン 	Royal Authority
+682	Spritzee 	Spritzee 	Perfume 	こうすいポケモン 	Perfume
+683	Aromatisse 	Aromatisse 	Fragrance 	ほうこうポケモン 	Fragrance
+684	Swirlix 	Swirlix 	Cotton Candy 	わたあめポケモン 	Cotton Candy
+685	Slurpuff 	Slurpuff 	Meringue 	ホイップポケモン 	Whipped Cream
+686	Inkay 	Inkay 	Revolving 	かいてんポケモン 	Rotation
+687	Malamar 	Malamar 	Overturning 	ぎゃくてんポケモン 	Reversal
+688	Binacle 	Binacle 	Two-Handed 	ふたてポケモン 	Two Groups
+689	Barbaracle 	Barbaracle 	Collective 	しゅうごうポケモン 	Gathering
+690	Skrelp 	Skrelp 	Mock Kelp 	クサモドキポケモン 	Pseudo Grass
+691	Dragalge 	Dragalge 	Mock Kelp 	クサモドキポケモン 	Pseudo Grass
+692	Clauncher 	Clauncher 	Water Gun 	みずでっぽうポケモン 	Water Gun
+693	Clawitzer 	Clawitzer 	Howitzer 	ランチャーポケモン 	Launcher
+694	Helioptile 	Helioptile 	Generator 	はつでんポケモン 	Generator
+695	Heliolisk 	Heliolisk 	Generator 	はつでんポケモン 	Generator
+696	Tyrunt 	Tyrunt 	Royal Heir 	ようくんポケモン 	Young Lord
+697	Tyrantrum 	Tyrantrum 	Despot 	ぼうくんポケモン 	Tyrant
+698	Amaura 	Amaura 	Tundra 	ツンドラポケモン 	Tundra
+699	Aurorus 	Aurorus 	Tundra 	ツンドラポケモン 	Tundra
+700	Sylveon 	Sylveon 	Intertwining 	むすびつきポケモン 	Association
+701	Hawlucha 	Hawlucha 	Wrestling 	レスリングポケモン 	Wrestling
+702	Dedenne 	Dedenne 	Antenna 	アンテナポケモン 	Antenna
+703	Carbink 	Carbink 	Jewel 	ほうせきポケモン 	Jewel
+704	Goomy 	Goomy 	Soft Tissue 	なんたいポケモン 	Soft Body
+705	Sliggoo 	Sliggoo 	Soft Tissue 	なんたいポケモン 	Soft Body
+706	Goodra 	Goodra 	Dragon 	ドラゴンポケモン 	Dragon
+707	Klefki 	Klefki 	Key Ring 	かぎたばポケモン 	Key Ring
+708	Phantump 	Phantump 	Stump 	きりかぶポケモン 	Stump
+709	Trevenant 	Trevenant 	Elder Tree 	ろうぼくポケモン 	Old Tree
+710	Pumpkaboo 	Pumpkaboo 	Pumpkin 	かぼちゃポケモン 	Pumpkin
+711	Gourgeist 	Gourgeist 	Pumpkin 	かぼちゃポケモン 	Pumpkin
+712	Bergmite 	Bergmite 	Ice Chunk 	ひょうかいポケモン 	Ice Floe
+713	Avalugg 	Avalugg 	Iceberg 	ひょうざんポケモン 	Iceberg
+714	Noibat 	Noibat 	Sound Wave 	おんぱポケモン 	Sound Wave
+715	Noivern 	Noivern 	Sound Wave 	おんぱポケモン 	Sound Wave
+716	Xerneas 	Xerneas 	Life 	せいめいポケモン 	Life
+717	Yveltal 	Yveltal 	Destruction 	はかいポケモン 	Destruction
+718	Zygarde 	Zygarde 	Order 	ちつじょポケモン 	Order
+719	Diancie 	Diancie 	Jewel 	ほうせきポケモン 	Jewel
+720	Hoopa 	Hoopa Unbound 	Djinn 	まじんポケモン 	Majin
+720	Hoopa 	Hoopa Confined 	Mischief 	いたずらポケモン 	Mischief
+721	Volcanion 	Volcanion 	Steam 	スチームポケモン 	Steam
+722	Rowlet 	Rowlet 	Grass Quill 	くさばねポケモン 	Grass Feather
+723	Dartrix 	Dartrix 	Blade Quill 	はばねポケモン 	Blade Feather
+724	Decidueye 	Decidueye 	Arrow Quill 	やばねポケモン 	Arrow Feather
+725	Litten 	Litten 	Fire Cat 	ひねこポケモン 	Fire Cat
+726	Torracat 	Torracat 	Fire Cat 	ひねこポケモン 	Fire Cat
+727	Incineroar 	Incineroar 	Heel 	ヒールポケモン 	Heel
+728	Popplio 	Popplio 	Sea Lion 	あしかポケモン 	Sea Lion
+729	Brionne 	Brionne 	Pop Star 	アイドルポケモン 	Idol
+730	Primarina 	Primarina 	Soloist 	ソリストポケモン 	Soloist
+731	Pikipek 	Pikipek 	Woodpecker 	きつつきポケモン 	Woodpecker
+732	Trumbeak 	Trumbeak 	Bugle Beak 	ラッパぐちポケモン 	Bugle Beak
+733	Toucannon 	Toucannon 	Cannon 	おおづつポケモン 	Cannon
+734	Yungoos 	Yungoos 	Loitering 	うろつきポケモン 	Prowling
+735	Gumshoos 	Gumshoos 	Stakeout 	はりこみポケモン 	Stakeout
+736	Grubbin 	Grubbin 	Larva 	ようちゅうポケモン 	Larva
+737	Charjabug 	Charjabug 	Battery 	バッテリーポケモン 	Battery
+738	Vikavolt 	Vikavolt 	Stag Beetle 	くわがたポケモン 	Stag Beetle
+739	Crabrawler 	Crabrawler 	Boxing 	けんとうポケモン 	Boxing
+740	Crabominable 	Crabominable 	Woolly Crab 	けがにポケモン 	Horsehair Crab
+741	Oricorio 	Oricorio 	Dancing 	ダンスポケモン 	Dance
+742	Cutiefly 	Cutiefly 	Bee Fly 	ツリアブポケモン 	Bee Fly
+743	Ribombee 	Ribombee 	Bee Fly 	ツリアブポケモン 	Bee Fly
+744	Rockruff 	Rockruff 	Puppy 	こいぬポケモン 	Puppy
+745	Lycanroc 	Lycanroc 	Wolf 	オオカミポケモン 	Wolf
+746	Wishiwashi 	Wishiwashi 	Small Fry 	こざかなポケモン 	Small Fish
+747	Mareanie 	Mareanie 	Brutal Star 	ヒトデナシポケモン 	Brutal
+748	Toxapex 	Toxapex 	Brutal Star 	ヒトデナシポケモン 	Brutal
+749	Mudbray 	Mudbray 	Donkey 	うさぎうまポケモン 	Donkey
+750	Mudsdale 	Mudsdale 	Draft Horse 	ばんばポケモン 	Draft Horse
+751	Dewpider 	Dewpider 	Water Bubble 	すいほうポケモン 	Water Bubble
+752	Araquanid 	Araquanid 	Water Bubble 	すいほうポケモン 	Water Bubble
+753	Fomantis 	Fomantis 	Sickle Grass 	かまくさポケモン 	Sickle Grass
+754	Lurantis 	Lurantis 	Bloom Sickle 	はなかまポケモン 	Flower Sickle
+755	Morelull 	Morelull 	Illuminating 	はっこうポケモン 	Luminescence
+756	Shiinotic 	Shiinotic 	Illuminating 	はっこうポケモン 	Luminescence
+757	Salandit 	Salandit 	Toxic Lizard 	どくトカゲポケモン 	Poison Lizard
+758	Salazzle 	Salazzle 	Toxic Lizard 	どくトカゲポケモン 	Poison Lizard
+759	Stufful 	Stufful 	Flailing 	じたばたポケモン 	Flailing
+760	Bewear 	Bewear 	Strong Arm 	ごうわんポケモン 	Strong Arm
+761	Bounsweet 	Bounsweet 	Fruit 	フルーツポケモン 	Fruit
+762	Steenee 	Steenee 	Fruit 	フルーツポケモン 	Fruit
+763	Tsareena 	Tsareena 	Fruit 	フルーツポケモン 	Fruit
+764	Comfey 	Comfey 	Posy Picker 	はなつみポケモン 	Flower Picker
+765	Oranguru 	Oranguru 	Sage 	けんじゃポケモン 	Sage
+766	Passimian 	Passimian 	Teamwork 	れんけいポケモン 	Cooperation
+767	Wimpod 	Wimpod 	Turn Tail 	そうこうポケモン 	Bustling
+768	Golisopod 	Golisopod 	Hard Scale 	そうこうポケモン 	Armored
+769	Sandygast 	Sandygast 	Sand Heap 	すなやまポケモン 	Sand Pile
+770	Palossand 	Palossand 	Sand Castle 	すなのしろポケモン 	Sand Castle
+771	Pyukumuku 	Pyukumuku 	Sea Cucumber 	なまこポケモン 	Sea Cucumber
+772	Type: Null 	Type: Null 	Synthetic 	じんこうポケモン 	Man-made
+773	Silvally 	Silvally 	Synthetic 	じんこうポケモン 	Man-made
+774	Minior 	Minior 	Meteor 	ながれぼしポケモン 	Meteor
+775	Komala 	Komala 	Drowsing 	ゆめうつつポケモン 	Trance
+776	Turtonator 	Turtonator 	Blast Turtle 	ばくはつがめポケモン 	Explosion Turtle
+777	Togedemaru 	Togedemaru 	Roly-Poly 	まるまりポケモン 	Circle Ball
+778	Mimikyu 	Mimikyu 	Disguise 	ばけのかわポケモン 	Disguise
+779	Bruxish 	Bruxish 	Gnash Teeth 	はぎしりポケモン 	Bruxism
+780	Drampa 	Drampa 	Placid 	ゆうゆうポケモン 	Calm
+781	Dhelmise 	Dhelmise 	Sea Creeper 	もくずポケモン 	Seaweed
+782	Jangmo-o 	Jangmo-o 	Scaly 	うろこポケモン 	Scale
+783	Hakamo-o 	Hakamo-o 	Scaly 	うろこポケモン 	Scale
+784	Kommo-o 	Kommo-o 	Scaly 	うろこポケモン 	Scale
+785	Tapu Koko 	Tapu Koko 	Land Spirit 	とちがみポケモン 	Land Spirit
+786	Tapu Lele 	Tapu Lele 	Land Spirit 	とちがみポケモン 	Land Spirit
+787	Tapu Bulu 	Tapu Bulu 	Land Spirit 	とちがみポケモン 	Land Spirit
+788	Tapu Fini 	Tapu Fini 	Land Spirit 	とちがみポケモン 	Land Spirit
+789	Cosmog 	Cosmog 	Nebula 	せいうんポケモン 	Nebula
+790	Cosmoem 	Cosmoem 	Protostar 	げんしせいポケモン 	Protostar
+791	Solgaleo 	Solgaleo 	Sunne 	にちりんポケモン 	Sun
+792	Lunala 	Lunala 	Moone 	がちりんポケモン 	Moon
+793	Nihilego 	Nihilego 	Parasite 	きせいポケモン 	Parasite
+794	Buzzwole 	Buzzwole 	Swollen 	ぼうちょうポケモン 	Swollen
+795	Pheromosa 	Pheromosa 	Lissome 	えんびポケモン 	Beauty
+796	Xurkitree 	Xurkitree 	Glowing 	でんしょくポケモン 	Glowing
+797	Celesteela 	Celesteela 	Launch 	うちあげポケモン 	Launch
+798	Kartana 	Kartana 	Drawn Sword 	ばっとうポケモン 	Drawn Sword
+799	Guzzlord 	Guzzlord 	Junkivore 	あくじきポケモン 	Allotriophage
+800	Necrozma 	Necrozma 	Prism 	プリズムポケモン 	Prism
+801	Magearna 	Magearna 	Artificial 	じんぞうポケモン 	Artificial
+802	Marshadow 	Marshadow 	Gloomdweller 	かげすみポケモン 	Shadow Dweller
+803	Poipole 	Poipole 	Poison Pin 	どくばりポケモン 	Poison Needle
+804	Naganadel 	Naganadel 	Poison Pin 	どくばりポケモン 	Poison Needle
+805	Stakataka 	Stakataka 	Rampart 	いしがきポケモン 	Stone Wall
+806	Blacephalon 	Blacephalon 	Fireworks 	はなびポケモン 	Fireworks
+807	Zeraora 	Zeraora 	Thunderclap 	じんらいポケモン 	Thunderclap
+-802	Meltan 	Meltan 	Hex Nut 	ナットポケモン 	Nut

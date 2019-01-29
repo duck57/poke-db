@@ -1,0 +1,919 @@
+#	pok	height-m	weight-kg	form	dup?
+1	Bulbasaur	0.7	6.9		FALSE
+2	Ivysaur	1	13		FALSE
+3	Venusaur	2	100		TRUE
+3	Venusaur	2.4	155.5	Mega	TRUE
+4	Charmander	0.6	8.5		FALSE
+5	Charmeleon	1.1	19		FALSE
+6	Charizard	1.7	90.5		TRUE
+6	Charizard	1.7	110.5	Mega X	TRUE
+6	Charizard	1.7	100.5	Mega Y	TRUE
+7	Squirtle	0.5	9		FALSE
+8	Wartortle	1	22.5		FALSE
+9	Blastoise	1.6	85.5		TRUE
+9	Blastoise	1.6	101.1	Mega	TRUE
+10	Caterpie	0.3	2.9		FALSE
+11	Metapod	0.7	9.9		FALSE
+12	Butterfree	1.1	32		FALSE
+13	Weedle	0.3	3.2		FALSE
+14	Kakuna	0.6	10		FALSE
+15	Beedrill	1	29.5		TRUE
+15	Beedrill	1.4	40.5	Mega	TRUE
+16	Pidgey	0.3	1.8		FALSE
+17	Pidgeotto	1.1	30		FALSE
+18	Pidgeot	1.5	39.5		TRUE
+18	Pidgeot	2.2	50.5	Mega	TRUE
+19	Rattata	0.3	3.5		TRUE
+19	Rattata	0.3	3.8	Alola	TRUE
+20	Raticate	0.7	18.5		TRUE
+20	Raticate	0.7	25.5	Alola	TRUE
+21	Spearow	0.3	2		FALSE
+22	Fearow	1.2	38		FALSE
+23	Ekans	2	6.9		FALSE
+24	Arbok	3.5	65		FALSE
+25	Pikachu	0.4	6		FALSE
+26	Raichu	0.8	30		TRUE
+26	Raichu	0.7	21	Alola	TRUE
+27	Sandshrew	0.6	12		TRUE
+27	Sandshrew	0.7	40	Alola	TRUE
+28	Sandslash	1	29.5		TRUE
+28	Sandslash	1.2	55	Alola	TRUE
+29	Nidoran♀	0.4	7		FALSE
+30	Nidorina	0.8	20		FALSE
+31	Nidoqueen	1.3	60		FALSE
+32	Nidoran♂	0.5	9		FALSE
+33	Nidorino	0.9	19.5		FALSE
+34	Nidoking	1.4	62		FALSE
+35	Clefairy	0.6	7.5		FALSE
+36	Clefable	1.3	40		FALSE
+37	Vulpix	0.6	9.9		TRUE
+37	Vulpix	0.6	9.9	Alola	TRUE
+38	Ninetales	1.1	19.9		TRUE
+38	Ninetales	1.1	19.9	Alola	TRUE
+39	Jigglypuff	0.5	5.5		FALSE
+40	Wigglytuff	1	12		FALSE
+41	Zubat	0.8	7.5		FALSE
+42	Golbat	1.6	55		FALSE
+43	Oddish	0.5	5.4		FALSE
+44	Gloom	0.8	8.6		FALSE
+45	Vileplume	1.2	18.6		FALSE
+46	Paras	0.3	5.4		FALSE
+47	Parasect	1	29.5		FALSE
+48	Venonat	1	30		FALSE
+49	Venomoth	1.5	12.5		FALSE
+50	Diglett	0.2	0.8		TRUE
+50	Diglett	0.2	1	Alola	TRUE
+51	Dugtrio	0.7	33.3		TRUE
+51	Dugtrio	0.7	66.6	Alola	TRUE
+52	Meowth	0.4	4.2		TRUE
+52	Meowth	0.4	4.2	Alola	TRUE
+53	Persian	1	32		TRUE
+53	Persian	1.1	33	Alola	TRUE
+54	Psyduck	0.8	19.6		FALSE
+55	Golduck	1.7	76.6		FALSE
+56	Mankey	0.5	28		FALSE
+57	Primeape	1	32		FALSE
+58	Growlithe	0.7	19		FALSE
+59	Arcanine	1.9	155		FALSE
+60	Poliwag	0.6	12.4		FALSE
+61	Poliwhirl	1	20		FALSE
+62	Poliwrath	1.3	54		FALSE
+63	Abra	0.9	19.5		FALSE
+64	Kadabra	1.3	56.5		FALSE
+65	Alakazam	1.5	48		TRUE
+65	Alakazam	1.2	48	Mega	TRUE
+66	Machop	0.8	19.5		FALSE
+67	Machoke	1.5	70.5		FALSE
+68	Machamp	1.6	130		FALSE
+69	Bellsprout	0.7	4		FALSE
+70	Weepinbell	1	6.4		FALSE
+71	Victreebel	1.7	15.5		FALSE
+72	Tentacool	0.9	45.5		FALSE
+73	Tentacruel	1.6	55		FALSE
+74	Geodude	0.4	20		TRUE
+74	Geodude	0.4	20.3	Alola	TRUE
+75	Graveler	1	105		TRUE
+75	Graveler	1	110	Alola	TRUE
+76	Golem	1.4	300		TRUE
+76	Golem	1.7	316	Alola	TRUE
+77	Ponyta	1	30		FALSE
+78	Rapidash	1.7	95		FALSE
+79	Slowpoke	1.2	36		FALSE
+80	Slowbro	1.6	78.5		TRUE
+80	Slowbro	2	120	Mega	TRUE
+81	Magnemite	0.3	6		FALSE
+82	Magneton	1	60		FALSE
+83	Farfetch'd	0.8	15		FALSE
+84	Doduo	1.4	39.2		FALSE
+85	Dodrio	1.8	85.2		FALSE
+86	Seel	1.1	90		FALSE
+87	Dewgong	1.7	120		FALSE
+88	Grimer	0.9	30		TRUE
+88	Grimer	0.7	42	Alola	TRUE
+89	Muk	1.2	30		TRUE
+89	Muk	1	52	Alola	TRUE
+90	Shellder	0.3	4		FALSE
+91	Cloyster	1.5	132.5		FALSE
+92	Gastly	1.3	0.1		FALSE
+93	Haunter	1.6	0.1		FALSE
+94	Gengar	1.5	40.5		TRUE
+94	Gengar	1.4	40.5	Mega	TRUE
+95	Onix	8.8	210		FALSE
+96	Drowzee	1	32.4		FALSE
+97	Hypno	1.6	75.6		FALSE
+98	Krabby	0.4	6.5		FALSE
+99	Kingler	1.3	60		FALSE
+100	Voltorb	0.5	10.4		FALSE
+101	Electrode	1.2	66.6		FALSE
+102	Exeggcute	0.4	2.5		FALSE
+103	Exeggutor	2	120		TRUE
+103	Exeggutor	10.9	415.6	Alola	TRUE
+104	Cubone	0.4	6.5		FALSE
+105	Marowak	1	45		TRUE
+105	Marowak	1	34	Alola	TRUE
+106	Hitmonlee	1.5	49.8		FALSE
+107	Hitmonchan	1.4	50.2		FALSE
+108	Lickitung	1.2	65.5		FALSE
+109	Koffing	0.6	1		FALSE
+110	Weezing	1.2	9.5		FALSE
+111	Rhyhorn	1	115		FALSE
+112	Rhydon	1.9	120		FALSE
+113	Chansey	1.1	34.6		FALSE
+114	Tangela	1	35		FALSE
+115	Kangaskhan	2.2	80		TRUE
+115	Kangaskhan	2.2	100	Mega	TRUE
+116	Horsea	0.4	8		FALSE
+117	Seadra	1.2	25		FALSE
+118	Goldeen	0.6	15		FALSE
+119	Seaking	1.3	39		FALSE
+120	Staryu	0.8	34.5		FALSE
+121	Starmie	1.1	80		FALSE
+122	Mr. Mime	1.3	54.5		FALSE
+123	Scyther	1.5	56		FALSE
+124	Jynx	1.4	40.6		FALSE
+125	Electabuzz	1.1	30		FALSE
+126	Magmar	1.3	44.5		FALSE
+127	Pinsir	1.5	55		TRUE
+127	Pinsir	1.7	59	Mega	TRUE
+128	Tauros	1.4	88.4		FALSE
+129	Magikarp	0.9	10		FALSE
+130	Gyarados	6.5	235		TRUE
+130	Gyarados	6.5	305	Mega	TRUE
+131	Lapras	2.5	220		FALSE
+132	Ditto	0.3	4		FALSE
+133	Eevee	0.3	6.5		FALSE
+134	Vaporeon	1	29		FALSE
+135	Jolteon	0.8	24.5		FALSE
+136	Flareon	0.9	25		FALSE
+137	Porygon	0.8	36.5		FALSE
+138	Omanyte	0.4	7.5		FALSE
+139	Omastar	1	35		FALSE
+140	Kabuto	0.5	11.5		FALSE
+141	Kabutops	1.3	40.5		FALSE
+142	Aerodactyl	1.8	59		TRUE
+142	Aerodactyl	2.1	79	Mega	TRUE
+143	Snorlax	2.1	460		FALSE
+144	Articuno	1.7	55.4		FALSE
+145	Zapdos	1.6	52.6		FALSE
+146	Moltres	2	60		FALSE
+147	Dratini	1.8	3.3		FALSE
+148	Dragonair	4	16.5		FALSE
+149	Dragonite	2.2	210		FALSE
+150	Mewtwo	2	122		TRUE
+150	Mewtwo	2.3	127	Mega X	TRUE
+150	Mewtwo	1.5	33	Mega Y	TRUE
+151	Mew	0.4	4		FALSE
+152	Chikorita	0.9	6.4		FALSE
+153	Bayleef	1.2	15.8		FALSE
+154	Meganium	1.8	100.5		FALSE
+155	Cyndaquil	0.5	7.9		FALSE
+156	Quilava	0.9	19		FALSE
+157	Typhlosion	1.7	79.5		FALSE
+158	Totodile	0.6	9.5		FALSE
+159	Croconaw	1.1	25		FALSE
+160	Feraligatr	2.3	88.8		FALSE
+161	Sentret	0.8	6		FALSE
+162	Furret	1.8	32.5		FALSE
+163	Hoothoot	0.7	21.2		FALSE
+164	Noctowl	1.6	40.8		FALSE
+165	Ledyba	1	10.8		FALSE
+166	Ledian	1.4	35.6		FALSE
+167	Spinarak	0.5	8.5		FALSE
+168	Ariados	1.1	33.5		FALSE
+169	Crobat	1.8	75		FALSE
+170	Chinchou	0.5	12		FALSE
+171	Lanturn	1.2	22.5		FALSE
+172	Pichu	0.3	2		FALSE
+173	Cleffa	0.3	3		FALSE
+174	Igglybuff	0.3	1		FALSE
+175	Togepi	0.3	1.5		FALSE
+176	Togetic	0.6	3.2		FALSE
+177	Natu	0.2	2		FALSE
+178	Xatu	1.5	15		FALSE
+179	Mareep	0.6	7.8		FALSE
+180	Flaaffy	0.8	13.3		FALSE
+181	Ampharos	1.4	61.5		TRUE
+181	Ampharos	1.4	61.5	Mega	TRUE
+182	Bellossom	0.4	5.8		FALSE
+183	Marill	0.4	8.5		FALSE
+184	Azumarill	0.8	28.5		FALSE
+185	Sudowoodo	1.2	38		FALSE
+186	Politoed	1.1	33.9		FALSE
+187	Hoppip	0.4	0.5		FALSE
+188	Skiploom	0.6	1		FALSE
+189	Jumpluff	0.8	3		FALSE
+190	Aipom	0.8	11.5		FALSE
+191	Sunkern	0.3	1.8		FALSE
+192	Sunflora	0.8	8.5		FALSE
+193	Yanma	1.2	38		FALSE
+194	Wooper	0.4	8.5		FALSE
+195	Quagsire	1.4	75		FALSE
+196	Espeon	0.9	26.5		FALSE
+197	Umbreon	1	27		FALSE
+198	Murkrow	0.5	2.1		FALSE
+199	Slowking	2	79.5		FALSE
+200	Misdreavus	0.7	1		FALSE
+201	Unown	0.5	5		FALSE
+202	Wobbuffet	1.3	28.5		FALSE
+203	Girafarig	1.5	41.5		FALSE
+204	Pineco	0.6	7.2		FALSE
+205	Forretress	1.2	125.8		FALSE
+206	Dunsparce	1.5	14		FALSE
+207	Gligar	1.1	64.8		FALSE
+208	Steelix	9.2	400		TRUE
+208	Steelix	10.5	740	Mega	TRUE
+209	Snubbull	0.6	7.8		FALSE
+210	Granbull	1.4	48.7		FALSE
+211	Qwilfish	0.5	3.9		FALSE
+212	Scizor	1.8	118		TRUE
+212	Scizor	2	125	Mega	TRUE
+213	Shuckle	0.6	20.5		FALSE
+214	Heracross	1.5	54		TRUE
+214	Heracross	1.7	62.5	Mega	TRUE
+215	Sneasel	0.9	28		FALSE
+216	Teddiursa	0.6	8.8		FALSE
+217	Ursaring	1.8	125.8		FALSE
+218	Slugma	0.7	35		FALSE
+219	Magcargo	0.8	55		FALSE
+220	Swinub	0.4	6.5		FALSE
+221	Piloswine	1.1	55.8		FALSE
+222	Corsola	0.6	5		FALSE
+223	Remoraid	0.6	12		FALSE
+224	Octillery	0.9	28.5		FALSE
+225	Delibird	0.9	16		FALSE
+226	Mantine	2.1	220		FALSE
+227	Skarmory	1.7	50.5		FALSE
+228	Houndour	0.6	10.8		FALSE
+229	Houndoom	1.4	35		TRUE
+229	Houndoom	1.9	49.5	Mega	TRUE
+230	Kingdra	1.8	152		FALSE
+231	Phanpy	0.5	33.5		FALSE
+232	Donphan	1.1	120		FALSE
+233	Porygon2	0.6	32.5		FALSE
+234	Stantler	1.4	71.2		FALSE
+235	Smeargle	1.2	58		FALSE
+236	Tyrogue	0.7	21		FALSE
+237	Hitmontop	1.4	48		FALSE
+238	Smoochum	0.4	6		FALSE
+239	Elekid	0.6	23.5		FALSE
+240	Magby	0.7	21.4		FALSE
+241	Miltank	1.2	75.5		FALSE
+242	Blissey	1.5	46.8		FALSE
+243	Raikou	1.9	178		FALSE
+244	Entei	2.1	198		FALSE
+245	Suicune	2	187		FALSE
+246	Larvitar	0.6	72		FALSE
+247	Pupitar	1.2	152		FALSE
+248	Tyranitar	2	202		TRUE
+248	Tyranitar	2.5	255	Mega	TRUE
+249	Lugia	5.2	216		FALSE
+250	Ho-oh	3.8	199		FALSE
+251	Celebi	0.6	5		FALSE
+252	Treecko	0.5	5		FALSE
+253	Grovyle	0.9	21.6		FALSE
+254	Sceptile	1.7	52.2		TRUE
+254	Sceptile	1.9	55.2	Mega	TRUE
+255	Torchic	0.4	2.5		FALSE
+256	Combusken	0.9	19.5		FALSE
+257	Blaziken	1.9	52		TRUE
+257	Blaziken	1.9	52	Mega	TRUE
+258	Mudkip	0.4	7.6		FALSE
+259	Marshtomp	0.7	28		FALSE
+260	Swampert	1.5	81.9		TRUE
+260	Swampert	1.9	102	Mega	TRUE
+261	Poochyena	0.5	13.6		FALSE
+262	Mightyena	1	37		FALSE
+263	Zigzagoon	0.4	17.5		FALSE
+264	Linoone	0.5	32.5		FALSE
+265	Wurmple	0.3	3.6		FALSE
+266	Silcoon	0.6	10		FALSE
+267	Beautifly	1	28.4		FALSE
+268	Cascoon	0.7	11.5		FALSE
+269	Dustox	1.2	31.6		FALSE
+270	Lotad	0.5	2.6		FALSE
+271	Lombre	1.2	32.5		FALSE
+272	Ludicolo	1.5	55		FALSE
+273	Seedot	0.5	4		FALSE
+274	Nuzleaf	1	28		FALSE
+275	Shiftry	1.3	59.6		FALSE
+276	Taillow	0.3	2.3		FALSE
+277	Swellow	0.7	19.8		FALSE
+278	Wingull	0.6	9.5		FALSE
+279	Pelipper	1.2	28		FALSE
+280	Ralts	0.4	6.6		FALSE
+281	Kirlia	0.8	20.2		FALSE
+282	Gardevoir	1.6	48.4		TRUE
+282	Gardevoir	1.6	48.4	Mega	TRUE
+283	Surskit	0.5	1.7		FALSE
+284	Masquerain	0.8	3.6		FALSE
+285	Shroomish	0.4	4.5		FALSE
+286	Breloom	1.2	39.2		FALSE
+287	Slakoth	0.8	24		FALSE
+288	Vigoroth	1.4	46.5		FALSE
+289	Slaking	2	130.5		FALSE
+290	Nincada	0.5	5.5		FALSE
+291	Ninjask	0.8	12		FALSE
+292	Shedinja	0.8	1.2		FALSE
+293	Whismur	0.6	16.3		FALSE
+294	Loudred	1	40.5		FALSE
+295	Exploud	1.5	84		FALSE
+296	Makuhita	1	86.4		FALSE
+297	Hariyama	2.3	253.8		FALSE
+298	Azurill	0.2	2		FALSE
+299	Nosepass	1	97		FALSE
+300	Skitty	0.6	11		FALSE
+301	Delcatty	1.1	32.6		FALSE
+302	Sableye	0.5	11		TRUE
+302	Sableye	0.5	161	Mega	TRUE
+303	Mawile	0.6	11.5		TRUE
+303	Mawile	1	23.5	Mega	TRUE
+304	Aron	0.4	60		FALSE
+305	Lairon	0.9	120		FALSE
+306	Aggron	2.1	360		TRUE
+306	Aggron	2.2	395	Mega	TRUE
+307	Meditite	0.6	11.2		FALSE
+308	Medicham	1.3	31.5		TRUE
+308	Medicham	1.3	31.5	Mega	TRUE
+309	Electrike	0.6	15.2		FALSE
+310	Manectric	1.5	40.2		TRUE
+310	Manectric	1.8	44	Mega	TRUE
+311	Plusle	0.4	4.2		FALSE
+312	Minun	0.4	4.2		FALSE
+313	Volbeat	0.7	17.7		FALSE
+314	Illumise	0.6	17.7		FALSE
+315	Roselia	0.3	2		FALSE
+316	Gulpin	0.4	10.3		FALSE
+317	Swalot	1.7	80		FALSE
+318	Carvanha	0.8	20.8		FALSE
+319	Sharpedo	1.8	88.8		TRUE
+319	Sharpedo	2.5	130.3	Mega	TRUE
+320	Wailmer	2	130		FALSE
+321	Wailord	14.5	398		FALSE
+322	Numel	0.7	24		FALSE
+323	Camerupt	1.9	220		TRUE
+323	Camerupt	2.5	320.5	Mega	TRUE
+324	Torkoal	0.5	80.4		FALSE
+325	Spoink	0.7	30.6		FALSE
+326	Grumpig	0.9	71.5		FALSE
+327	Spinda	1.1	5		FALSE
+328	Trapinch	0.7	15		FALSE
+329	Vibrava	1.1	15.3		FALSE
+330	Flygon	2	82		FALSE
+331	Cacnea	0.4	51.3		FALSE
+332	Cacturne	1.3	77.4		FALSE
+333	Swablu	0.4	1.2		FALSE
+334	Altaria	1.1	20.6		TRUE
+334	Altaria	1.5	20.6	Mega	TRUE
+335	Zangoose	1.3	40.3		FALSE
+336	Seviper	2.7	52.5		FALSE
+337	Lunatone	1	168		FALSE
+338	Solrock	1.2	154		FALSE
+339	Barboach	0.4	1.9		FALSE
+340	Whiscash	0.9	23.6		FALSE
+341	Corphish	0.6	11.5		FALSE
+342	Crawdaunt	1.1	32.8		FALSE
+343	Baltoy	0.5	21.5		FALSE
+344	Claydol	1.5	108		FALSE
+345	Lileep	1	23.8		FALSE
+346	Cradily	1.5	60.4		FALSE
+347	Anorith	0.7	12.5		FALSE
+348	Armaldo	1.5	68.2		FALSE
+349	Feebas	0.6	7.4		FALSE
+350	Milotic	6.2	162		FALSE
+351	Castform	0.3	0.8		FALSE
+352	Kecleon	1	22		FALSE
+353	Shuppet	0.6	2.3		FALSE
+354	Banette	1.1	12.5		TRUE
+354	Banette	1.2	13	Mega	TRUE
+355	Duskull	0.8	15		FALSE
+356	Dusclops	1.6	30.6		FALSE
+357	Tropius	2	100		FALSE
+358	Chimecho	0.6	1		FALSE
+359	Absol	1.2	47		TRUE
+359	Absol	1.2	49	Mega	TRUE
+360	Wynaut	0.6	14		FALSE
+361	Snorunt	0.7	16.8		FALSE
+362	Glalie	1.5	256.5		TRUE
+362	Glalie	2.1	350.2	Mega	TRUE
+363	Spheal	0.8	39.5		FALSE
+364	Sealeo	1.1	87.6		FALSE
+365	Walrein	1.4	150.6		FALSE
+366	Clamperl	0.4	52.5		FALSE
+367	Huntail	1.7	27		FALSE
+368	Gorebyss	1.8	22.6		FALSE
+369	Relicanth	1	23.4		FALSE
+370	Luvdisc	0.6	8.7		FALSE
+371	Bagon	0.6	42.1		FALSE
+372	Shelgon	1.1	110.5		FALSE
+373	Salamence	1.5	102.6		TRUE
+373	Salamence	1.8	112.6	Mega	TRUE
+374	Beldum	0.6	95.2		FALSE
+375	Metang	1.2	202.5		FALSE
+376	Metagross	1.6	550		TRUE
+376	Metagross	2.5	942.9	Mega	TRUE
+377	Regirock	1.7	230		FALSE
+378	Regice	1.8	175		FALSE
+379	Registeel	1.9	205		FALSE
+380	Latias	1.4	40		TRUE
+380	Latias	1.8	52	Mega	TRUE
+381	Latios	2	60		TRUE
+381	Latios	2.3	70	Mega	TRUE
+382	Kyogre	4.5	352		TRUE
+382	Kyogre	9.8	430	Primal	TRUE
+383	Groudon	3.5	950		TRUE
+383	Groudon	5	999.7	Primal	TRUE
+384	Rayquaza	7	206.5		TRUE
+384	Rayquaza	10.8	392	Mega	TRUE
+385	Jirachi	0.3	1.1		FALSE
+386	Deoxys	1.7	60.8	Normal	TRUE
+386	Deoxys	1.7	60.8	Attack	TRUE
+386	Deoxys	1.7	60.8	Defense	TRUE
+386	Deoxys	1.7	60.8	Speed	TRUE
+387	Turtwig	0.4	10.2		FALSE
+388	Grotle	1.1	97		FALSE
+389	Torterra	2.2	310		FALSE
+390	Chimchar	0.5	6.2		FALSE
+391	Monferno	0.9	22		FALSE
+392	Infernape	1.2	55		FALSE
+393	Piplup	0.4	5.2		FALSE
+394	Prinplup	0.8	23		FALSE
+395	Empoleon	1.7	84.5		FALSE
+396	Starly	0.3	2		FALSE
+397	Staravia	0.6	15.5		FALSE
+398	Staraptor	1.2	24.9		FALSE
+399	Bidoof	0.5	20		FALSE
+400	Bibarel	1	31.5		FALSE
+401	Kricketot	0.3	2.2		FALSE
+402	Kricketune	1	25.5		FALSE
+403	Shinx	0.5	9.5		FALSE
+404	Luxio	0.9	30.5		FALSE
+405	Luxray	1.4	42		FALSE
+406	Budew	0.2	1.2		FALSE
+407	Roserade	0.9	14.5		FALSE
+408	Cranidos	0.9	31.5		FALSE
+409	Rampardos	1.6	102.5		FALSE
+410	Shieldon	0.5	57		FALSE
+411	Bastiodon	1.3	149.5		FALSE
+412	Burmy	0.2	3.4		FALSE
+413	Wormadam	0.5	6.5	Plant	TRUE
+413	Wormadam	0.5	6.5	Sandy	TRUE
+413	Wormadam	0.5	6.5	Trash	TRUE
+414	Mothim	0.9	23.3		FALSE
+415	Combee	0.3	5.5		FALSE
+416	Vespiquen	1.2	38.5		FALSE
+417	Pachirisu	0.4	3.9		FALSE
+418	Buizel	0.7	29.5		FALSE
+419	Floatzel	1.1	33.5		FALSE
+420	Cherubi	0.4	3.3		FALSE
+421	Cherrim	0.5	9.3		FALSE
+422	Shellos	0.3	6.3		FALSE
+423	Gastrodon	0.9	29.9		FALSE
+424	Ambipom	1.2	20.3		FALSE
+425	Drifloon	0.4	1.2		FALSE
+426	Drifblim	1.2	15		FALSE
+427	Buneary	0.4	5.5		FALSE
+428	Lopunny	1.2	33.3		TRUE
+428	Lopunny	1.3	28.3	Mega	TRUE
+429	Mismagius	0.9	4.4		FALSE
+430	Honchkrow	0.9	27.3		FALSE
+431	Glameow	0.5	3.9		FALSE
+432	Purugly	1	43.8		FALSE
+433	Chingling	0.2	0.6		FALSE
+434	Stunky	0.4	19.2		FALSE
+435	Skuntank	1	38		FALSE
+436	Bronzor	0.5	60.5		FALSE
+437	Bronzong	1.3	187		FALSE
+438	Bonsly	0.5	15		FALSE
+439	Mime Jr.	0.6	13		FALSE
+440	Happiny	0.6	24.4		FALSE
+441	Chatot	0.5	1.9		FALSE
+442	Spiritomb	1	108		FALSE
+443	Gible	0.7	20.5		FALSE
+444	Gabite	1.4	56		FALSE
+445	Garchomp	1.9	95		TRUE
+445	Garchomp	1.9	95	Mega	TRUE
+446	Munchlax	0.6	105		FALSE
+447	Riolu	0.7	20.2		FALSE
+448	Lucario	1.2	54		TRUE
+448	Lucario	1.3	57.5	Mega	TRUE
+449	Hippopotas	0.8	49.5		FALSE
+450	Hippowdon	2	300		FALSE
+451	Skorupi	0.8	12		FALSE
+452	Drapion	1.3	61.5		FALSE
+453	Croagunk	0.7	23		FALSE
+454	Toxicroak	1.3	44.4		FALSE
+455	Carnivine	1.4	27		FALSE
+456	Finneon	0.4	7		FALSE
+457	Lumineon	1.2	24		FALSE
+458	Mantyke	1	65		FALSE
+459	Snover	1	50.5		FALSE
+460	Abomasnow	2.2	135.5		TRUE
+460	Abomasnow	2.7	185	Mega	TRUE
+461	Weavile	1.1	34		FALSE
+462	Magnezone	1.2	180		FALSE
+463	Lickilicky	1.7	140		FALSE
+464	Rhyperior	2.4	282.8		FALSE
+465	Tangrowth	2	128.6		FALSE
+466	Electivire	1.8	138.6		FALSE
+467	Magmortar	1.6	68		FALSE
+468	Togekiss	1.5	38		FALSE
+469	Yanmega	1.9	51.5		FALSE
+470	Leafeon	1	25.5		FALSE
+471	Glaceon	0.8	25.9		FALSE
+472	Gliscor	2	42.5		FALSE
+473	Mamoswine	2.5	291		FALSE
+474	Porygon-Z	0.9	34		FALSE
+475	Gallade	1.6	52		TRUE
+475	Gallade	1.6	56.4	Mega	TRUE
+476	Probopass	1.4	340		FALSE
+477	Dusknoir	2.2	106.6		FALSE
+478	Froslass	1.3	26.6		FALSE
+479	Rotom	0.3	0.3		TRUE
+479	Rotom	0.3	0.3	Heat	TRUE
+479	Rotom	0.3	0.3	Wash	TRUE
+479	Rotom	0.3	0.3	Frost	TRUE
+479	Rotom	0.3	0.3	Fan	TRUE
+479	Rotom	0.3	0.3	Mow	TRUE
+480	Uxie	0.3	0.3		FALSE
+481	Mesprit	0.3	0.3		FALSE
+482	Azelf	0.3	0.3		FALSE
+483	Dialga	5.4	683		FALSE
+484	Palkia	4.2	336		FALSE
+485	Heatran	1.7	430		FALSE
+486	Regigigas	3.7	420		FALSE
+487	Giratina	4.5	750	Altered	TRUE
+487	Giratina	6.9	650	Origin	TRUE
+488	Cresselia	1.5	85.6		FALSE
+489	Phione	0.4	3.1		FALSE
+490	Manaphy	0.3	1.4		FALSE
+491	Darkrai	1.5	50.5		FALSE
+492	Shaymin	0.2	2.1	Land	TRUE
+492	Shaymin	0.4	5.2	Sky	TRUE
+493	Arceus	3.2	320		FALSE
+494	Victini	0.4	4		FALSE
+495	Snivy	0.6	8.1		FALSE
+496	Servine	0.8	16		FALSE
+497	Serperior	3.3	63		FALSE
+498	Tepig	0.5	9.9		FALSE
+499	Pignite	1	55.5		FALSE
+500	Emboar	1.6	150		FALSE
+501	Oshawott	0.5	5.9		FALSE
+502	Dewott	0.8	24.5		FALSE
+503	Samurott	1.5	94.6		FALSE
+504	Patrat	0.5	11.6		FALSE
+505	Watchog	1.1	27		FALSE
+506	Lillipup	0.4	4.1		FALSE
+507	Herdier	0.9	14.7		FALSE
+508	Stoutland	1.2	61		FALSE
+509	Purrloin	0.4	10.1		FALSE
+510	Liepard	1.1	37.5		FALSE
+511	Pansage	0.6	10.5		FALSE
+512	Simisage	1.1	30.5		FALSE
+513	Pansear	0.6	11		FALSE
+514	Simisear	1	28		FALSE
+515	Panpour	0.6	13.5		FALSE
+516	Simipour	1	29		FALSE
+517	Munna	0.6	23.3		FALSE
+518	Musharna	1.1	60.5		FALSE
+519	Pidove	0.3	2.1		FALSE
+520	Tranquill	0.6	15		FALSE
+521	Unfezant	1.2	29		FALSE
+522	Blitzle	0.8	29.8		FALSE
+523	Zebstrika	1.6	79.5		FALSE
+524	Roggenrola	0.4	18		FALSE
+525	Boldore	0.9	102		FALSE
+526	Gigalith	1.7	260		FALSE
+527	Woobat	0.4	2.1		FALSE
+528	Swoobat	0.9	10.5		FALSE
+529	Drilbur	0.3	8.5		FALSE
+530	Excadrill	0.7	40.4		FALSE
+531	Audino	1.1	31		TRUE
+531	Audino	1.5	32	Mega	TRUE
+532	Timburr	0.6	12.5		FALSE
+533	Gurdurr	1.2	40		FALSE
+534	Conkeldurr	1.4	87		FALSE
+535	Tympole	0.5	4.5		FALSE
+536	Palpitoad	0.8	17		FALSE
+537	Seismitoad	1.5	62		FALSE
+538	Throh	1.3	55.5		FALSE
+539	Sawk	1.4	51		FALSE
+540	Sewaddle	0.3	2.5		FALSE
+541	Swadloon	0.5	7.3		FALSE
+542	Leavanny	1.2	20.5		FALSE
+543	Venipede	0.4	5.3		FALSE
+544	Whirlipede	1.2	58.5		FALSE
+545	Scolipede	2.5	200.5		FALSE
+546	Cottonee	0.3	0.6		FALSE
+547	Whimsicott	0.7	6.6		FALSE
+548	Petilil	0.5	6.6		FALSE
+549	Lilligant	1.1	16.3		FALSE
+550	Basculin	1	18	Red	TRUE
+550	Basculin	1	18	Blue	TRUE
+551	Sandile	0.7	15.2		FALSE
+552	Krokorok	1	33.4		FALSE
+553	Krookodile	1.5	96.3		FALSE
+554	Darumaka	0.6	37.5		FALSE
+555	Darmanitan	1.3	92.9	Standard	TRUE
+555	Darmanitan	1.3	92.9	Zen	TRUE
+556	Maractus	1	28		FALSE
+557	Dwebble	0.3	14.5		FALSE
+558	Crustle	1.4	200		FALSE
+559	Scraggy	0.6	11.8		FALSE
+560	Scrafty	1.1	30		FALSE
+561	Sigilyph	1.4	14		FALSE
+562	Yamask	0.5	1.5		FALSE
+563	Cofagrigus	1.7	76.5		FALSE
+564	Tirtouga	0.7	16.5		FALSE
+565	Carracosta	1.2	81		FALSE
+566	Archen	0.5	9.5		FALSE
+567	Archeops	1.4	32		FALSE
+568	Trubbish	0.6	31		FALSE
+569	Garbodor	1.9	107.3		FALSE
+570	Zorua	0.7	12.5		FALSE
+571	Zoroark	1.6	81.1		FALSE
+572	Minccino	0.4	5.8		FALSE
+573	Cinccino	0.5	7.5		FALSE
+574	Gothita	0.4	5.8		FALSE
+575	Gothorita	0.7	18		FALSE
+576	Gothitelle	1.5	44		FALSE
+577	Solosis	0.3	1		FALSE
+578	Duosion	0.6	8		FALSE
+579	Reuniclus	1	20.1		FALSE
+580	Ducklett	0.5	5.5		FALSE
+581	Swanna	1.3	24.2		FALSE
+582	Vanillite	0.4	5.7		FALSE
+583	Vanillish	1.1	41		FALSE
+584	Vanilluxe	1.3	57.5		FALSE
+585	Deerling	0.6	19.5		FALSE
+586	Sawsbuck	1.9	92.5		FALSE
+587	Emolga	0.4	5		FALSE
+588	Karrablast	0.5	5.9		FALSE
+589	Escavalier	1	33		FALSE
+590	Foongus	0.2	1		FALSE
+591	Amoonguss	0.6	10.5		FALSE
+592	Frillish	1.2	33		FALSE
+593	Jellicent	2.2	135		FALSE
+594	Alomomola	1.2	31.6		FALSE
+595	Joltik	0.1	0.6		FALSE
+596	Galvantula	0.8	14.3		FALSE
+597	Ferroseed	0.6	18.8		FALSE
+598	Ferrothorn	1	110		FALSE
+599	Klink	0.3	21		FALSE
+600	Klang	0.6	51		FALSE
+601	Klinklang	0.6	81		FALSE
+602	Tynamo	0.2	0.3		FALSE
+603	Eelektrik	1.2	22		FALSE
+604	Eelektross	2.1	80.5		FALSE
+605	Elgyem	0.5	9		FALSE
+606	Beheeyem	1	34.5		FALSE
+607	Litwick	0.3	3.1		FALSE
+608	Lampent	0.6	13		FALSE
+609	Chandelure	1	34.3		FALSE
+610	Axew	0.6	18		FALSE
+611	Fraxure	1	36		FALSE
+612	Haxorus	1.8	105.5		FALSE
+613	Cubchoo	0.5	8.5		FALSE
+614	Beartic	2.6	260		FALSE
+615	Cryogonal	1.1	148		FALSE
+616	Shelmet	0.4	7.7		FALSE
+617	Accelgor	0.8	25.3		FALSE
+618	Stunfisk	0.7	11		FALSE
+619	Mienfoo	0.9	20		FALSE
+620	Mienshao	1.4	35.5		FALSE
+621	Druddigon	1.6	139		FALSE
+622	Golett	1	92		FALSE
+623	Golurk	2.8	330		FALSE
+624	Pawniard	0.5	10.2		FALSE
+625	Bisharp	1.6	70		FALSE
+626	Bouffalant	1.6	94.6		FALSE
+627	Rufflet	0.5	10.5		FALSE
+628	Braviary	1.5	41		FALSE
+629	Vullaby	0.5	9		FALSE
+630	Mandibuzz	1.2	39.5		FALSE
+631	Heatmor	1.4	58		FALSE
+632	Durant	0.3	33		FALSE
+633	Deino	0.8	17.3		FALSE
+634	Zweilous	1.4	50		FALSE
+635	Hydreigon	1.8	160		FALSE
+636	Larvesta	1.1	28.8		FALSE
+637	Volcarona	1.6	46		FALSE
+638	Cobalion	2.1	250		FALSE
+639	Terrakion	1.9	260		FALSE
+640	Virizion	2	200		FALSE
+641	Tornadus	1.5	63	Incarnate	TRUE
+641	Tornadus	1.4	63	Therian	TRUE
+642	Thundurus	1.5	61	Incarnate	TRUE
+642	Thundurus	3	61	Therian	TRUE
+643	Reshiram	3.2	330		FALSE
+644	Zekrom	2.9	345		FALSE
+645	Landorus	1.5	68	Incarnate	TRUE
+645	Landorus	1.3	68	Therian	TRUE
+646	Kyurem	3	325		TRUE
+646	Kyurem	3.3	325	Black	TRUE
+646	Kyurem	3.6	325	White	TRUE
+647	Keldeo	1.4	48.5	Ordinary	TRUE
+647	Keldeo	1.4	48.5	Resolute	TRUE
+648	Meloetta	0.6	6.5	Aria	TRUE
+648	Meloetta	0.6	6.5	Pirouette	TRUE
+649	Genesect	1.5	82.5		FALSE
+650	Chespin	0.4	9		FALSE
+651	Quilladin	0.7	29		FALSE
+652	Chesnaught	1.6	90		FALSE
+653	Fennekin	0.4	9.4		FALSE
+654	Braixen	1	14.5		FALSE
+655	Delphox	1.5	39		FALSE
+656	Froakie	0.3	7		FALSE
+657	Frogadier	0.6	10.9		FALSE
+658	Greninja	1.5	40		TRUE
+658	Greninja	1.5	40	Ash	TRUE
+659	Bunnelby	0.4	5		FALSE
+660	Diggersby	1	42.4		FALSE
+661	Fletchling	0.3	1.7		FALSE
+662	Fletchinder	0.7	16		FALSE
+663	Talonflame	1.2	24.5		FALSE
+664	Scatterbug	0.3	2.5		FALSE
+665	Spewpa	0.3	8.4		FALSE
+666	Vivillon	1.2	17		FALSE
+667	Litleo	0.6	13.5		FALSE
+668	Pyroar	1.5	81.5		FALSE
+669	Flabébé	0.1	0.1		FALSE
+670	Floette	0.2	0.9		FALSE
+671	Florges	1.1	10		FALSE
+672	Skiddo	0.9	31		FALSE
+673	Gogoat	1.7	91		FALSE
+674	Pancham	0.6	8		FALSE
+675	Pangoro	2.1	136		FALSE
+676	Furfrou	1.2	28		FALSE
+677	Espurr	0.3	3.5		FALSE
+678	Meowstic	0.6	8.5	Male	TRUE
+678	Meowstic	0.6	8.5	Female	TRUE
+679	Honedge	0.8	2		FALSE
+680	Doublade	0.8	4.5		FALSE
+681	Aegislash	1.7	53	Blade	TRUE
+681	Aegislash	1.7	53	Shield	TRUE
+682	Spritzee	0.2	0.5		FALSE
+683	Aromatisse	0.8	15.5		FALSE
+684	Swirlix	0.4	3.5		FALSE
+685	Slurpuff	0.8	5		FALSE
+686	Inkay	0.4	3.5		FALSE
+687	Malamar	1.5	47		FALSE
+688	Binacle	0.5	31		FALSE
+689	Barbaracle	1.3	96		FALSE
+690	Skrelp	0.5	7.3		FALSE
+691	Dragalge	1.8	81.5		FALSE
+692	Clauncher	0.5	8.3		FALSE
+693	Clawitzer	1.3	35.3		FALSE
+694	Helioptile	0.5	6		FALSE
+695	Heliolisk	1	21		FALSE
+696	Tyrunt	0.8	26		FALSE
+697	Tyrantrum	2.5	270		FALSE
+698	Amaura	1.3	25.2		FALSE
+699	Aurorus	2.7	225		FALSE
+700	Sylveon	1	23.5		FALSE
+701	Hawlucha	0.8	21.5		FALSE
+702	Dedenne	0.2	2.2		FALSE
+703	Carbink	0.3	5.7		FALSE
+704	Goomy	0.3	2.8		FALSE
+705	Sliggoo	0.8	17.5		FALSE
+706	Goodra	2	150.5		FALSE
+707	Klefki	0.2	3		FALSE
+708	Phantump	0.4	7		FALSE
+709	Trevenant	1.5	71		FALSE
+710	Pumpkaboo	0.4	5	Average	TRUE
+710	Pumpkaboo	0.3	3.5	Small	TRUE
+710	Pumpkaboo	0.5	7.5	Large	TRUE
+710	Pumpkaboo	0.8	15	Super	TRUE
+711	Gourgeist	0.9	12.5	Average	TRUE
+711	Gourgeist	0.7	9.5	Small	TRUE
+711	Gourgeist	1.1	14	Large	TRUE
+711	Gourgeist	1.7	39	Super	TRUE
+712	Bergmite	1	99.5		FALSE
+713	Avalugg	2	505		FALSE
+714	Noibat	0.5	8		FALSE
+715	Noivern	1.5	85		FALSE
+716	Xerneas	3	215		FALSE
+717	Yveltal	5.8	203		FALSE
+718	Zygarde	5	305	50%	TRUE
+718	Zygarde	1.2	33.5	10%	TRUE
+718	Zygarde	4.5	610	Complete	TRUE
+719	Diancie	0.7	8.8		TRUE
+719	Diancie	1.1	27.8	Mega	TRUE
+720	Hoopa	0.5	9	Confined	TRUE
+720	Hoopa	6.5	490	Unbound	TRUE
+721	Volcanion	1.7	195		FALSE
+722	Rowlet	0.3	1.5		FALSE
+723	Dartrix	0.7	16		FALSE
+724	Decidueye	1.6	36.6		FALSE
+725	Litten	0.4	4.3		FALSE
+726	Torracat	0.7	25		FALSE
+727	Incineroar	1.8	83		FALSE
+728	Popplio	0.4	7.5		FALSE
+729	Brionne	0.6	17.5		FALSE
+730	Primarina	1.8	44		FALSE
+731	Pikipek	0.3	1.2		FALSE
+732	Trumbeak	0.6	14.8		FALSE
+733	Toucannon	1.1	26		FALSE
+734	Yungoos	0.4	6		FALSE
+735	Gumshoos	0.7	14.2		FALSE
+736	Grubbin	0.4	4.4		FALSE
+737	Charjabug	0.5	10.5		FALSE
+738	Vikavolt	1.5	45		FALSE
+739	Crabrawler	0.6	7		FALSE
+740	Crabominable	1.7	180		FALSE
+741	Oricorio	0.6	3.4	Baile	TRUE
+741	Oricorio	0.6	3.4	Pom-Pom	TRUE
+741	Oricorio	0.6	3.4	Pa'u	TRUE
+741	Oricorio	0.6	3.4	Sensu	TRUE
+742	Cutiefly	0.1	0.2		FALSE
+743	Ribombee	0.2	0.5		FALSE
+744	Rockruff	0.5	9.2		FALSE
+745	Lycanroc	0.8	25	Midday	TRUE
+745	Lycanroc	1.1	25	Midnight	TRUE
+745	Lycanroc	0.8	25	Dusk	TRUE
+746	Wishiwashi	0.2	0.3	Solo	TRUE
+746	Wishiwashi	8.2	78.6	School	TRUE
+747	Mareanie	0.4	8		FALSE
+748	Toxapex	0.7	14.5		FALSE
+749	Mudbray	1	110		FALSE
+750	Mudsdale	2.5	920		FALSE
+751	Dewpider	0.3	4		FALSE
+752	Araquanid	1.8	82		FALSE
+753	Fomantis	0.3	1.5		FALSE
+754	Lurantis	0.9	18.5		FALSE
+755	Morelull	0.2	1.5		FALSE
+756	Shiinotic	1	11.5		FALSE
+757	Salandit	0.6	4.8		FALSE
+758	Salazzle	1.2	22.2		FALSE
+759	Stufful	0.5	6.8		FALSE
+760	Bewear	2.1	135		FALSE
+761	Bounsweet	0.3	3.2		FALSE
+762	Steenee	0.7	8.2		FALSE
+763	Tsareena	1.2	21.4		FALSE
+764	Comfey	0.1	0.3		FALSE
+765	Oranguru	1.5	76		FALSE
+766	Passimian	2	82.8		FALSE
+767	Wimpod	0.5	12		FALSE
+768	Golisopod	2	108		FALSE
+769	Sandygast	0.5	70		FALSE
+770	Palossand	1.3	250		FALSE
+771	Pyukumuku	0.3	1.2		FALSE
+772	Type: Null	1.9	120.5		FALSE
+773	Silvally	2.3	100.5		FALSE
+774	Minior	0.3	40	Meteor	TRUE
+774	Minior	0.3	0.3	Core	TRUE
+775	Komala	0.4	19.9		FALSE
+776	Turtonator	2	212		FALSE
+777	Togedemaru	0.3	3.3		FALSE
+778	Mimikyu	0.2	0.7		FALSE
+779	Bruxish	0.9	19		FALSE
+780	Drampa	3	185		FALSE
+781	Dhelmise	3.9	210		FALSE
+782	Jangmo-o	0.6	29.7		FALSE
+783	Hakamo-o	1.2	47		FALSE
+784	Kommo-o	1.6	78.2		FALSE
+785	Tapu Koko	1.8	20.5		FALSE
+786	Tapu Lele	1.2	18.6		FALSE
+787	Tapu Bulu	1.9	45.5		FALSE
+788	Tapu Fini	1.3	21.2		FALSE
+789	Cosmog	0.2	0.1		FALSE
+790	Cosmoem	0.1	999.9		FALSE
+791	Solgaleo	3.4	230		FALSE
+792	Lunala	4	120		FALSE
+793	Nihilego	1.2	55.5		FALSE
+794	Buzzwole	2.4	333.6		FALSE
+795	Pheromosa	1.8	25		FALSE
+796	Xurkitree	3.8	100		FALSE
+797	Celesteela	9.2	999.9		FALSE
+798	Kartana	0.3	0.1		FALSE
+799	Guzzlord	5.5	888		FALSE
+800	Necrozma	2.4	230		TRUE
+800	Necrozma	3.8	460	Dusk Mane	TRUE
+800	Necrozma	4.2	350	Dawn Wings	TRUE
+800	Necrozma	7.5	230	Ultra	TRUE
+801	Magearna	1	80.5		FALSE
+802	Marshadow	0.7	22.2		FALSE
+803	Poipole	0.6	1.8		FALSE
+804	Naganadel	3.6	150		FALSE
+805	Stakataka	5.5	820		FALSE
+806	Blacephalon	1.8	13		FALSE
+807	Zeraora	1.5	44.5		FALSE

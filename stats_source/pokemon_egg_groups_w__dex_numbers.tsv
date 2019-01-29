@@ -1,0 +1,958 @@
+#	Name	Egg1	Egg2
+1	Bulbasaur	Monster	Grass
+2	Ivysaur	Monster	Grass
+3	Venusaur	Monster	Grass
+3	Venusaur-Mega	Monster	Grass
+4	Charmander	Monster	Dragon
+5	Charmeleon	Monster	Dragon
+6	Charizard	Monster	Dragon
+6	Charizard-MegaX	Monster	Dragon
+6	Charizard-MegaY	Monster	Dragon
+7	Squirtle	Monster	Water1
+8	Wartortle	Monster	Water1
+9	Blastoise	Monster	Water1
+9	Blastoise-Mega	Monster	Water1
+10	Caterpie	Bug
+11	Metapod	Bug
+12	Butterfree	Bug
+13	Weedle	Bug
+14	Kakuna	Bug
+15	Beedrill	Bug
+15	Beedrill-Mega	Bug
+16	Pidgey	Flying
+17	Pidgeotto	Flying
+18	Pidgeot	Flying
+18	Pidgeot-Mega	Flying
+19	Rattata	Field
+19	Rattata-Alola	Field
+20	Raticate	Field
+20	Raticate-Alola	Field
+21	Spearow	Flying
+22	Fearow	Flying
+23	Ekans	Field	Dragon
+24	Arbok	Field	Dragon
+25	Pikachu	Field	Fairy
+26	Raichu	Field	Fairy
+26	Raichu-Alola	Field	Fairy
+27	Sandshrew	Field
+27	Sandshrew-Alola	Field
+28	Sandslash	Field
+28	Sandslash-Alola	Field
+29	Nidoran-F	Monster	Field
+30	Nidorina	Undiscovered
+31	Nidoqueen	Undiscovered
+32	Nidoran-M	Monster	Field
+33	Nidorino	Monster	Field
+34	Nidoking	Monster	Field
+35	Clefairy	Fairy
+36	Clefable	Fairy
+37	Vulpix	Field
+37	Vulpix-Alola	Field
+38	Ninetales	Field
+38	Ninetales-Alola	Field
+39	Jigglypuff	Fairy
+40	Wigglytuff	Fairy
+41	Zubat	Flying
+42	Golbat	Flying
+43	Oddish	Grass
+44	Gloom	Grass
+45	Vileplume	Grass
+46	Paras	Bug	Grass
+47	Parasect	Bug	Grass
+48	Venonat	Bug
+49	Venomoth	Bug
+50	Diglett	Field
+50	Diglett-Alola	Field
+51	Dugtrio	Field
+51	Dugtrio-Alola	Field
+52	Meowth	Field
+52	Meowth-Alola	Field
+53	Persian	Field
+53	Persian-Alola	Field
+54	Psyduck	Water1	Field
+55	Golduck	Water1	Field
+56	Mankey	Field
+57	Primeape	Field
+58	Growlithe	Field
+59	Arcanine	Field
+60	Poliwag	Water1
+61	Poliwhirl	Water1
+62	Poliwrath	Water1
+63	Abra	Human-Like
+64	Kadabra	Human-Like
+65	Alakazam	Human-Like
+65	Alakazam-Mega	Human-Like
+66	Machop	Human-Like
+67	Machoke	Human-Like
+68	Machamp	Human-Like
+69	Bellsprout	Grass
+70	Weepinbell	Grass
+71	Victreebel	Grass
+72	Tentacool	Water3
+73	Tentacruel	Water3
+74	Geodude	Mineral
+74	Geodude-Alola	Mineral
+75	Graveler	Mineral
+75	Graveler-Alola	Mineral
+76	Golem	Mineral
+76	Golem-Alola	Mineral
+77	Ponyta	Field
+78	Rapidash	Field
+79	Slowpoke	Monster	Water1
+80	Slowbro	Monster	Water1
+80	Slowbro-Mega	Monster	Water1
+81	Magnemite	Mineral
+82	Magneton	Mineral
+83	Farfetch'd	Flying	Field
+84	Doduo	Flying
+85	Dodrio	Flying
+86	Seel	Water1	Field
+87	Dewgong	Water1	Field
+88	Grimer	Amorphous
+88	Grimer-Alola	Amorphous
+89	Muk	Amorphous
+89	Muk-Alola	Amorphous
+90	Shellder	Water3
+91	Cloyster	Water3
+92	Gastly	Amorphous
+93	Haunter	Amorphous
+94	Gengar	Amorphous
+94	Gengar-Mega	Amorphous
+95	Onix	Mineral
+96	Drowzee	Human-Like
+97	Hypno	Human-Like
+98	Krabby	Water3
+99	Kingler	Water3
+100	Voltorb	Mineral
+101	Electrode	Mineral
+102	Exeggcute	Grass
+103	Exeggutor	Grass
+103	Exeggutor-Alola	Grass
+104	Cubone	Monster
+105	Marowak	Monster
+105	Marowak-Alola	Monster
+106	Hitmonlee	Human-Like
+107	Hitmonchan	Human-Like
+108	Lickitung	Monster
+109	Koffing	Amorphous
+110	Weezing	Amorphous
+111	Rhyhorn	Monster	Field
+112	Rhydon	Monster	Field
+113	Chansey	Fairy
+114	Tangela	Grass
+115	Kangaskhan	Monster
+115	Kangaskhan-Mega	Monster
+116	Horsea	Water1	Dragon
+117	Seadra	Water1	Dragon
+118	Goldeen	Water2
+119	Seaking	Water2
+120	Staryu	Water3
+121	Starmie	Water3
+122	Mr.	Mime	Human-Like
+123	Scyther	Bug
+124	Jynx	Human-Like
+125	Electabuzz	Human-Like
+126	Magmar	Human-Like
+127	Pinsir	Bug
+127	Pinsir-Mega	Bug
+128	Tauros	Field
+129	Magikarp	Water2	Dragon
+130	Gyarados	Water2	Dragon
+130	Gyarados-Mega	Water2	Dragon
+131	Lapras	Monster	Water1
+132	Ditto	Ditto
+133	Eevee	Field
+134	Vaporeon	Field
+135	Jolteon	Field
+136	Flareon	Field
+137	Porygon	Mineral
+138	Omanyte	Water1	Water3
+139	Omastar	Water1	Water3
+140	Kabuto	Water1	Water3
+141	Kabutops	Water1	Water3
+142	Aerodactyl	Flying
+142	Aerodactyl-Mega	Flying
+143	Snorlax	Monster
+144	Articuno	Undiscovered
+145	Zapdos	Undiscovered
+146	Moltres	Undiscovered
+147	Dratini	Water1	Dragon
+148	Dragonair	Water1	Dragon
+149	Dragonite	Water1	Dragon
+150	Mewtwo	Undiscovered
+150	Mewtwo-MegaX	Undiscovered
+150	Mewtwo-MegaY	Undiscovered
+151	Mew	Undiscovered
+152	Chikorita	Monster	Grass
+153	Bayleef	Monster	Grass
+154	Meganium	Monster	Grass
+155	Cyndaquil	Field
+156	Quilava	Field
+157	Typhlosion	Field
+158	Totodile	Monster	Water1
+159	Croconaw	Monster	Water1
+160	Feraligatr	Monster	Water1
+161	Sentret	Field
+162	Furret	Field
+163	Hoothoot	Flying
+164	Noctowl	Flying
+165	Ledyba	Bug
+166	Ledian	Bug
+167	Spinarak	Bug
+168	Ariados	Bug
+169	Crobat	Flying
+170	Chinchou	Water2
+171	Lanturn	Water2
+172	Pichu	Undiscovered
+173	Cleffa	Undiscovered
+174	Igglybuff	Undiscovered
+175	Togepi	Undiscovered
+176	Togetic	Flying	Fairy
+177	Natu	Flying
+178	Xatu	Flying
+179	Mareep	Monster	Field
+180	Flaaffy	Monster	Field
+181	Ampharos	Monster	Field
+181	Ampharos-Mega	Monster	Field
+182	Bellossom	Grass
+183	Marill	Water1	Fairy
+184	Azumarill	Water1	Fairy
+185	Sudowoodo	Mineral
+186	Politoed	Water1
+187	Hoppip	Fairy	Grass
+188	Skiploom	Fairy	Grass
+189	Jumpluff	Fairy	Grass
+190	Aipom	Field
+191	Sunkern	Grass
+192	Sunflora	Grass
+193	Yanma	Bug
+194	Wooper	Water1	Field
+195	Quagsire	Water1	Field
+196	Espeon	Field
+197	Umbreon	Field
+198	Murkrow	Flying
+199	Slowking	Monster	Water1
+200	Misdreavus	Amorphous
+201	Unown	Undiscovered
+202	Wobbuffet	Amorphous
+203	Girafarig	Field
+204	Pineco	Bug
+205	Forretress	Bug
+206	Dunsparce	Field
+207	Gligar	Bug
+208	Steelix	Mineral
+208	Steelix-Mega	Mineral
+209	Snubbull	Field	Fairy
+210	Granbull	Field	Fairy
+211	Qwilfish	Water2
+212	Scizor	Bug
+212	Scizor-Mega	Bug
+213	Shuckle	Bug
+214	Heracross	Bug
+214	Heracross-Mega	Bug
+215	Sneasel	Field
+216	Teddiursa	Field
+217	Ursaring	Field
+218	Slugma	Amorphous
+219	Magcargo	Amorphous
+220	Swinub	Field
+221	Piloswine	Field
+222	Corsola	Water1	Water3
+223	Remoraid	Water1	Water2
+224	Octillery	Water1	Water2
+225	Delibird	Water1	Field
+226	Mantine	Water1
+227	Skarmory	Flying
+228	Houndour	Field
+229	Houndoom	Field
+229	Houndoom-Mega	Field
+230	Kingdra	Water1	Dragon
+231	Phanpy	Field
+232	Donphan	Field
+233	Porygon2	Mineral
+234	Stantler	Field
+235	Smeargle	Field
+236	Tyrogue	Undiscovered
+237	Hitmontop	Human-Like
+238	Smoochum	Undiscovered
+239	Elekid	Undiscovered
+240	Magby	Undiscovered
+241	Miltank	Field
+242	Blissey	Fairy
+243	Raikou	Undiscovered
+244	Entei	Undiscovered
+245	Suicune	Undiscovered
+246	Larvitar	Monster
+247	Pupitar	Monster
+248	Tyranitar	Monster
+248	Tyranitar-Mega	Monster
+249	Lugia	Undiscovered
+250	Ho-oh	Undiscovered
+251	Celebi	Undiscovered
+252	Treecko	Monster	Dragon
+253	Grovyle	Monster	Dragon
+254	Sceptile	Monster	Dragon
+254	Sceptile-Mega	Monster	Dragon
+255	Torchic	Field
+256	Combusken	Field
+257	Blaziken	Field
+257	Blaziken-Mega	Field
+258	Mudkip	Monster	Water1
+259	Marshtomp	Monster	Water1
+260	Swampert	Monster	Water1
+260	Swampert-Mega	Monster	Water1
+261	Poochyena	Field
+262	Mightyena	Field
+263	Zigzagoon	Field
+264	Linoone	Field
+265	Wurmple	Bug
+266	Silcoon	Bug
+267	Beautifly	Bug
+268	Cascoon	Bug
+269	Dustox	Bug
+270	Lotad	Water1	Grass
+271	Lombre	Water1	Grass
+272	Ludicolo	Water1	Grass
+273	Seedot	Field	Grass
+274	Nuzleaf	Field	Grass
+275	Shiftry	Field	Grass
+276	Taillow	Flying
+277	Swellow	Flying
+278	Wingull	Water1	Flying
+279	Pelipper	Water1	Flying
+280	Ralts	Amorphous
+281	Kirlia	Amorphous
+282	Gardevoir	Amorphous
+282	Gardevoir-Mega	Amorphous
+283	Surskit	Water1	Bug
+284	Masquerain	Water1	Bug
+285	Shroomish	Fairy	Grass
+286	Breloom	Fairy	Grass
+287	Slakoth	Field
+288	Vigoroth	Field
+289	Slaking	Field
+290	Nincada	Bug
+291	Ninjask	Bug
+292	Shedinja	Mineral
+293	Whismur	Monster	Field
+294	Loudred	Monster	Field
+295	Exploud	Monster	Field
+296	Makuhita	Human-Like
+297	Hariyama	Human-Like
+298	Azurill	Undiscovered
+299	Nosepass	Mineral
+300	Skitty	Field	Fairy
+301	Delcatty	Field	Fairy
+302	Sableye	Human-Like
+302	Sableye-Mega	Human-Like
+303	Mawile	Field	Fairy
+303	Mawile-Mega	Field	Fairy
+304	Aron	Monster
+305	Lairon	Monster
+306	Aggron	Monster
+306	Aggron-Mega	Monster
+307	Meditite	Human-Like
+308	Medicham	Human-Like
+308	Medicham-Mega	Human-Like
+309	Electrike	Field
+310	Manectric	Field
+310	Manectric-Mega	Field
+311	Plusle	Fairy
+312	Minun	Fairy
+313	Volbeat	Bug	Human-Like
+314	Illumise	Bug	Human-Like
+315	Roselia	Fairy	Grass
+316	Gulpin	Amorphous
+317	Swalot	Amorphous
+318	Carvanha	Water2
+319	Sharpedo	Water2
+319	Sharpedo-Mega	Water2
+320	Wailmer	Field	Water2
+321	Wailord	Field	Water2
+322	Numel	Field
+323	Camerupt	Field
+323	Camerupt-Mega	Field
+324	Torkoal	Field
+325	Spoink	Field
+326	Grumpig	Field
+327	Spinda	Field	Human-Like
+328	Trapinch	Bug
+329	Vibrava	Bug
+330	Flygon	Bug
+331	Cacnea	Grass	Human-Like
+332	Cacturne	Grass	Human-Like
+333	Swablu	Flying	Dragon
+334	Altaria	Flying	Dragon
+334	Altaria-Mega	Flying	Dragon
+335	Zangoose	Field
+336	Seviper	Field	Dragon
+337	Lunatone	Mineral
+338	Solrock	Mineral
+339	Barboach	Water2
+340	Whiscash	Water2
+341	Corphish	Water1	Water3
+342	Crawdaunt	Water1	Water3
+343	Baltoy	Mineral
+344	Claydol	Mineral
+345	Lileep	Water3
+346	Cradily	Water3
+347	Anorith	Water3
+348	Armaldo	Water3
+349	Feebas	Water1	Dragon
+350	Milotic	Water1	Dragon
+351	Castform	Fairy	Amorphous
+351	Castform-Sun	Fairy	Amorphous
+351	Castform-Rain	Fairy	Amorphous
+351	Castform-Hail	Fairy	Amorphous
+352	Kecleon	Field
+353	Shuppet	Amorphous
+354	Banette	Amorphous
+354	Banette-Mega	Amorphous
+355	Duskull	Amorphous
+356	Dusclops	Amorphous
+357	Tropius	Monster	Grass
+358	Chimecho	Amorphous
+359	Absol	Field
+359	Absol-Mega	Field
+360	Wynaut	Undiscovered
+361	Snorunt	Fairy	Mineral
+362	Glalie	Fairy	Mineral
+362	Glalie-Mega	Fairy	Mineral
+363	Spheal	Water1	Field
+364	Sealeo	Water1	Field
+365	Walrein	Water1	Field
+366	Clamperl	Water1
+367	Huntail	Water1
+368	Gorebyss	Water1
+369	Relicanth	Water1	Water2
+370	Luvdisc	Water2
+371	Bagon	Dragon
+372	Shelgon	Dragon
+373	Salamence	Dragon
+373	Salamence-Mega	Dragon
+374	Beldum	Mineral
+375	Metang	Mineral
+376	Metagross	Mineral
+376	Metagross-Mega	Mineral
+377	Regirock	Undiscovered
+378	Regice	Undiscovered
+379	Registeel	Undiscovered
+380	Latias	Undiscovered
+380	Latias-Mega	Undiscovered
+381	Latios	Undiscovered
+381	Latios-Mega	Undiscovered
+382	Kyogre	Undiscovered
+382	Kyogre-Mega	Undiscovered
+383	Groudon	Undiscovered
+383	Groudon-Mega	Undiscovered
+384	Rayquaza	Undiscovered
+384	Rayquaza-Mega	Undiscovered
+385	Jirachi	Undiscovered
+386	Deoxys	Undiscovered
+386	Deoxys-Attack	Undiscovered
+386	Deoxys-Defense	Undiscovered
+386	Deoxys-Speed	Undiscovered
+387	Turtwig	Monster	Grass
+388	Grotle	Monster	Grass
+389	Torterra	Monster	Grass
+390	Chimchar	Field	Human-Like
+391	Monferno	Field	Human-Like
+392	Infernape	Field	Human-Like
+393	Piplup	Water1	Field
+394	Prinplup	Water1	Field
+395	Empoleon	Water1	Field
+396	Starly	Flying
+397	Staravia	Flying
+398	Staraptor	Flying
+399	Bidoof	Water1	Field
+400	Bibarel	Water1	Field
+401	Kricketot	Bug
+402	Kricketune	Bug
+403	Shinx	Field
+404	Luxio	Field
+405	Luxray	Field
+406	Budew	Undiscovered
+407	Roserade	Fairy	Grass
+408	Cranidos	Monster
+409	Rampardos	Monster
+410	Shieldon	Monster
+411	Bastiodon	Monster
+412	Burmy	Bug
+413	Wormadam-Plant	Bug
+413	Wormadam-Sand	Bug
+413	Wormadam-Trash	Bug
+414	Mothim	Bug
+415	Combee	Bug
+416	Vespiquen	Bug
+417	Pachirisu	Field	Fairy
+418	Buizel	Water1	Field
+419	Floatzel	Water1	Field
+420	Cherubi	Fairy	Grass
+421	Cherrim	Fairy	Grass
+422	Shellos	Water1	Amorphous
+423	Gastrodon	Water1	Amorphous
+424	Ambipom	Field
+425	Drifloon	Amorphous
+426	Drifblim	Amorphous
+427	Buneary	Field	Human-Like
+428	Lopunny	Field	Human-Like
+428	Lopunny-Mega	Field	Human-Like
+429	Mismagius	Amorphous
+430	Honchkrow	Flying
+431	Glameow	Field
+432	Purugly	Field
+433	Chingling	Undiscovered
+434	Stunky	Field
+435	Skuntank	Field
+436	Bronzor	Mineral
+437	Bronzong	Mineral
+438	Bonsly	Undiscovered
+439	Mime	Jr.	Undiscovered
+440	Happiny	Undiscovered
+441	Chatot	Flying
+442	Spiritomb	Amorphous
+443	Gible	Monster	Dragon
+444	Gabite	Monster	Dragon
+445	Garchomp	Monster	Dragon
+445	Garchomp-Mega	Monster	Dragon
+446	Munchlax	Undiscovered
+447	Riolu	Undiscovered
+448	Lucario	Field	Human-Like
+448	Lucario-Mega	Field	Human-Like
+449	Hippopotas	Field
+450	Hippowdon	Field
+451	Skorupi	Bug	Water3
+452	Drapion	Bug	Water3
+453	Croagunk	Human-Like
+454	Toxicroak	Human-Like
+455	Carnivine	Grass
+456	Finneon	Water2
+457	Lumineon	Water2
+458	Mantyke	Undiscovered
+459	Snover	Monster	Grass
+460	Abomasnow	Monster	Grass
+460	Abomasnow-Mega	Monster	Grass
+461	Weavile	Field
+462	Magnezone	Mineral
+463	Lickilicky	Monster
+464	Rhyperior	Monster	Field
+465	Tangrowth	Grass
+466	Electivire	Human-Like
+467	Magmortar	Human-Like
+468	Togekiss	Flying	Fairy
+469	Yanmega	Bug
+470	Leafeon	Field
+471	Glaceon	Field
+472	Gliscor	Bug
+473	Mamoswine	Field
+474	Porygon-Z	Mineral
+475	Gallade	Amorphous
+475	Gallade-Mega	Amorphous
+476	Probopass	Mineral
+477	Dusknoir	Amorphous
+478	Froslass	Fairy	Mineral
+479	Rotom	Amorphous
+479	Rotom-Heat	Amorphous
+479	Rotom-Wash	Amorphous
+479	Rotom-Frost	Amorphous
+479	Rotom-Fan	Amorphous
+479	Rotom-Mow	Amorphous
+480	Uxie	Undiscovered
+481	Mesprit	Undiscovered
+482	Azelf	Undiscovered
+483	Dialga	Undiscovered
+484	Palkia	Undiscovered
+485	Heatran	Undiscovered
+486	Regigigas	Undiscovered
+486	Regigigas-Ready	Undiscovered
+487	Giratina-Altered	Undiscovered
+487	Giratina-Origin	Undiscovered
+488	Cresselia	Undiscovered
+489	Phione	Water1	Fairy
+490	Manaphy	Water1	Fairy
+491	Darkrai	Undiscovered
+492	Shaymin-Land	Undiscovered
+492	Shaymin-Sky	Undiscovered
+493	Arceus	Undiscovered
+493	Arceus-Bug	Undiscovered
+493	Arceus-Dark	Undiscovered
+493	Arceus-Dragon	Undiscovered
+493	Arceus-Electric	Undiscovered
+493	Arceus-Fairy	Undiscovered
+493	Arceus-Fighting	Undiscovered
+493	Arceus-Fire	Undiscovered
+493	Arceus-Flying	Undiscovered
+493	Arceus-Ghost	Undiscovered
+493	Arceus-Grass	Undiscovered
+493	Arceus-Ground	Undiscovered
+493	Arceus-Ice	Undiscovered
+493	Arceus-Poison	Undiscovered
+493	Arceus-Psychic	Undiscovered
+493	Arceus-Rock	Undiscovered
+493	Arceus-Steel	Undiscovered
+493	Arceus-Water	Undiscovered
+494	Victini	Undiscovered
+495	Snivy	Field	Grass
+496	Servine	Field	Grass
+497	Serperior	Field	Grass
+498	Tepig	Field
+499	Pignite	Field
+500	Emboar	Field
+501	Oshawott	Field
+502	Dewott	Field
+503	Samurott	Field
+504	Patrat	Field
+505	Watchog	Field
+506	Lillipup	Field
+507	Herdier	Field
+508	Stoutland	Field
+509	Purrloin	Field
+510	Liepard	Field
+511	Pansage	Field
+512	Simisage	Field
+513	Pansear	Field
+514	Simisear	Field
+515	Panpour	Field
+516	Simipour	Field
+517	Munna	Field
+518	Musharna	Field
+519	Pidove	Flying
+520	Tranquill	Flying
+521	Unfezant	Flying
+522	Blitzle	Field
+523	Zebstrika	Field
+524	Roggenrola	Mineral
+525	Boldore	Mineral
+526	Gigalith	Mineral
+527	Woobat	Field	Flying
+528	Swoobat	Field	Flying
+529	Drilbur	Field
+530	Excadrill	Field
+531	Audino	Fairy
+531	Audino-Mega	Fairy
+532	Timburr	Human-Like
+533	Gurdurr	Human-Like
+534	Conkeldurr	Human-Like
+535	Tympole	Water1
+536	Palpitoad	Water1
+537	Seismitoad	Water1
+538	Throh	Human-Like
+539	Sawk	Human-Like
+540	Sewaddle	Bug
+541	Swadloon	Bug
+542	Leavanny	Bug
+543	Venipede	Bug
+544	Whirlipede	Bug
+545	Scolipede	Bug
+546	Cottonee	Grass	Fairy
+547	Whimsicott	Grass	Fairy
+548	Petilil	Grass
+549	Lilligant	Grass
+550	Basculin-Red	Water2
+550	Basculin-Blue	Water2
+551	Sandile	Field
+552	Krokorok	Field
+553	Krookodile	Field
+554	Darumaka	Field
+555	Darmanitan	Field
+555	Darmanitan-Zen	Field
+556	Maractus	Grass
+557	Dwebble	Bug	Mineral
+558	Crustle	Bug	Mineral
+559	Scraggy	Field	Dragon
+560	Scrafty	Field	Dragon
+561	Sigilyph	Flying
+562	Yamask	Mineral	Amorphous
+563	Cofagrigus	Mineral	Amorphous
+564	Tirtouga	Water1	Water3
+565	Carracosta	Water1	Water3
+566	Archen	Flying	Water3
+567	Archeops	Flying	Water3
+568	Trubbish	Mineral
+569	Garbodor	Mineral
+570	Zorua	Field
+571	Zoroark	Field
+572	Minccino	Field
+573	Cinccino	Field
+574	Gothita	Human-Like
+575	Gothorita	Human-Like
+576	Gothitelle	Human-Like
+577	Solosis	Amorphous
+578	Duosion	Amorphous
+579	Reuniclus	Amorphous
+580	Ducklett	Water1	Flying
+581	Swanna	Water1	Flying
+582	Vanillite	Mineral
+583	Vanillish	Mineral
+584	Vanilluxe	Mineral
+585	Deerling	Field
+586	Sawsbuck	Field
+587	Emolga	Field
+588	Karrablast	Bug
+589	Escavalier	Bug
+590	Foongus	Grass
+591	Amoonguss	Grass
+592	Frillish	Amorphous
+593	Jellicent	Amorphous
+594	Alomomola	Water1	Water2
+595	Joltik	Bug
+596	Galvantula	Bug
+597	Ferroseed	Grass	Mineral
+598	Ferrothorn	Grass	Mineral
+599	Klink	Mineral
+600	Klang	Mineral
+601	Klinklang	Mineral
+602	Tynamo	Amorphous
+603	Eelektrik	Amorphous
+604	Eelektross	Amorphous
+605	Elgyem	Human-Like
+606	Beheeyem	Human-Like
+607	Litwick	Amorphous
+608	Lampent	Amorphous
+609	Chandelure	Amorphous
+610	Axew	Monster	Dragon
+611	Fraxure	Monster	Dragon
+612	Haxorus	Monster	Dragon
+613	Cubchoo	Field
+614	Beartic	Field
+615	Cryogonal	Mineral
+616	Shelmet	Bug
+617	Accelgor	Bug
+618	Stunfisk	Water1	Amorphous
+619	Mienfoo	Field	Human-Like
+620	Mienshao	Field	Human-Like
+621	Druddigon	Dragon	Monster
+622	Golett	Mineral
+623	Golurk	Mineral
+624	Pawniard	Human-Like
+625	Bisharp	Human-Like
+626	Bouffalant	Field
+627	Rufflet	Flying
+628	Braviary	Flying
+629	Vullaby	Flying
+630	Mandibuzz	Flying
+631	Heatmor	Field
+632	Durant	Bug
+633	Deino	Dragon
+634	Zweilous	Dragon
+635	Hydreigon	Dragon
+636	Larvesta	Bug
+637	Volcarona	Bug
+638	Cobalion	Undiscovered
+639	Terrakion	Undiscovered
+640	Virizion	Undiscovered
+641	Tornadus-Incarnate	Undiscovered
+641	Tornadus-Therian	Undiscovered
+642	Thundurus-Incarnate	Undiscovered
+642	Thundurus-Therian	Undiscovered
+643	Reshiram	Undiscovered
+644	Zekrom	Undiscovered
+645	Landorus-Incarnate	Undiscovered
+645	Landorus-Therian	Undiscovered
+646	Kyurem	Undiscovered
+646	Kyurem-Black	Undiscovered
+646	Kyurem-White	Undiscovered
+647	Keldeo	Undiscovered
+648	Meloetta	Undiscovered
+648	Meloetta-Pirouette	Undiscovered
+649	Genesect	Undiscovered
+650	Chespin	Field
+651	Quilladin	Field
+652	Chesnaught	Field
+653	Fennekin	Field
+654	Braixen	Field
+655	Delphox	Field
+656	Froakie	Water1
+657	Frogadier	Water1
+658	Greninja	Water1
+658	Greninja-Ash	Water1
+659	Bunnelby	Field
+660	Diggersby	Field
+661	Fletchling	Flying
+662	Fletchinder	Flying
+663	Talonflame	Flying
+664	Scatterbug	Bug
+665	Spewpa	Bug
+666	Vivillon	Bug
+667	Litleo	Field
+668	Pyroar	Field
+669	Flabébé	Fairy
+670	Floette	Fairy
+670	Floette-Eternal	Fairy
+671	Florges	Fairy
+672	Skiddo	Field
+673	Gogoat	Field
+674	Pancham	Field	Human-Like
+675	Pangoro	Field	Human-Like
+676	Furfrou	Field
+677	Espurr	Field
+678	Meowstic-M	Field
+678	Meowstic-F	Field
+679	Honedge	Mineral
+680	Doublade	Mineral
+681	Aegislash-Shield	Mineral
+681	Aegislash-Blade	Mineral
+682	Spritzee	Fairy
+683	Aromatisse	Fairy
+684	Swirlix	Fairy
+685	Slurpuff	Fairy
+686	Inkay	Water1	Water2
+687	Malamar	Water1	Water2
+688	Binacle	Water3
+689	Barbaracle	Water3
+690	Skrelp	Water1	Dragon
+691	Dragalge	Water1	Dragon
+692	Clauncher	Water1	Water3
+693	Clawitzer	Water1	Water3
+694	Helioptile	Monster	Dragon
+695	Heliolisk	Monster	Dragon
+696	Tyrunt	Monster	Dragon
+697	Tyrantrum	Monster	Dragon
+698	Amaura	Monster
+699	Aurorus	Monster
+700	Sylveon	Field
+701	Hawlucha	Human-Like
+702	Dedenne	Field	Fairy
+703	Carbink	Fairy	Mineral
+704	Goomy	Dragon
+705	Sliggoo	Dragon
+706	Goodra	Dragon
+707	Klefki	Mineral
+708	Phantump	Grass	Amorphous
+709	Trevenant	Grass	Amorphous
+710	Pumpkaboo-Small	Amorphous
+710	Pumpkaboo-Average	Amorphous
+710	Pumpkaboo-Large	Amorphous
+710	Pumpkaboo-Super	Amorphous
+711	Gourgeist-Small	Amorphous
+711	Gourgeist-Average	Amorphous
+711	Gourgeist-Large	Amorphous
+711	Gourgeist-Super	Amorphous
+712	Bergmite	Monster
+713	Avalugg	Monster
+714	Noibat	Flying
+715	Noivern	Flying
+716	Xerneas	Undiscovered
+717	Yveltal	Undiscovered
+718	Zygarde-50%	Undiscovered
+718	Zygarde-10%	Undiscovered
+718	Zygarde-Complete	Undiscovered
+719	Diancie	Undiscovered
+719	Diancie-Mega	Undiscovered
+720	Hoopa	Undiscovered
+720	Hoopa-Unbound	Undiscovered
+721	Volcanion	Undiscovered
+722	Rowlet	Flying
+723	Dartrix	Flying
+724	Decidueye	Flying
+725	Litten	Field
+726	Torracat	Field
+727	Incineroar	Field
+728	Popplio	Water1	Field
+729	Brionne	Water1	Field
+730	Primarina	Water1	Field
+731	Pikipek	Flying
+732	Trumbeak	Flying
+733	Toucannon	Flying
+734	Yungoos	Field
+735	Gumshoos	Field
+736	Grubbin	Bug
+737	Charjabug	Bug
+738	Vikavolt	Bug
+739	Crabrawler	Water3
+740	Crabominable	Water3
+741	Oricorio-Baile	Flying
+741	Oricorio-PomPom	Flying
+741	Oricorio-Pau	Flying
+741	Oricorio-Sensu	Flying
+742	Cutiefly	Bug	Fairy
+743	Ribombee	Bug	Fairy
+744	Rockruff	Field
+744	Rockruff-Special	Field
+745	Lycanroc-Midday	Field
+745	Lycanroc-Midnight	Field
+745	Lycanroc-Dusk	Field
+746	Wishiwashi-Solo	Water2
+746	Wishiwashi-School	Water2
+747	Mareanie	Water1
+748	Toxapex	Water1
+749	Mudbray	Field
+750	Mudsdale	Field
+751	Dewpider	Water1	Bug
+752	Araquanid	Water1	Bug
+753	Fomantis	Grass
+754	Lurantis	Grass
+755	Morelull	Grass
+756	Shiinotic	Grass
+757	Salandit	Monster	Dragon
+758	Salazzle	Monster	Dragon
+759	Stufful	Field
+760	Bewear	Field
+761	Bounsweet	Grass
+762	Steenee	Grass
+763	Tsareena	Grass
+764	Comfey	Grass
+765	Oranguru	Field
+766	Passimian	Field
+767	Wimpod	Bug	Water3
+768	Golisopod	Bug	Water3
+769	Sandygast	Amorphous
+770	Palossand	Amorphous
+771	Pyukumuku	Water1
+772	Type:	Null	Undiscovered
+773	Silvally	Undiscovered
+773	Silvally-Bug	Undiscovered
+773	Silvally-Dark	Undiscovered
+773	Silvally-Dragon	Undiscovered
+773	Silvally-Electric	Undiscovered
+773	Silvally-Fairy	Undiscovered
+773	Silvally-Fighting	Undiscovered
+773	Silvally-Fire	Undiscovered
+773	Silvally-Flying	Undiscovered
+773	Silvally-Ghost	Undiscovered
+773	Silvally-Grass	Undiscovered
+773	Silvally-Ground	Undiscovered
+773	Silvally-Ice	Undiscovered
+773	Silvally-Poison	Undiscovered
+773	Silvally-Psychic	Undiscovered
+773	Silvally-Rock	Undiscovered
+773	Silvally-Steel	Undiscovered
+773	Silvally-Water	Undiscovered
+774	Minior-Meteor	Mineral
+774	Minior-Core	Mineral
+775	Komala	Field
+776	Turtonator	Monster	Dragon
+777	Togedemaru	Field	Fairy
+778	Mimikyu	Amorphous
+779	Bruxish	Water2
+780	Drampa	Monster	Dragon
+781	Dhelmise	Mineral
+782	Jangmo-o	Dragon
+783	Hakamo-o	Dragon
+784	Kommo-o	Dragon
+785	Tapu	Koko	Undiscovered
+786	Tapu	Lele	Undiscovered
+787	Tapu	Bulu	Undiscovered
+788	Tapu	Fini	Undiscovered
+789	Cosmog	Undiscovered
+790	Cosmoem	Undiscovered
+791	Solgaleo	Undiscovered
+792	Lunala	Undiscovered
+793	Nihilego	Undiscovered
+794	Buzzwole	Undiscovered
+795	Pheromosa	Undiscovered
+796	Xurkitree	Undiscovered
+797	Celesteela	Undiscovered
+798	Kartana	Undiscovered
+799	Guzzlord	Undiscovered
+800	Necrozma	Undiscovered
+800	Necrozma-Dawn	Undiscovered
+800	Necrozma-Dusk	Undiscovered
+800	Necrozma-Ultra	Undiscovered
+801	Magearna	Undiscovered
+802	Marshadow	Undiscovered
+803	Poipole	Undiscovered
+804	Naganadel	Undiscovered
+805	Stakataka	Undiscovered
+806	Blacephalon	Undiscovered
+807	Zeraora	Undiscovered

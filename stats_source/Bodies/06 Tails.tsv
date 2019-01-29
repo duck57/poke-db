@@ -1,0 +1,173 @@
+Ndex	MS	Pokémon	Type	T3
+#004	004	Charmander	Fire
+#005	005	Charmeleon	Fire
+#006	006	Charizard	Fire	Flying
+#007	007	Squirtle	Water
+#008	008	Wartortle	Water
+#009	009	Blastoise	Water
+#026	026	Raichu	Electric
+#027	027	Sandshrew	Ground
+#028	028	Sandslash	Ground
+#031	031	Nidoqueen	Poison	Ground
+#034	034	Nidoking	Poison	Ground
+#035	035	Clefairy	Fairy
+#036	036	Clefable	Fairy
+#054	054	Psyduck	Water
+#055	055	Golduck	Water
+#056	056	Mankey	Fighting
+#057	057	Primeape	Fighting
+#063	063	Abra	Psychic
+#064	064	Kadabra	Psychic
+#066	066	Machop	Fighting
+#080	080	Slowbro	Water	Psychic
+#094	094	Gengar	Ghost	Poison
+#104	104	Cubone	Ground
+#105	105	Marowak	Ground
+#108	108	Lickitung	Normal
+#112	112	Rhydon	Ground	Rock
+#113	113	Chansey	Normal
+#115	115	Kangaskhan	Normal
+#125	125	Electabuzz	Electric
+#126	126	Magmar	Fire
+#141	141	Kabutops	Rock	Water
+#149	149	Dragonite	Dragon	Flying
+#150	150	Mewtwo	Psychic
+#151	151	Mew	Psychic
+#158	158	Totodile	Water
+#159	159	Croconaw	Water
+#160	160	Feraligatr	Water
+#173	173	Cleffa	Fairy
+#180	180	Flaaffy	Electric
+#181	181	Ampharos	Electric
+#183	183	Marill	Water	Fairy
+#184	184	Azumarill	Water	Fairy
+#187	187	Hoppip	Grass	Flying
+#188	188	Skiploom	Grass	Flying
+#189	189	Jumpluff	Grass	Flying
+#190	190	Aipom	Normal
+#195	195	Quagsire	Water	Ground
+#199	199	Slowking	Water	Psychic
+#210	210	Granbull	Fairy
+#215	215	Sneasel	Dark	Ice
+#216	216	Teddiursa	Normal
+#217	217	Ursaring	Normal
+#235	235	Smeargle	Normal
+#237	237	Hitmontop	Fighting
+#240	240	Magby	Fire
+#241	241	Miltank	Normal
+#246	246	Larvitar	Rock	Ground
+#248	248	Tyranitar	Rock	Dark
+#252	252	Treecko	Grass
+#253	253	Grovyle	Grass
+#254	254	Sceptile	Grass
+#256	256	Combusken	Fire	Fighting
+#257	257	Blaziken	Fire	Fighting
+#259	259	Marshtomp	Water	Ground
+#260	260	Swampert	Water	Ground
+#286	286	Breloom	Grass	Fighting
+#288	288	Vigoroth	Normal
+#293	293	Whismur	Normal
+#294	294	Loudred	Normal
+#295	295	Exploud	Normal
+#306	306	Aggron	Steel	Rock
+#311	311	Plusle	Electric
+#312	312	Minun	Electric
+#313	313	Volbeat	Bug
+#326	326	Grumpig	Psychic
+#327	327	Spinda	Normal
+#335	335	Zangoose	Normal
+#348	348	Armaldo	Rock	Bug
+#352	352	Kecleon	Normal
+#354	354	Banette	Ghost
+#360	360	Wynaut	Psychic
+#383	383	Groudon	Ground
+#390	390	Chimchar	Fire
+#391	391	Monferno	Fire	Fighting
+#392	392	Infernape	Fire	Fighting
+#394	394	Prinplup	Water
+#395	395	Empoleon	Water	Steel
+#400	400	Bibarel	Normal	Water
+#408	408	Cranidos	Rock
+#409	409	Rampardos	Rock
+#424	424	Ambipom	Normal
+#427	427	Buneary	Normal
+#428	428	Lopunny	Normal
+#443	443	Gible	Dragon	Ground
+#444	444	Gabite	Dragon	Ground
+#445	445	Garchomp	Dragon	Ground
+#447	447	Riolu	Fighting
+#448	448	Lucario	Fighting	Steel
+#459	459	Snover	Grass	Ice
+#460	460	Abomasnow	Grass	Ice
+#461	461	Weavile	Dark	Ice
+#464	464	Rhyperior	Ground	Rock
+#466	466	Electivire	Electric
+#467	467	Magmortar	Fire
+#480	480	Uxie	Psychic
+#481	481	Mesprit	Psychic
+#482	482	Azelf	Psychic
+#484	484	Palkia	Water	Dragon
+#495	495	Snivy	Grass
+#496	496	Servine	Grass
+#499	499	Pignite	Fire	Fighting
+#500	500	Emboar	Fire	Fighting
+#501	501	Oshawott	Water
+#502	502	Dewott	Water
+#505	505	Watchog	Normal
+#511	511	Pansage	Grass
+#512	512	Simisage	Grass
+#513	513	Pansear	Fire
+#514	514	Simisear	Fire
+#515	515	Panpour	Water
+#516	516	Simipour	Water
+#529	529	Drilbur	Ground
+#531	531	Audino	Normal
+#536	536	Palpitoad	Water	Ground
+#553	553	Krookodile	Ground	Dark
+#559	559	Scraggy	Dark	Fighting
+#560	560	Scrafty	Dark	Fighting
+#565	565	Carracosta	Water	Rock
+#571	571	Zoroark	Dark
+#605	605	Elgyem	Psychic
+#610	610	Axew	Dragon
+#611	611	Fraxure	Dragon
+#612	612	Haxorus	Dragon
+#613	613	Cubchoo	Ice
+#619	619	Mienfoo	Fighting
+#620	620	Mienshao	Fighting
+#621	621	Druddigon	Dragon
+#631	631	Heatmor	Fire
+#635	635	Hydreigon	Dark	Dragon
+#642	642T	Thundurus	Electric	Flying
+#644	644	Zekrom	Dragon	Electric
+#646	646	Kyurem	Dragon	Ice
+#650	650	Chespin	Grass
+#651	651	Quilladin	Grass
+#652	652	Chesnaught	Grass	Fighting
+#654	654	Braixen	Fire
+#655	655	Delphox	Fire	Psychic
+#659	659	Bunnelby	Normal
+#660	660	Diggersby	Normal	Ground
+#674	674	Pancham	Fighting
+#677	677	Espurr	Psychic
+#678	678	Meowstic	Psychic
+#694	694	Helioptile	Electric	Normal
+#695	695	Heliolisk	Electric	Normal
+#696	696	Tyrunt	Rock	Dragon
+#697	697	Tyrantrum	Rock	Dragon
+#702	702	Dedenne	Electric	Fairy
+#706	706	Goodra	Dragon
+#718	718C	Zygarde	Dragon	Ground
+#720	720U	Hoopa	Psychic	Dark
+#727	727	Incineroar	Fire	Dark
+#745	745Mn	Lycanroc	Rock
+#753	753	Fomantis	Grass
+#760	760	Bewear	Normal	Fighting
+#766	766	Passimian	Fighting
+#776	776	Turtonator	Fire	Dragon
+#777	777	Togedemaru	Electric	Steel
+#783	783	Hakamo-o	Dragon	Fighting
+#784	784	Kommo-o	Dragon	Fighting
+#796	796	Xurkitree	Electric
+#799	799	Guzzlord	Dark	Dragon
+#803	803	Poipole	Poison

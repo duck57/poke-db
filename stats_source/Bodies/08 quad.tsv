@@ -1,0 +1,155 @@
+Ndex	MS	Pokémon	Type	q
+#001	001	Bulbasaur	Grass	Poison
+#002	002	Ivysaur	Grass	Poison
+#003	003	Venusaur	Grass	Poison
+#019	019	Rattata	Normal
+#020	020	Raticate	Normal
+#025	025	Pikachu	Electric
+#029	029	Nidoran♀	Poison
+#030	030	Nidorina	Poison
+#032	032	Nidoran♂	Poison
+#033	033	Nidorino	Poison
+#037	037	Vulpix	Fire
+#038	038	Ninetales	Fire
+#052	052	Meowth	Normal
+#053	053	Persian	Normal
+#058	058	Growlithe	Fire
+#059	059	Arcanine	Fire
+#077	077	Ponyta	Fire
+#078	078	Rapidash	Fire
+#079	079	Slowpoke	Water	Psychic
+#111	111	Rhyhorn	Ground	Rock
+#128	128	Tauros	Normal
+#133	133	Eevee	Normal
+#134	134	Vaporeon	Water
+#135	135	Jolteon	Electric
+#136	136	Flareon	Fire
+#152	152	Chikorita	Grass
+#153	153	Bayleef	Grass
+#154	154	Meganium	Grass
+#156	156	Quilava	Fire
+#157	157	Typhlosion	Fire
+#161	161	Sentret	Normal
+#162	162	Furret	Normal
+#172	172	Pichu	Electric
+#179	179	Mareep	Electric
+#196	196	Espeon	Psychic
+#197	197	Umbreon	Dark
+#203	203	Girafarig	Normal	Psychic
+#220	220	Swinub	Ice	Ground
+#221	221	Piloswine	Ice	Ground
+#228	228	Houndour	Dark	Fire
+#229	229	Houndoom	Dark	Fire
+#231	231	Phanpy	Ground
+#232	232	Donphan	Ground
+#234	234	Stantler	Normal
+#243	243	Raikou	Electric
+#244	244	Entei	Fire
+#245	245	Suicune	Water
+#258	258	Mudkip	Water
+#261	261	Poochyena	Dark
+#262	262	Mightyena	Dark
+#263	263	Zigzagoon	Normal
+#264	264	Linoone	Normal
+#287	287	Slakoth	Normal
+#300	300	Skitty	Normal
+#301	301	Delcatty	Normal
+#304	304	Aron	Steel	Rock
+#305	305	Lairon	Steel	Rock
+#309	309	Electrike	Electric
+#310	310	Manectric	Electric
+#322	322	Numel	Fire	Ground
+#323	323	Camerupt	Fire	Ground
+#324	324	Torkoal	Fire
+#357	357	Tropius	Grass	Flying
+#359	359	Absol	Dark
+#365	365	Walrein	Ice	Water
+#372	372	Shelgon	Dragon
+#373	373	Salamence	Dragon	Flying
+#387	387	Turtwig	Grass
+#388	388	Grotle	Grass
+#389	389	Torterra	Grass	Ground
+#399	399	Bidoof	Normal
+#403	403	Shinx	Electric
+#404	404	Luxio	Electric
+#405	405	Luxray	Electric
+#410	410	Shieldon	Rock	Steel
+#411	411	Bastiodon	Rock	Steel
+#417	417	Pachirisu	Electric
+#418	418	Buizel	Water
+#419	419	Floatzel	Water
+#431	431	Glameow	Normal
+#432	432	Purugly	Normal
+#434	434	Stunky	Poison	Dark
+#435	435	Skuntank	Poison	Dark
+#449	449	Hippopotas	Ground
+#450	450	Hippowdon	Ground
+#470	470	Leafeon	Grass
+#471	471	Glaceon	Ice
+#473	473	Mamoswine	Ice	Ground
+#483	483	Dialga	Steel	Dragon
+#485	485	Heatran	Fire	Steel
+#492	492	Shaymin	Grass
+#493	493	Arceus	Normal
+#498	498	Tepig	Fire
+#503	503	Samurott	Water
+#504	504	Patrat	Normal
+#506	506	Lillipup	Normal
+#507	507	Herdier	Normal
+#508	508	Stoutland	Normal
+#509	509	Purrloin	Dark
+#510	510	Liepard	Dark
+#517	517	Munna	Psychic
+#522	522	Blitzle	Electric
+#523	523	Zebstrika	Electric
+#551	551	Sandile	Ground	Dark
+#552	552	Krokorok	Ground	Dark
+#555	555	Darmanitan	Fire
+#564	564	Tirtouga	Water	Rock
+#570	570	Zorua	Dark
+#572	572	Minccino	Normal
+#573	573	Cinccino	Normal
+#585	585	Deerling	Normal	Grass
+#586	586	Sawsbuck	Normal	Grass
+#587	587	Emolga	Electric	Flying
+#614	614	Beartic	Ice
+#626	626	Bouffalant	Normal
+#633	633	Deino	Dark	Dragon
+#634	634	Zweilous	Dark	Dragon
+#638	638	Cobalion	Steel	Fighting
+#639	639	Terrakion	Rock	Fighting
+#640	640	Virizion	Grass	Fighting
+#645	645T	Landorus	Ground	Flying
+#647	647	Keldeo	Water	Fighting
+#653	653	Fennekin	Fire
+#656	656	Froakie	Water
+#667	667	Litleo	Fire	Normal
+#668	668	Pyroar	Fire	Normal
+#672	672	Skiddo	Grass
+#673	673	Gogoat	Grass
+#676	676	Furfrou	Normal
+#698	698	Amaura	Rock	Ice
+#699	699	Aurorus	Rock	Ice
+#700	700	Sylveon	Fairy
+#712	712	Bergmite	Ice
+#713	713	Avalugg	Ice
+#716	716	Xerneas	Fairy
+#718	718T	Zygarde	Dragon	Ground
+#721	721	Volcanion	Fire	Water
+#725	725	Litten	Fire
+#726	726	Torracat	Fire
+#734	734	Yungoos	Normal
+#735	735	Gumshoos	Normal
+#744	744	Rockruff	Rock
+#745	745	Lycanroc	Rock
+#749	749	Mudbray	Ground
+#750	750	Mudsdale	Ground
+#757	757	Salandit	Poison	Fire
+#758	758	Salazzle	Poison	Fire
+#759	759	Stufful	Normal	Fighting
+#772	772	Type: Null	Normal
+#773	773	Silvally	Normal
+#782	782	Jangmo-o	Dragon
+#791	791	Solgaleo	Psychic	Steel
+#800	800DM	Necrozma	Psychic	Steel
+#805	805	Stakataka	Rock	Steel
