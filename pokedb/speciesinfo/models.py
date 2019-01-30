@@ -96,19 +96,24 @@ class Pokemon(models.Model):
     evolved_from = models.ForeignKey('self', models.DO_NOTHING, db_column='evolved_from')
     pogonerf = models.BooleanField(db_column='PoGoNerf', default=False)
     type1 = models.ForeignKey('typeedit.Type', models.DO_NOTHING, db_column='Type1num', related_name='primary_type')
-    type2 = models.ForeignKey('typeedit.Type', models.DO_NOTHING, db_column='Type2num', blank=True, null=True, related_name='alternate_type')
+    type2 = models.ForeignKey('typeedit.Type', models.DO_NOTHING, db_column='Type2num',
+                              blank=True, null=True, related_name='alternate_type')
     category = models.ForeignKey('PokeCategory', models.DO_NOTHING, db_column='catnum', blank=True, null=True)
     wt_kg = models.FloatField()
     ht_m = models.FloatField()
     egg1 = models.ForeignKey(EggGroup, models.DO_NOTHING, db_column='EG1', related_name='egg_group_1')
-    egg2 = models.ForeignKey(EggGroup, models.DO_NOTHING, db_column='EG2', blank=True, null=True, related_name='egg_group_2')
+    egg2 = models.ForeignKey(EggGroup, models.DO_NOTHING, db_column='EG2',
+                             blank=True, null=True, related_name='egg_group_2')
     habitat = models.ForeignKey(Biome, models.DO_NOTHING, db_column='habitat', blank=True, null=True)
     official_color = models.CharField(db_column='OfficialColor', max_length=11, blank=True, null=True)
     body_plan = models.ForeignKey('BodyPlan', models.DO_NOTHING, db_column='Body_Plan', blank=True, null=True)
     description_category = models.CharField(max_length=13, blank=True, null=True)
-    ability1 = models.ForeignKey(Ability, models.DO_NOTHING, db_column='Ability1', blank=True, null=True, related_name='main_ability')
-    ability2 = models.ForeignKey(Ability, models.DO_NOTHING, db_column='Ability2', blank=True, null=True, related_name='alternate_ability')
-    hidden_ability = models.ForeignKey(Ability, models.DO_NOTHING, db_column='HiddenAbility', blank=True, null=True, related_name='hidden_ability')
+    ability1 = models.ForeignKey(Ability, models.DO_NOTHING, db_column='Ability1',
+                                 blank=True, null=True, related_name='main_ability')
+    ability2 = models.ForeignKey(Ability, models.DO_NOTHING, db_column='Ability2',
+                                 blank=True, null=True, related_name='alternate_ability')
+    hidden_ability = models.ForeignKey(Ability, models.DO_NOTHING, db_column='HiddenAbility',
+                                       blank=True, null=True, related_name='hidden_ability')
     nicknames = models.CharField(max_length=88, blank=True, null=True)
     notes = models.CharField(max_length=333, blank=True, null=True)
     nia_cust_hp = models.IntegerField(db_column='NIA_cust_HP', blank=True, null=True)
@@ -121,7 +126,7 @@ class Pokemon(models.Model):
         unique_together = (('dex_number', 'form'),)
 
     def __str__(self):
-        return self.name
+        return f'#{self.dex_number:03} {self.name}'
 
     def is_type(self, t1, t2=None):
         """

@@ -81,7 +81,7 @@ class NstLocation(models.Model):
         db_table = 'NST_locations'
 
     def __str__(self):
-        return str(self.official_name) + ' [' + str(self.nestID) + '] (' + str(self.neighborhood) + ')'
+        return f'{self.official_name} [{self.nestID}] ({self.neighborhood})'
 
     def get_name(self):
         return self.short_name if (self.short_name is not None and self.short_name != '') else self.official_name
@@ -155,13 +155,16 @@ class NstRotationDate(models.Model):
         db_table = 'NST_rotation_dates'
 
     def __str__(self):
-        return str(self.num) + ' [' + str(self.date) + ']'
+        return f'{self.num} [{self.date}]'
 
     def __cmp__(self, other):
         return self.date.__cmp__(other.date)
 
     def __lt__(self, other):
         return self.date < other.date
+
+    def date_priority_display(self):
+        return f'{self.date} (rotation {self.num})'
 
 
 class NstSpeciesListArchive(models.Model):
@@ -181,9 +184,8 @@ class NstSpeciesListArchive(models.Model):
         unique_together = (('rotation_num', 'nestid'),)
 
     def __str__(self):
-        return str(self.species_txt) \
-               + ' at ' + str(self.nestid) \
-               + ' on ' + str(self.rotation_num)
+        return f'{self.species_txt} at {self.nestid.get_name()} [{self.nestid.nestID}] \
+on {self.rotation_num.date_priority_display()}'
 
     def __cmp__(self, other):
         if self.rotation_num < other.rotation_num:
@@ -205,3 +207,18 @@ class NstSpeciesListArchive(models.Model):
             return True
         return False
 
+
+class NestSpecies(models.Model):
+    poke_fk = models.OneToOneField('speciesinfo.Pokemon', models.DO_NOTHING, primary_key=True, db_column='Name')
+    dex_number = models.IntegerField(db_column='#', unique=True)
+    main_type = models.ForeignKey('typeedit.Type', models.DO_NOTHING, db_column='Type', related_name='nst1type')
+    subtype = models.ForeignKey('typeedit.Type', models.DO_NOTHING,
+                                related_name='nst2type', null=True, db_column='Subtype')
+    generation = models.ForeignKey('speciesinfo.Generation', models.DO_NOTHING, db_column='Generation')
+
+    class Meta:
+        managed = False
+        db_table = 'nest_species_list'
+
+    def __str__(self):
+        return str(self.poke_fk)

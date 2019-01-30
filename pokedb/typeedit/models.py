@@ -15,7 +15,7 @@ class TypeEffectiveness(models.Model):
         unique_together = (('otype', 'dtype'),)
 
     def __str__(self):
-        return self.otype.name + ' ' + self.relation.description + ' against ' + self.dtype.name
+        return f'{self.otype.name} {self.relation.description} against {self.dtype.name}'
 
     search_fields = ['otype', 'relation', 'dtype']
 
