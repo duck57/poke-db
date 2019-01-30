@@ -90,7 +90,32 @@ def true_if_y(st):
     return False
 
 
-def select_list(prompt, size, start):
+def disp_qs_select(qs, none_option=True):
+    """
+    :param qs: A previously-sorted QuerySet
+    :param none_option: display an option 0 for 'none of the above'
+    :return: the length of the query set
+    """
+
+    many = len(qs)
+    if many < 2:
+        assert "Programming Error: This should be used if there are at least two options."
+
+    count = 1
+
+    if none_option is True:
+        none_option = "None of these"
+
+    if none_option is not False:
+        print(f"0. {none_option}")
+    for thing in qs:
+        print(f'{count}. {thing}')
+        count += 1
+
+    return many
+
+
+def select_from_list(prompt, size, start):
     """
     Prompt the user to select an item from a list
     :param prompt: Text to prompt the user
@@ -109,6 +134,18 @@ def select_list(prompt, size, start):
         else:
             print("Selection outside range")
             continue
+
+
+def pick_from_qs(prompt, qs, allow_none=True):
+    """
+    Pick an option from a QuerySet
+    :param prompt: prompt for the user
+    :param qs: query set from which the user should choose
+    :param allow_none: allow the user to select a "none of these option" and return 0
+    :return:
+    """
+    maxi = disp_qs_select(qs, allow_none)
+    return select_from_list(prompt, maxi, 0 if allow_none else 1)
 
 
 def input_with_prefill(prompt, text):
