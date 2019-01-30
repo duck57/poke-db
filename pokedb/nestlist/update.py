@@ -5,12 +5,10 @@
 
 import os
 import sys
-from collections import defaultdict
 from datetime import datetime
-
-import click
 import pyperclip
-from utils import getdate, decorate_text
+from utils import getdate, decorate_text, nested_dict
+import click
 
 if __name__ == '__main__':
     # Setup environ
@@ -27,7 +25,6 @@ if __name__ == '__main__':
         NstNeighborhood, NstCombinedRegion, NstAltName
     from typeedit.models import Type
 
-nested_dict = lambda: defaultdict(nested_dict)
 
 # maybe this should be in a config file in the future
 private_reminder = '☝'
@@ -373,7 +370,7 @@ def get_nests(rotnum):
     neighborhoods = NstNeighborhood.objects.filter(nstlocation__nstrotationdate=rotnum)\
         .order_by('name')
     regions = NstCombinedRegion.objects.filter(nstneighborhood__in=neighborhoods).order_by('name')
-    neighborhoods = neighborhoods.exclude(region__gt=0)
+    neighborhoods = neighborhoods.exclude(region__gt=0)  # clever way to check for non-null regions in a neighborhood
 
     for neighborhood in neighborhoods:
         nestout[neighborhood.name] = set()
@@ -420,7 +417,7 @@ def main(date=None, format=None):
     :return: nothing
     """
 
-    date = getdate(date)
+    date = getdate("For which date do you wish to generate the nests list?: ", date)
     run_date = date.strftime('%d %b %Y')
     print(f"Gathering nests as of {run_date}")
 

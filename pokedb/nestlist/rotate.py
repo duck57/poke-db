@@ -7,8 +7,8 @@ import os
 import sys
 from datetime import datetime
 
+from utils import getdate
 import click
-from nestlist.utils import getdate
 
 if __name__ == '__main__':
     # Setup environ
@@ -34,7 +34,7 @@ if __name__ == '__main__':
 )
 # main method
 def main(date):
-    d8 = str(getdate(date.strip()))
+    d8 = str(getdate(f"What is the date of the nest rotation (blank for today, {datetime.today()})? ", date.strip()))
     if len(NstRotationDate.objects.filter(date=d8)) > 0:
         print(f"Rotation already exists for {d8}")
         return

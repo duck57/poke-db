@@ -6,6 +6,15 @@
 from datetime import datetime
 from dateutil.parser import *
 from dateutil.relativedelta import *
+from collections import defaultdict
+import readline
+# note: importing readline here makes click act up in the all the modules that rely on this one
+# however, I've only noticed this with the rewrite, since I never encounter the circumstances leading to the bug in
+# my normal use of these programs (I always use the command line flags)
+# tl;dr: readline causes newlines not to happen when accepting a default value by entering nothing in click
+
+
+nested_dict = lambda: defaultdict(nested_dict)
 
 
 def str_int(strin):
@@ -23,7 +32,7 @@ def str_int(strin):
     return True
 
 
-def getdate(date=None):
+def getdate(question, date=None):
     """
     gets a date (also accepts relative dates like y-1, t+3, w+2)
     will keep prompting you until you get it right
@@ -32,7 +41,7 @@ def getdate(date=None):
     """
 
     today = datetime.today()
-    question = f"What is the date of the nest rotation (blank for today, {today.date()})? "
+    # question = f"What is the date of the nest rotation (blank for today, {today.date()})? "
 
     while True:
         if date is None:
@@ -79,3 +88,41 @@ def true_if_y(st):
     if st[0].upper() == 'Y':
         return True
     return False
+
+
+def select_list(prompt, size, start):
+    """
+    Prompt the user to select an item from a list
+    :param prompt: Text to prompt the user
+    :param size: Size of list
+    :param start: Smallest number in the list
+    :return: The user's selection once valid
+    """
+    while True:
+        try:
+            selection = int(input(prompt))
+        except ValueError:
+            print("Enter an integer")
+            continue
+        if selection in range(start, size + 1):
+            return selection
+        else:
+            print("Selection outside range")
+            continue
+
+
+def input_with_prefill(prompt, text):
+    """
+
+    :param prompt:
+    :param text:
+    :return:
+    """
+    def hook():
+        readline.insert_text(text)
+        readline.redisplay()
+
+    readline.set_pre_input_hook(hook)
+    result = input(prompt)
+    readline.set_pre_input_hook()
+    return result
