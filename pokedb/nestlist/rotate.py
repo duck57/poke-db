@@ -46,7 +46,8 @@ def main(date):
         NstSpeciesListArchive.objects.create(
             rotation_num=new_rot,
             species_txt=nst.permanent_species,
-            nestid=nst
+            nestid=nst,
+            confirmation=True
         ).save()
     print(f"Added rotation {new_rot}")
 
