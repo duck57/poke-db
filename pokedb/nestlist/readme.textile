@@ -1,0 +1,25 @@
+h1. PoGo Nest Lister
+h5. A system for tracking PoGo nest migrations for your city's parks
+
+h3. 'Link to example nest post in the Facebook format':https://www.facebook.com/groups/pokemongocolumbus/permalink/610361859376798/
+
+h2. Usage
+
+* All commands should be run from the parent directory (Django root) as
+* @nestlist/module.py@ @rotate.py@ prepares your database after a nest
+migration.  It inserts permanent nests such as water biomes into the
+database for your enjoyment.
+* @nest_entry.py@ is the main loop for entering new nest reports.
+* @update.py@ generates output for Discord or Facebook.  
+More formats can be requested if you make a polite pull request with them.
+Use the @-f@ parameter to specify which formatting regimen to use.
+* All 3 of these modules take a @-d@ parameter.  
+@-d@ specifies the date on which the command is to be run:
+inserting a new rotation for @rotate.py@, entering nests as of a specific date for @nest_entry.py@,
+or generating output on the specified date in @update.py@
+
+h3. Notes
+
+* I’ve only tested this on my Mac so far and I have no idea how a Windows Python setup would work.
+* FreeBSD testing will probably happen pretty soon.
+* Requires @Django@, @sortedcontainers@, @click@, and @python-dateutil@ (I hope I did not forget any dependencies)
