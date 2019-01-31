@@ -35,7 +35,7 @@ def search_nest_query(search):
         Q(nestID=search if str_int(search) else None) |  # if/else needed to prevent Value errors
         Q(short_name__icontains=search) |
         Q(nstaltname__name__icontains=search)
-    ).order_by('official_name')
+    ).distinct().order_by('official_name')
 
     if len(res) == 1:
         return res[0]
@@ -72,7 +72,7 @@ def match_species(sptxt):
     reslst = NestSpecies.objects.filter(
         Q(dex_number=sptxt if str_int(sptxt) else None) |
         Q(poke_fk__name__icontains=sptxt)
-    ).order_by('dex_number')
+    ).order_by('dex_number').distinct()
 
     if len(reslst) == 0:
         return None, sptxt, None
@@ -81,7 +81,7 @@ def match_species(sptxt):
 
     choice = pick_from_qs("Index of species (not species number): ", reslst, f"{sptxt} [None]")
     if choice > 0:
-        choice -= 1
+        choice -= 1  # deal with the 0 option
         return reslst[choice].dex_number, reslst[choice].poke_fk.name, reslst[choice].poke_fk
     return None, sptxt, None
 
@@ -100,6 +100,9 @@ def update_park(rotnum, search=None, species=None):
         return 1
     if search == 'q':
         return -5
+    if search == '?':
+        print("Search for parks here.  Leave blank or enter a lowercase q to exit.  ? to display this help again.")
+        return False
 
     results1 = search_nest_query(search)
     if results1 == 0:
@@ -180,6 +183,8 @@ def main(date='t', park=None, poke=None):
     while stop is False:
         stop = update_park(rot_num, park, poke)
         park, poke = None, None
+    print("Goodbye.")
+    sys.exit(0)
 
 
 if __name__ == "__main__":
