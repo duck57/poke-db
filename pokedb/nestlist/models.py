@@ -211,8 +211,9 @@ on {self.rotation_num.date_priority_display()}'
 class NestSpecies(models.Model):
     poke_fk = models.OneToOneField('speciesinfo.Pokemon', models.DO_NOTHING, primary_key=True, db_column='Name')
     dex_number = models.IntegerField(db_column='#', unique=True)
-    main_type = models.ForeignKey('typeedit.Type', models.DO_NOTHING, db_column='Type', related_name='nst1type')
-    subtype = models.ForeignKey('typeedit.Type', models.DO_NOTHING,
+    main_type = models.ForeignKey('typeedit.Type', models.DO_NOTHING, db_column='Type',
+                                  related_name='nst1type', to_field='name')
+    subtype = models.ForeignKey('typeedit.Type', models.DO_NOTHING, to_field='name',
                                 related_name='nst2type', null=True, db_column='Subtype')
     generation = models.ForeignKey('speciesinfo.Generation', models.DO_NOTHING, db_column='Generation')
 

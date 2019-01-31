@@ -130,13 +130,17 @@ class Pokemon(models.Model):
 
     def is_type(self, t1, t2=None):
         """
-        It is agnostic as to which order the match occurs (eg. checking for "Flying, Dragon" on a Dragon/Flying type returns True)
+        It is agnostic as to which order the match occurs
+        (eg. checking for "Flying, Dragon" on a Dragon/Flying type returns True)
+
+        Accepts strings, ints, or Type objects as t1 and t2
         :param t1: Type to check (required)
         :param t2: Type to check (optional)
         :return: whether the pokémon matches the input type(s)
         """
         if t2 is None:
-            return self.type1 == t1 or self.type2 == t1
+            return self.type1 == t1 or self.type2 == t1 or self.type1.matches(t1) or\
+                   (self.type2 is not None and self.type2.matches(t1))
         return self.is_type(t1) and self.is_type(t2)
 
     def __cmp__(self, other):

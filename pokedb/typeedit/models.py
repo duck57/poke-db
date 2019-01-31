@@ -47,6 +47,7 @@ class Type(models.Model):
     note = models.CharField(max_length=111, blank=True, null=True)
     weather_boost = models.ForeignKey('GoWeather', models.DO_NOTHING, db_column='weather_boost', blank=True, null=True)
     emoji = models.CharField(max_length=8, blank=True, null=True)
+    id = models.IntegerField(primary_key=True, db_column='id')
     AtkEffectiveness = models.ManyToManyField(
         'Type',
         symmetrical=False,
@@ -68,6 +69,13 @@ class Type(models.Model):
 
     def __str__(self):
         return self.name
+
+    def matches(self, q):
+        """
+        :param q: query to search
+        :return: if q matches either the type's ID or name
+        """
+        return self.id == q or self.name.lower() == str(q).lower().strip()
 
 
 class GoWeather(models.Model):
