@@ -11,19 +11,33 @@ https://docs.djangoproject.com/en/2.1/ref/settings/
 """
 
 import os
+import configparser
+
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
+config = configparser.ConfigParser(inline_comment_prefixes=(';',))
+config.readfp(open('config.cfg'))
+
+# Load things from the config file
+kiskis = config.get('Secrets', 'secret_key')
+uname = config.get('Secrets', 'username')
+pwd = config.get('Secrets', 'password')
+host = config.get('Host', 'host')
+bug_mode = config.get('Mode', 'debug')
+backend = config.get('Host', 'engine')
+port = config.get('Host', 'port')
+db = config.get('Host', 'db_name')
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/2.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = '*g23px2la-)2@u%)(&k54lg=mndcq+hc00t#@b63wbb8g-f9hh'
+SECRET_KEY = kiskis
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = bug_mode
 
 ALLOWED_HOSTS = []
 
@@ -79,14 +93,12 @@ WSGI_APPLICATION = 'pokedb.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'POGO',
-        'USER': 'PokeAdmin',
-        'PASSWORD': '123qqqTest!',
-        # 'USER': 'root',
-        # 'PASSWORD': '_n0t@te$tPa$war',
-        'HOST': 'localhost',
-        'PORT': '',
+        'ENGINE': backend,
+        'NAME': db,
+        'USER': uname,
+        'PASSWORD': pwd,
+        'HOST': host,
+        'PORT': port,
     }
 }
 
