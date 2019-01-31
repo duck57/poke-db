@@ -24,6 +24,7 @@ if __name__ == '__main__':
     from nestlist.models import NstRotationDate, NstSpeciesListArchive, NstLocation, \
         NstNeighborhood, NstCombinedRegion, NstAltName
     from typeedit.models import Type
+    from django.db.models import Q
 
 
 # maybe this should be in a config file in the future
@@ -35,6 +36,7 @@ large_whale = '🐋'
 rat_icon = '🐀'
 hoothoot = '🦉'
 water_icon = '💦'
+fish_icon = '🐠'
 
 
 def gen_parenthetical(notes):
@@ -115,18 +117,20 @@ def annotate_species_txt(species_txt):
     :return: an emoji or an empty string to match the species
     """
 
-    if species_txt == 'Water Biome':
+    if species_txt.lower() == 'water biome':
         return water_icon
-    if species_txt == 'Wailmer':
+    if species_txt.lower() == 'wailmer':
         return small_whale
-    if species_txt == 'Wailord':
+    if species_txt.lower() == 'wailord':
         return large_whale
-    if species_txt == 'Girafarig':
+    if species_txt.lower() == 'girafarig':
         return giraffe_icon
-    if species_txt == 'Hoothoot':
+    if species_txt.lower() == 'hoothoot':
         return hoothoot
-    if species_txt == 'Rattata':
+    if species_txt.lower() == 'rattata':
         return rat_icon
+    if 'karp' in species_txt.lower():
+        return fish_icon
     return ''
 
 
@@ -150,6 +154,8 @@ def annotate_species(nest):
         return hoothoot
     if nest.species_name_fk.name == 'Rattata':
         return rat_icon
+    if nest.species_name_fk.name == 'Magikarp':
+        return fish_icon
     return ''
 
 
@@ -163,7 +169,7 @@ def FB_summary(summary):
     for species in sorted(summary.keys()):
         out += "\n" + annotate_species_txt(species) + species + ": "
         first = True
-        for nest in summary[species]:
+        for nest in sorted(summary[species]):
             if first is False:
                 out += ", "
             if nest.nestid.private:
@@ -208,36 +214,52 @@ def disc_preamble(updated8, rotationday, rotnum):
     return out
 
 
-def disc_important_species(slist):
+def disc_important_species(s_list):
     """
     discord post of top/important species & parks
     maybe this should be from a config file?
-    :param slist: species-arranged nested_dict, like elsewhere
+    :param s_list: species-arranged nested_dict, like elsewhere
     :return: a species summary for the popular species
     """
 
-    important_species = ["Magikarp", "Walimer", "Water Biome"]
+    important_species = ["Magikarp", "Walimer", "Water Biome", "Cubone", "Omanyte", "Kabuto"]
     out = decorate_text("Popular Species", "__****__")
-    count = 0
-    for species in sorted(slist.keys()):
-        if species not in important_species and slist[species]["-Spooked"] is not True:
-            continue
-        count += 1
-        out += '\n• ' + species + ": "
-        first = True
-        for park in slist[species]:
-            if park == "-Spooked":
-                continue
-            if first is False:
-                out += ', '
-            out += decorate_text(park, '****' if slist[species][park]["Status"] == 2 else '__')
-            first = False
-    if count == 0:
+    pre_list = {}
+
+    # list of nests with noteworthy species
+    s_list = s_list.filter(
+        Q(species_txt__in=important_species) |  # important/popular species for quests
+        Q(species_name_fk__type1=8) |  # (ghosts for Kanto research)
+        Q(species_name_fk__type2=8) |
+        Q(species_name_fk__category=50)  # starters
+    )
+
+    if len(s_list) == 0:
         return ''
+
+    # Sort the list into categories/species
+    pre_list[f"Ghost|{ghost_icon}Ghosts"] = s_list.filter(Q(species_name_fk__type1=8) | Q(species_name_fk__type2=8))
+    s_list = s_list.exclude(Q(species_name_fk__type1=8) | Q(species_name_fk__type2=8))
+    pre_list["Start|Starters"] = s_list.filter(species_name_fk__category=50)
+    s_list = s_list.exclude(species_name_fk__category=50)
+    for i_s in important_species:
+        pre_list[f'{i_s}|{annotate_species_txt(i_s)}{i_s}'] = s_list.filter(species_txt=i_s)
+
+    # actually generate the output string
+    for sp_cat in sorted(pre_list.keys()):
+        if len(pre_list[sp_cat]) == 0:
+            continue
+        out += f"\n• {sp_cat.split('|')[-1]}:"
+        first = True
+        for nest in sorted(pre_list[sp_cat]):
+            out += f"{'' if first else ','} \
+{decorate_text(nest.nestid.get_name(), '****' if nest.confirmation else '__')}"
+            first = False
+
     return out
 
 
-def disc_posts(nnl2, rundate, shiftdate, slist=None, rotnum=0):
+def disc_posts(nnl2, rundate, shiftdate, rotnum=0, raw_nests=None):
     """
     generate and copy a Discord post to the clipboard
 
@@ -247,7 +269,7 @@ def disc_posts(nnl2, rundate, shiftdate, slist=None, rotnum=0):
     :param rundate: string of the date the list was generated
     :param shiftdate: string of the date of the nest shift
     :param mt: nested_dict of empty nests—mt[nest] = NstLocation object
-    :param slist: nested_dict of species-sorted nests—slist[species][nest] = NSLA object
+    :param raw_nests: QuerySet of NSLA objects to pass to the important species finder
     :param rotnum: rotation number (int)
     :return:
     """
@@ -262,28 +284,26 @@ def disc_posts(nnl2, rundate, shiftdate, slist=None, rotnum=0):
 
     for loc in sorted(nnl2.keys()):
         loclst = decorate_text(loc, '__****__') + '\n'
-        for nestname in sorted(nnl2[loc].keys()):
-            loclst += nestname
-            nest = nnl2[loc][nestname]
-            if nest["Alt"] != '':
-                loclst += '/' + str(nest["Alt"])
-            loclst += ": " + decorate_text(nest["Species"], '****' if nest["Status"] == 2 else '__') + '\n'
+        for nest in sorted(nnl2[loc]):
+            loclst += nest.nestid.get_name()
+            alts = NstAltName.objects.filter(main_entry=nest.nestid).exclude(hide_me=True)
+            for alt in alts:
+                loclst += '/' + alt.name
+            loclst += ": " + decorate_text(nest.species_txt, '****' if nest.confirmation else '__') + '\n'
         if len(loclst) > 2000:
-            raise Exception("Nest list for sub-region " + loc + """ exceeds 2000 characters,
-            which causes Discord problems.  Consider breaking into smaller areas.""")
+            raise Exception(f"""Nest list for sub-region {loc} exceeds 2000 characters,\
+which causes Discord problems.  Consider breaking into smaller areas.""")
         olen += len(loclst)
         list.append(loclst)
 
-    start = 0
-    end = 0
+    # Discord bean-counting to fit character limits
     num = olen // max + 1
     trg = olen // num
     outparts = []
-    pts = len(list) // num
     ix = 0
     count = 0
     tmpstr = ""
-    for nbh in list:
+    for nbh in list:  # I honestly can't remember what nbh means
         if len(nbh) + count < max and count <= trg:
             tmpstr += nbh
             count += len(nbh)
@@ -294,7 +314,7 @@ def disc_posts(nnl2, rundate, shiftdate, slist=None, rotnum=0):
             ix += 1
     outparts.append(tmpstr)
 
-    outparts.append(disc_important_species(slist))
+    outparts.append(disc_important_species(raw_nests))
 
     pos = 0
     num = len(outparts)
@@ -363,7 +383,7 @@ def get_nests(rotnum):
 
     nestout = {}
     nestmt = nested_dict()
-    ssumry = nested_dict()
+    ssumry = {}
 
     nests = NstSpeciesListArchive.objects.filter(rotation_num=rotnum)
     empties = NstLocation.objects.exclude(nstrotationdate=rotnum).order_by('official_name')
@@ -384,15 +404,19 @@ def get_nests(rotnum):
             nestout[nest.nestid.neighborhood.name].add(nest)
         else:
             nestout[region.name].add(nest)
-        if nest.species_name_fk is None:
-            ssumry[nest.species_txt][nest] = nest
-        else:
-            ssumry[nest.species_name_fk.name][nest] = nest
+
+        sp_name = nest.species_txt
+        if nest.species_name_fk is not None:
+            sp_name = nest.species_name_fk.name
+
+        if ssumry.get(sp_name) is None:
+            ssumry[sp_name] = set()
+        ssumry[sp_name].add(nest)
 
     for empty in empties:
         nestmt[empty.neighborhood.name][empty] = empty
 
-    return nestout, nestmt, ssumry
+    return nestout, nestmt, ssumry, nests
 
 
 @click.command()
@@ -424,14 +448,14 @@ def main(date=None, format=None):
     rotation = get_rot8d8(date)
     shiftdate = str(rotation.date)
     rotnum = int(rotation.num)
-    nests, empties, species = get_nests(rotation)
+    nests, empties, species, nest_raw = get_nests(rotation)
     print(f"Using the nest list from the {shiftdate} nest rotation")
     if format[0].lower() == 'f':
         # format_name = "Facebook"
         FB_post(nests, run_date, shiftdate, slist=species, mt=empties, rotnum=rotnum)
     if format[0].lower() == 'd':
         # format_name = "Discord"
-        disc_posts(nests, run_date, shiftdate, slist=species, rotnum=rotnum)
+        disc_posts(nests, run_date, shiftdate, rotnum=rotnum, raw_nests=nest_raw)
 
 
 if __name__ == "__main__":
