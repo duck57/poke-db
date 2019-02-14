@@ -10,7 +10,7 @@ class Biome(models.Model):
 
     class Meta:
         managed = False
-        db_table = 'Biomes'
+        db_table = 'biome'
 
     def __str__(self):
         return self.name
@@ -36,7 +36,7 @@ class EggGroup(models.Model):
 
     class Meta:
         managed = False
-        db_table = 'EggGroups'
+        db_table = 'egg_group'
 
     def __str__(self):
         return self.name
@@ -48,7 +48,7 @@ class PokeCategory(models.Model):
 
     class Meta:
         managed = False
-        db_table = 'ZC_categories'
+        db_table = 'zc_pkmn_cat'
 
     def __str__(self):
         return self.name
@@ -61,7 +61,7 @@ class BodyPlan(models.Model):
 
     class Meta:
         managed = False
-        db_table = 'body_plans'
+        db_table = 'body_plan'
 
     def __str__(self):
         return self.name
@@ -75,7 +75,7 @@ class Ability(models.Model):
 
     class Meta:
         managed = False
-        db_table = 'Abilities'
+        db_table = 'ability'
 
     def __str__(self):
         return self.name
@@ -122,7 +122,7 @@ class Pokemon(models.Model):
 
     class Meta:
         managed = False
-        db_table = 'Pokémon'
+        db_table = 'pokémon'
         unique_together = (('dex_number', 'form'),)
 
     def __str__(self):

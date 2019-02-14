@@ -11,7 +11,7 @@ class NstAdminEmail(models.Model):
 
     class Meta:
         managed = False
-        db_table = 'NST_admin_email'
+        db_table = 'nst_admin_email'
 
     def __str__(self):
         return f'{self.short_name} [{self.id}] {self.e_mail}'
@@ -25,7 +25,7 @@ class NstAltName(models.Model):
 
     class Meta:
         managed = False
-        db_table = 'NST_alt_names'
+        db_table = 'nst_alt_name'
 
     def __str__(self):
         if self.hide_me:
@@ -38,7 +38,7 @@ class NstCombinedRegion(models.Model):
 
     class Meta:
         managed = False
-        db_table = 'NST_combined_regions'
+        db_table = 'nst_combined_region'
 
     def __str__(self):
         return f'{self.name} [{self.id}]'
@@ -78,7 +78,7 @@ class NstLocation(models.Model):
 
     class Meta:
         managed = False
-        db_table = 'NST_locations'
+        db_table = 'nst_location'
 
     def __str__(self):
         return f'{self.official_name} [{self.nestID}] ({self.neighborhood})'
@@ -107,7 +107,7 @@ class NstMetropolisMajor(models.Model):
 
     class Meta:
         managed = False
-        db_table = 'NST_metropolis_major'
+        db_table = 'nst_metropolis_major'
 
     def __str__(self):
         return self.name
@@ -122,7 +122,7 @@ class NstNeighborhood(models.Model):
 
     class Meta:
         managed = False
-        db_table = 'NST_neighborhoods'
+        db_table = 'nst_neighborhood'
 
     def __str__(self):
         return self.name
@@ -134,7 +134,7 @@ class NstParkSystem(models.Model):
 
     class Meta:
         managed = False
-        db_table = 'NST_park_system'
+        db_table = 'nst_park_system'
 
     def __str__(self):
         return self.name
@@ -152,7 +152,7 @@ class NstRotationDate(models.Model):
 
     class Meta:
         managed = False
-        db_table = 'NST_rotation_dates'
+        db_table = 'nst_rotation_dates'
 
     def __str__(self):
         return f'{self.num} [{self.date}]'
@@ -180,7 +180,7 @@ class NstSpeciesListArchive(models.Model):
 
     class Meta:
         managed = False
-        db_table = 'NST_species_list_archive'
+        db_table = 'nst_species_list_archive'
         unique_together = (('rotation_num', 'nestid'),)
 
     def __str__(self):
@@ -210,7 +210,7 @@ on {self.rotation_num.date_priority_display()}'
 
 class NestSpecies(models.Model):
     poke_fk = models.OneToOneField('speciesinfo.Pokemon', models.DO_NOTHING, primary_key=True, db_column='Name')
-    dex_number = models.IntegerField(db_column='#', unique=True)
+    dex_number = models.IntegerField(db_column='dex_number', unique=True)
     main_type = models.ForeignKey('typeedit.Type', models.DO_NOTHING, db_column='Type',
                                   related_name='nst1type', to_field='name')
     subtype = models.ForeignKey('typeedit.Type', models.DO_NOTHING, to_field='name',
