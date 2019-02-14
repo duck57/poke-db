@@ -1,3 +1,8 @@
+*/include/
+*/bin/
+*.core
+*pip-selfcheck*
+
 .vscode/
 *.cfg
 
