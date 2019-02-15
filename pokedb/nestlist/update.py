@@ -7,7 +7,7 @@ import os
 import sys
 from datetime import datetime
 import pyperclip
-from utils import getdate, decorate_text, nested_dict
+from utils import getdate, decorate_text, nested_dict, pick_from_qs, str_int
 import click
 
 if __name__ == '__main__':
@@ -22,7 +22,7 @@ if __name__ == '__main__':
 
     # now you can import your ORM models
     from nestlist.models import NstRotationDate, NstSpeciesListArchive, NstLocation, \
-        NstNeighborhood, NstCombinedRegion, NstAltName
+        NstNeighborhood, NstCombinedRegion, NstAltName, NstMetropolisMajor
     from typeedit.models import Type
     from django.db.models import Q
 
@@ -375,9 +375,10 @@ def nestname(nestrow):
     return nestrow.short_name if nestrow.short_name is not None else nestrow.official_name
 
 
-def get_nests(rotnum):
+def get_nests(rotnum, ct=None):
     """
     :param rotnum: rotation ID
+    :param ct: NstMetopolisMajor object
     :return: the nested nest list, a stack of empties, and the list sorted by species
     """
 
@@ -385,12 +386,26 @@ def get_nests(rotnum):
     nestmt = nested_dict()
     ssumry = {}
 
-    nests = NstSpeciesListArchive.objects.filter(rotation_num=rotnum)
-    empties = NstLocation.objects.exclude(nstrotationdate=rotnum).order_by('official_name')
-    neighborhoods = NstNeighborhood.objects.filter(nstlocation__nstrotationdate=rotnum)\
-        .order_by('name')
-    regions = NstCombinedRegion.objects.filter(nstneighborhood__in=neighborhoods).order_by('name')
-    neighborhoods = neighborhoods.exclude(region__gt=0)  # clever way to check for non-null regions in a neighborhood
+    if ct is None:
+        nests = NstSpeciesListArchive.objects.filter(rotation_num=rotnum)
+        empties = NstLocation.objects.exclude(nstrotationdate=rotnum).order_by('official_name')
+        neighborhoods = NstNeighborhood.objects.filter(
+            nstlocation__nstrotationdate=rotnum).order_by('name')
+        regions = NstCombinedRegion.objects.filter(nstneighborhood__in=neighborhoods).order_by('name')
+        neighborhoods = neighborhoods.exclude(region__gt=0)
+        # clever way to check for non-null regions in a neighborhood
+    else:
+        pot_nests = NstLocation.objects.filter(neighborhood__major_city=ct)
+        nests = NstSpeciesListArchive.objects.filter(
+            rotation_num=rotnum,
+            nestid__in=pot_nests
+        )
+        empties = pot_nests.exclude(nstrotationdate=rotnum).order_by('official_name')
+        neighborhoods = NstNeighborhood.objects.filter(
+            nstlocation__nstrotationdate=rotnum,
+            major_city=ct
+        ).order_by('name')
+        regions = NstCombinedRegion.objects.filter(nstneighborhood__in=neighborhoods).order_by('name')
 
     for neighborhood in neighborhoods:
         nestout[neighborhood.name] = set()
@@ -398,7 +413,6 @@ def get_nests(rotnum):
         nestout[region.name] = set()
 
     for nest in nests:
-        nname = nest.nestid.get_name()
         region = nest.nestid.neighborhood.region
         if region is None:
             nestout[nest.nestid.neighborhood.name].add(nest)
@@ -419,6 +433,27 @@ def get_nests(rotnum):
     return nestout, nestmt, ssumry, nests
 
 
+def fetch_city(search=None):
+    """
+    :param search: City name or ID to search
+    :return: NstMetropolisMajor object
+    """
+
+    res = NstMetropolisMajor.objects.filter(
+        Q(name__contains=search) |
+        Q(id=search if str_int(search) else None) |  # if/else needed to prevent Value errors
+        Q(short_name__contains=search)
+    ).distinct()
+
+    if len(res) == 1:
+        return res[0]
+    if len(res) == 0:
+        print("No cities found")
+        sys.exit(404)
+
+    return res[pick_from_qs("Which region? ", res, False)-1]
+
+
 @click.command()
 @click.option(
     '-d',
@@ -433,7 +468,13 @@ def get_nests(rotnum):
     type=click.Choice(['FB', 'Facebook', 'f', 'd', 'Discord', 'disc']),
     prompt="Output format",
     help="Specify the output formatting for the nest list")
-def main(date=None, format=None):
+@click.option(
+    '-c',
+    '--city',
+    prompt='Anchor city for the region',
+    help='Provide which city this is run for'
+)
+def main(date=None, format=None, city=None):
     """
     Main method
     :param date: date to generate the list for
@@ -442,13 +483,14 @@ def main(date=None, format=None):
     """
 
     date = getdate("For which date do you wish to generate the nests list?: ", date)
+    ct = fetch_city(city)
     run_date = date.strftime('%d %b %Y')
     print(f"Gathering nests as of {run_date}")
 
     rotation = get_rot8d8(date)
     shiftdate = str(rotation.date)
     rotnum = int(rotation.num)
-    nests, empties, species, nest_raw = get_nests(rotation)
+    nests, empties, species, nest_raw = get_nests(rotation, ct)
     print(f"Using the nest list from the {shiftdate} nest rotation")
     if format[0].lower() == 'f':
         # format_name = "Facebook"

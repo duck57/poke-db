@@ -20,7 +20,7 @@ if __name__ == '__main__':
     django.setup()
 
     # now you can import your ORM models
-    from nestlist.models import NstRotationDate, NstSpeciesListArchive, NstLocation, NestSpecies
+    from nestlist.models import NstRotationDate, NstSpeciesListArchive, NstLocation, NestSpecies, NstMetropolisMajor, NstAdminEmail
     from django.db.models import Q
 
 

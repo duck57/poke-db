@@ -89,7 +89,7 @@ class NstLocation(models.Model):
     def __cmp__(self, other):
         if self.official_name < other.official_name:
             return -1
-        if self.official_name> other.official_name:
+        if self.official_name > other.official_name:
             return 1
         return 0  # this should not happen
 
