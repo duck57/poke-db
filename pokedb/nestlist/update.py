@@ -259,6 +259,25 @@ def disc_important_species(s_list):
     return out
 
 
+def copy_list(outparts):
+    """
+    copies a list of strings to the clipboard
+    :param outparts: list of strings for pyperclip to copy
+    """
+
+    pos = 0
+    num = len(outparts)
+    for part in outparts:
+        pyperclip.copy(part)
+        pos += 1
+        if num == 1:
+            print("Copied to clipboard.")
+        elif pos < num:
+            input(f"Copied part {pos} of {num} to the clipboard. Press enter or return to continue.")
+        else:
+            print(f"Copied part {pos} of {num} to the clipboard.")
+
+
 def disc_posts(nnl2, rundate, shiftdate, rotnum=0, raw_nests=None):
     """
     generate and copy a Discord post to the clipboard
@@ -271,7 +290,7 @@ def disc_posts(nnl2, rundate, shiftdate, rotnum=0, raw_nests=None):
     :param mt: nested_dict of empty nests—mt[nest] = NstLocation object
     :param raw_nests: QuerySet of NSLA objects to pass to the important species finder
     :param rotnum: rotation number (int)
-    :return:
+    :return: array of strings of Discord posts
     """
 
     list = []
@@ -316,15 +335,7 @@ which causes Discord problems.  Consider breaking into smaller areas.""")
 
     outparts.append(disc_important_species(raw_nests))
 
-    pos = 0
-    num = len(outparts)
-    for part in outparts:
-        pyperclip.copy(part)
-        pos += 1
-        if pos < num:
-            input(f"Copied part {pos} of {num} to the clipboard. Press enter or return to continue.")
-        else:
-            print(f"Copied part {pos} of {num} to the clipboard.")
+    return outparts
 
 
 def FB_post(nnl, rundate, shiftdate, mt=None, slist=None, rotnum=0):
@@ -336,7 +347,7 @@ def FB_post(nnl, rundate, shiftdate, mt=None, slist=None, rotnum=0):
     :param mt: nested_dict of empty nests—mt[nest] = NstLocation object
     :param slist: nested_dict of species-sorted nests—slist[species][nest] = NSLA object
     :param rotnum: rotation number (int)
-    :return:
+    :return: the FB-formatted nest post
     """
 
     post = FB_preamble(rundate, shiftdate, rotnum)
@@ -347,8 +358,7 @@ def FB_post(nnl, rundate, shiftdate, mt=None, slist=None, rotnum=0):
     if mt is not None:
         # post += decorate_text(" • ", "---==<>==---") + "\n\n"
         post += FB_empty(mt)
-    pyperclip.copy(post)
-    print("Nest list copied to clipboard")
+    return post
 
 
 def get_rot8d8(today):
@@ -440,9 +450,9 @@ def fetch_city(search=None):
     """
 
     res = NstMetropolisMajor.objects.filter(
-        Q(name__contains=search) |
+        Q(name__icontains=search) |
         Q(id=search if str_int(search) else None) |  # if/else needed to prevent Value errors
-        Q(short_name__contains=search)
+        Q(short_name__icontains=search)
     ).distinct()
 
     if len(res) == 1:
@@ -494,10 +504,12 @@ def main(date=None, format=None, city=None):
     print(f"Using the nest list from the {shiftdate} nest rotation")
     if format[0].lower() == 'f':
         # format_name = "Facebook"
-        FB_post(nests, run_date, shiftdate, slist=species, mt=empties, rotnum=rotnum)
+        f = FB_post(nests, run_date, shiftdate, slist=species, mt=empties, rotnum=rotnum)
+        copy_list([f])
     if format[0].lower() == 'd':
         # format_name = "Discord"
-        disc_posts(nests, run_date, shiftdate, rotnum=rotnum, raw_nests=nest_raw)
+        d = disc_posts(nests, run_date, shiftdate, rotnum=rotnum, raw_nests=nest_raw)
+        copy_list(d)
 
 
 if __name__ == "__main__":
