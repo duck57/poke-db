@@ -1,0 +1,28 @@
+h1. Future Plans (all modules)
+
+h2. pokescrape
+
+This will eventually be replaced with scrapy scripts to create tables for import from wikis.
+Challenges include looping to the next pokémon, filtering out canonical pokémon, and mega evolutions.
+
+h2. nestlist
+
+* Add a TUI editor for nests 
+* Make the web output prettier
+* Have separate webpage and copypage views
+
+h2. pokeperfect
+
+* Include support for non-defualt settings (old CP values, weather boost restrictions, etc…)
+
+h2. speciesinfo
+
+* Add pokémon species TUI editor
+* All the web stuff here has been done better elsewhere
+
+h2. typeedit
+
+* TUI type editor
+* Probably no web UI
+
+

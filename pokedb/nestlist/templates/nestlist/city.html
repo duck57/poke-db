@@ -1,0 +1,22 @@
+<h1>{{ city.name }}</h1>
+
+{% if current_nest_list %}
+    <table>
+        <tr><th>Region</th><th>Park</th><th>Species</th></tr>
+        {% for nest in current_nest_list %}
+            <tr>
+                <td>{{ nest.nestid.neighborhood.place_name }}</td>
+                <td>{{ nest.nestid.get_name }}</td>
+                <td>
+                    {% if nest.confirmation %}
+                    <strong>{{ nest.species_txt }}</strong>
+                    {% else %}
+                    {{ nest.species_txt }}
+                    {% endif %}
+                </td>
+            </tr>
+        {% endfor %}
+    </table>
+{% else %}
+    <p>No nests for {{ current_nest_list.rotation_num }}.</p>
+{% endif %}
