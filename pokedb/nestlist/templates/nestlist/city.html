@@ -1,22 +1,33 @@
-<h1>{{ city.name }}</h1>
+{% load static %}
+<link rel="stylesheet" type="text/css" href="{% static 'nestlist/css/style.css' %}">
+<script type="text/javascript" src="{% static 'nestlist/js/sort_t.js' %}"></script>
 
 {% if current_nest_list %}
-    <table>
-        <tr><th>Region</th><th>Park</th><th>Species</th></tr>
+    <title>{{ current_nest_list.0.nestid.neighborhood.major_city.short_name }} Nests!</title>
+    <center>
+    <table id="myTable2">
+        <caption>{{ current_nest_list.0.nestid.neighborhood.major_city }}<br>#{{ current_nest_list.0.rotation_num }}</caption>
+        <tr>
+            <th onclick="sortTable('myTable2', 0)">Neighborhood</th>
+            <th onclick="sortTable('myTable2', 1)">Park</th>
+            <th onclick="sortTable('myTable2', 2)">#</th>
+            <th onclick="sortTable('myTable2', 3)">Species</th>
+        </tr>
         {% for nest in current_nest_list %}
-            <tr>
-                <td>{{ nest.nestid.neighborhood.place_name }}</td>
-                <td>{{ nest.nestid.get_name }}</td>
-                <td>
-                    {% if nest.confirmation %}
-                    <strong>{{ nest.species_txt }}</strong>
-                    {% else %}
-                    {{ nest.species_txt }}
-                    {% endif %}
-                </td>
+            <tr id="{{ nest.id }}">
+                <td class="{{ nest.nestid.neighborhood.place_name }}">{{ nest.nestid.neighborhood }}</td>
+                <td class="nest-name">{{ nest.nestid.get_name }}</td>
+                {% if nest.confirmation %}
+                    <td class="confirmed number con-num">{{ nest.species_no }}</td>
+                    <td class="confirmed species con-sp">{{ nest.species_txt }}</td>
+                {% else %}
+                    <td class="unconfirmed number un-num">{{ nest.species_no }}</td>
+                    <td class="unconfirmed species un-sp">{{ nest.species_txt }}</td>
+                {% endif %}
             </tr>
         {% endfor %}
     </table>
+    </center>
 {% else %}
     <p>No nests for {{ current_nest_list.rotation_num }}.</p>
 {% endif %}

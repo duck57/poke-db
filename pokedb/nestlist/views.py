@@ -19,7 +19,7 @@ class CityView(generic.ListView):
 
     def get_queryset(self):
         return NstSpeciesListArchive.objects.filter(nestid__neighborhood__major_city=1,
-                                                    rotation_num=self.get_rotation())
+                                                    rotation_num=self.get_rotation()).order_by('nestid_official_name')
 
 
 class IndexView(generic.ListView):
