@@ -37,9 +37,12 @@ db = config.get('Host', 'db_name')
 SECRET_KEY = kiskis
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = bug_mode
+#DEBUG = bug_mode
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+        'pokemongo.toouter.space',
+        'pogo.toouter.space'
+        ]
 
 
 # Application definition
@@ -140,3 +143,5 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/2.1/howto/static-files/
 
 STATIC_URL = '/static/'
+STATIC_ROOT = '/var/www/toouter.space/static/'
+
