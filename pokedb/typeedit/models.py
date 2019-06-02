@@ -55,13 +55,6 @@ class Type(models.Model):
         through_fields=('otype', 'dtype'),
         related_name='attack_effects'
     )
-    DefEffectiveness = models.ManyToManyField(
-        'Type',
-        symmetrical=False,
-        through='TypeEffectiveness',
-        through_fields=('dtype', 'otype'),
-        related_name='defense_effects'
-    )
 
     class Meta:
         managed = False

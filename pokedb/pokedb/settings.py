@@ -29,6 +29,7 @@ bug_mode = config.get('Mode', 'debug')
 backend = config.get('Host', 'engine')
 port = config.get('Host', 'port')
 db = config.get('Host', 'db_name')
+hostlist = config.get('Host', 'allowed').split('\n')
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/2.1/howto/deployment/checklist/
@@ -43,6 +44,12 @@ ALLOWED_HOSTS = [
         'pokemongo.toouter.space',
         'pogo.toouter.space'
         ]
+
+SECURE_CONTENT_TYPE_NOSNIFF = True
+SECURE_BROWSER_XSS_FILTER = True
+SECURE_SSL_REDIRECT = True
+SESSION_COOKIE_SECURE = True
+CSRF_COOKIE_SECURE = True
 
 
 # Application definition
