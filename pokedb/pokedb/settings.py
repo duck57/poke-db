@@ -38,11 +38,13 @@ hostlist = config.get('Host', 'allowed').split('\n')
 SECRET_KEY = kiskis
 
 # SECURITY WARNING: don't run with debug turned on in production!
-#DEBUG = bug_mode
+DEBUG = bug_mode
 
 ALLOWED_HOSTS = [
         'pokemongo.toouter.space',
-        'pogo.toouter.space'
+        'pogo.toouter.space',
+        'localhost',
+        '127.0.0.1'
         ]
 
 SECURE_CONTENT_TYPE_NOSNIFF = True

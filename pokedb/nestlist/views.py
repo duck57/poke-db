@@ -13,12 +13,13 @@ class CityView(generic.ListView):
     model = NstSpeciesListArchive
     template_name = 'nestlist/city.html'
     context_object_name = 'current_nest_list'
+    pk_url_kwarg = 'city_id'
 
     def get_rotation(self):
         return NstRotationDate.objects.filter(date__lte=timezone.now()).order_by('-num')[0]
 
     def get_queryset(self):
-        return NstSpeciesListArchive.objects.filter(nestid__neighborhood__major_city=1,
+        return NstSpeciesListArchive.objects.filter(nestid__neighborhood__major_city=self.kwargs['city_id'],
                                                     rotation_num=self.get_rotation()).order_by('nestid__official_name')
 
 
