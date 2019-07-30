@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python3.7
 # coding=UTF-8
 # -*- coding: UTF-8 -*-
 # vim: set fileencoding=UTF-8 :
