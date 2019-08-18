@@ -13,3 +13,6 @@ class AirtableImportLog(models.Model):
     duplicates = models.IntegerField(null=True)
     total_import_count = models.IntegerField(null=True)
 
+    class Meta:
+        db_table = 'airtable_import_log'
+

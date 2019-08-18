@@ -105,7 +105,7 @@ class NstMetropolisMajor(models.Model):
     note = models.CharField(max_length=255, blank=True, null=True)
     admin_names = models.CharField(max_length=255, blank=True, null=True)
     airtable_base_id = models.CharField(max_length=30, blank=True, null=True)
-    airtable_bot_id = models.ForeignKey(NstAdminEmail, models.SET_NULL)
+    airtable_bot = models.ForeignKey(NstAdminEmail, models.SET_NULL)
 
     class Meta:
         managed = False
@@ -248,3 +248,7 @@ class NstRawRpt(models.Model):
     parklink_id = models.ForeignKey(NstLocation, models.SET_NULL, null=True)
     action = models.IntegerField(null=True)
     dedupe_sig = models.CharField(null=True, blank=False, max_length=50)
+    
+    class Meta:
+        db_table = 'nst_raw_rpt'
+
