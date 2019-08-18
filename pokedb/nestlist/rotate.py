@@ -21,7 +21,7 @@ if __name__ == '__main__':
     django.setup()
 
     # now you can import your ORM models
-    from nestlist.models import NstRotationDate, NstLocation, NstSpeciesListArchive
+    from nestlist.models import NstRotationDate, NstLocation, NstSpeciesListArchive, NstAdminEmail
 
 
 @click.command()
@@ -43,12 +43,18 @@ def main(date):
     new_rot.save()
     perm_nst = NstLocation.objects.exclude(permanent_species__isnull=True).exclude(permanent_species__exact='')
     for nst in perm_nst:
-        NstSpeciesListArchive.objects.create(
+        print(nst)
+        psp = str(nst.permanent_species).split('|')
+        new = NstSpeciesListArchive.objects.create(
             rotation_num=new_rot,
-            species_txt=nst.permanent_species,
+            species_txt=psp[0],
             nestid=nst,
-            confirmation=True
-        ).save()
+            confirmation=True,
+            last_mod_by=NstAdminEmail.objects.get(pk=7)  # hardcoded ID of system bot
+        )
+        if len(psp) > 1:
+            new.species_no = int(str(nst.permanent_species).split('|')[-1:])
+            new.save()
     print(f"Added rotation {new_rot}")
 
 

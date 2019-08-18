@@ -6,7 +6,7 @@ from typeedit.models import Type  # needed to prevent Django from complaining
 class NstAdminEmail(models.Model):
     name = models.CharField(max_length=90, blank=True, null=True)
     city = models.ForeignKey('NstMetropolisMajor', models.DO_NOTHING, db_column='city', blank=True, null=True)
-    short_name = models.CharField(max_length=20, blank=True, null=True)
+    shortname = models.CharField(max_length=20, blank=True, null=True)
     e_mail = models.CharField(db_column='e-mail', max_length=90, blank=True, null=True)
 
     class Meta:
@@ -183,8 +183,11 @@ class NstSpeciesListArchive(models.Model):
     confirmation = models.BooleanField(blank=True, null=True, default=False)
     id = models.AutoField(primary_key=True, db_column='django_sequence_id')
     special_notes = models.CharField(max_length=111, blank=True, null=True)
-    species_name_fk = models.ForeignKey('speciesinfo.Pokemon', models.DO_NOTHING, db_column='django_pkmn_key', to_field='name',
-                                        null=True, blank=True)
+    species_name_fk = models.ForeignKey('speciesinfo.Pokemon', models.DO_NOTHING, db_column='django_pkmn_key',
+                                        to_field='name', null=True, blank=True)
+    last_mod_by = models.ForeignKey(NstAdminEmail, models.SET_NULL, db_column='last_mod_by')
+    city = models.ForeignKey(NstMetropolisMajor, models.SET_NULL, db_column='city')
+    neighborhood = models.ForeignKey(NstNeighborhood, models.SET_NULL, db_column='neighborhood')
 
     class Meta:
         managed = False
