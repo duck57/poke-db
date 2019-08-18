@@ -105,6 +105,7 @@ class NstMetropolisMajor(models.Model):
     note = models.CharField(max_length=255, blank=True, null=True)
     admin_names = models.CharField(max_length=255, blank=True, null=True)
     airtable_base_id = models.CharField(max_length=30, blank=True, null=True)
+    airtable_bot_id = models.ForeignKey(NstAdminEmail, models.SET_NULL())
 
     class Meta:
         managed = False
@@ -230,3 +231,20 @@ class NestSpecies(models.Model):
 
     def __str__(self):
         return str(self.poke_fk)
+
+
+class NstRawRpt(models.Model):
+    nsla_pk = models.ForeignKey(NstSpeciesListArchive, models.SET_NULL(), null=True)
+    bot_id = models.ForeignKey(NstAdminEmail, models.SET_NULL(), null=True)
+    user_name = models.CharField(max_length=120, blank=False, null=True)
+    server_name = models.CharField(max_length=120, null=True, blank=True)
+    nsla_pk_unlink = models.IntegerField(default=0)
+    timestamp = models.DateTimeField(null=True)
+    foreign_db_row_num = models.IntegerField(null=True)
+    raw_species_num = models.IntegerField(null=True)
+    raw_species_txt = models.CharField(max_length=120, null=True)
+    attempted_dex_num = models.ForeignKey('speciesinfo.Pokemon', models.SET_NULL())
+    raw_park_info = models.CharField(max_length=120, null=True, blank=True)
+    parklink_id = models.ForeignKey(NstLocation, models.SET_NULL(), null=True)
+    action = models.IntegerField(null=True)
+    dedupe_sig = models.CharField(null=True, blank=False, max_length=50)
