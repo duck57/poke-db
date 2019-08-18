@@ -43,7 +43,6 @@ def main(date):
     new_rot.save()
     perm_nst = NstLocation.objects.exclude(permanent_species__isnull=True).exclude(permanent_species__exact='')
     for nst in perm_nst:
-        print(nst)
         psp = str(nst.permanent_species).split('|')
         new = NstSpeciesListArchive.objects.create(
             rotation_num=new_rot,
@@ -53,7 +52,7 @@ def main(date):
             last_mod_by=NstAdminEmail.objects.get(pk=7)  # hardcoded ID of system bot
         )
         if len(psp) > 1:
-            new.species_no = int(str(nst.permanent_species).split('|')[-1:])
+            new.species_no = int(str(nst.permanent_species).split('|')[-1])
             new.save()
     print(f"Added rotation {new_rot}")
 
