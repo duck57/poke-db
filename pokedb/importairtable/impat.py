@@ -55,6 +55,8 @@ def transform_submission_data(at_obj):
 
 def __main__():
     for city in NstMetropolisMajor.objects.all():
+        if city.airtable_base_id is None:
+            continue
         sub_dat = get_submission_data_at(city.airtable_base_id, -82)
         print(transform_submission_data(sub_dat))
 
