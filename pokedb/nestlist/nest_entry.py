@@ -5,8 +5,6 @@
 
 import sys
 import os
-
-from utils import pick_from_qs, input_with_prefill, getdate, nested_dict, str_int
 import click
 
 if __name__ == '__main__':
@@ -20,8 +18,10 @@ if __name__ == '__main__':
     django.setup()
 
     # now you can import your ORM models
-    from nestlist.models import NstRotationDate, NstSpeciesListArchive, NstLocation, NestSpecies, NstMetropolisMajor, NstAdminEmail
+    from nestlist.models import NstRotationDate, NstSpeciesListArchive, NstLocation, NestSpecies,\
+        NstMetropolisMajor, NstAdminEmail
     from django.db.models import Q
+    from nestlist.utils import pick_from_qs, input_with_prefill, getdate, nested_dict, str_int
 
 
 def search_nest_query(search):
