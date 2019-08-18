@@ -6,11 +6,17 @@
 
 import os
 import sys
+from asciimatics.widgets import Frame, Layout, Divider, Text, \
+    Button, Widget, MultiColumnListBox
+from asciimatics.scene import Scene
+from asciimatics.screen import Screen
+from asciimatics.exceptions import ResizeScreenError, NextScene, StopApplication
+from collections import defaultdict
 
 if __name__ == '__main__':
     # Setup environ
     sys.path.append(os.getcwd())
-    os.environ.setdefault("DJANGO_SETTINGS_MODULE", "main.settings")
+    os.environ.setdefault("DJANGO_SETTINGS_MODULE", "pokedb.settings")
 
     # Setup django
     import django
@@ -20,13 +26,6 @@ if __name__ == '__main__':
     # now you can import your ORM models
     from nestlist.models import Type
 
-import sys
-from asciimatics.widgets import Frame, Layout, Divider, Text, \
-    Button, Widget, MultiColumnListBox
-from asciimatics.scene import Scene
-from asciimatics.screen import Screen
-from asciimatics.exceptions import ResizeScreenError, NextScene, StopApplication
-from collections import defaultdict
 
 # internally-stored in memory as info[otype][dtype] = relation (nested dict)
 nested_dict = lambda: defaultdict(nested_dict)

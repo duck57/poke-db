@@ -104,6 +104,7 @@ class NstMetropolisMajor(models.Model):
     lon = models.FloatField(blank=True, null=True)
     note = models.CharField(max_length=255, blank=True, null=True)
     admin_names = models.CharField(max_length=255, blank=True, null=True)
+    airtable_base_id = models.CharField(max_length=30, blank=True, null=True)
 
     class Meta:
         managed = False
