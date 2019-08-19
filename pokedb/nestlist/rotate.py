@@ -30,7 +30,7 @@ if __name__ == '__main__':
     '--date',
     default=str(datetime.today().date()),
     prompt="Date of nest shift",
-    help="Date when the nest shift occured, can be absolute (YYYY-MM-DD) or relative (w+2)"
+    help="Date when the nest shift occurred, can be absolute (YYYY-MM-DD) or relative (w+2)"
 )
 # main method
 def main(date):
@@ -51,6 +51,7 @@ def main(date):
             confirmation=True,
             last_mod_by=NstAdminEmail.objects.get(pk=7)  # hardcoded ID of system bot
         )
+        # Add a species number to permanent nests
         if len(psp) > 1:
             new.species_no = int(str(nst.permanent_species).split('|')[-1])
             new.save()

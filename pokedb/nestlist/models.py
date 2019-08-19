@@ -234,24 +234,3 @@ class NestSpecies(models.Model):
 
     def __str__(self):
         return str(self.poke_fk)
-
-
-class NstRawRpt(models.Model):
-    nsla_pk = models.ForeignKey(NstSpeciesListArchive, models.SET_NULL, null=True, db_column='nsla_pk')
-    bot = models.ForeignKey(NstAdminEmail, models.SET_NULL, null=True)
-    user_name = models.CharField(max_length=120, blank=False, null=True)
-    server_name = models.CharField(max_length=120, null=True, blank=True)
-    nsla_pk_unlink = models.IntegerField(default=0)
-    timestamp = models.DateTimeField(null=True)
-    foreign_db_row_num = models.IntegerField(null=True)
-    raw_species_num = models.IntegerField(null=True)
-    raw_species_txt = models.CharField(max_length=120, null=True)
-    attempted_dex_num = models.IntegerField(null=True)
-    raw_park_info = models.CharField(max_length=120, null=True, blank=True)
-    parklink_id = models.ForeignKey(NstLocation, models.SET_NULL, null=True, db_column='parklink_id')
-    action = models.IntegerField(null=True)
-    dedupe_sig = models.CharField(null=True, blank=False, max_length=50)
-    
-    class Meta:
-        db_table = 'nst_raw_rpt'
-

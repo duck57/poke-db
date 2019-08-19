@@ -19,9 +19,8 @@ if __name__ == '__main__':
     django.setup()
 
     # now you can import your ORM models
-    from nestlist.models import NstMetropolisMajor, NstRawRpt, NstRotationDate, NstLocation,\
-        NstAdminEmail, NestSpecies
-    from importairtable.models import AirtableImportLog
+    from nestlist.models import NstMetropolisMajor, NstRotationDate, NstLocation
+    from importairtable.models import AirtableImportLog, NstRawRpt
     from django.utils import timezone
     from django.db.models import Q
     # from speciesinfo.models import Pokemon
