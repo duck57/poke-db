@@ -19,10 +19,12 @@ if __name__ == '__main__':
     django.setup()
 
     # now you can import your ORM models
-    from nestlist.models import NstMetropolisMajor, NstRawRpt, NstRotationDate, NstLocation
+    from nestlist.models import NstMetropolisMajor, NstRawRpt, NstRotationDate, NstLocation,\
+        NstAdminEmail, NestSpecies
     from importairtable.models import AirtableImportLog
     from django.utils import timezone
     from django.db.models import Q
+    # from speciesinfo.models import Pokemon
 
 
 # change from a lambda to make PEP8 shut up
@@ -59,7 +61,7 @@ def get_submission_data_at(city_id, start_num):
 
 
 def make_raw_rpt_sig(name, park_id, rot_num):
-    return str(rot_num) + '🥕' + name + '🥕' + str(park_id)
+    return f'{rot_num}🥕{name}🥕{park_id}'
 
 
 def transform_submission_data(at_obj):
@@ -84,7 +86,7 @@ def transform_submission_data(at_obj):
         at_tmp[num]['species'] = int(str(line['fields']['summary']).split(' ')[0][1:])
         at_tmp[num]['whodidit'] = str(line['fields']['Name']).strip().lower()
         at_tmp[num]['park'] = int(str(line['fields']['summary']).split(' at ')[1].split('.')[0])
-        at_tmp[num]['sig'] = make_raw_rpt_sig(at_tmp[num]['whodidit'], at_tmp[num]['park'], at_tmp['rotation'])
+        at_tmp[num]['sig'] = make_raw_rpt_sig(at_tmp[num]['whodidit'], at_tmp[num]['park'], at_tmp[num]['rotation'])
         at_tmp[num]['num'] = num
 
     return at_tmp
@@ -97,10 +99,13 @@ def add_air_rpt(report, bot):
         report['time'],
         report['species'],
         bot,
-        server='AirTable#' + str(bot),
+        server=f'AirTable#{bot}',
         sig=report['sig'],
         rotation=report['rotation']
     )
+
+    line_num.foreign_db_row_num = report['num']
+    line_num.save()
 
     return status
 
@@ -112,7 +117,7 @@ def match_species(sptxt):
     :return: species number and either a reference to the pokémon or None for an error
     """
     reslst = NestSpecies.objects.filter(
-        Q(dex_number=sptxt if str_int(sptxt) else None) |
+        Q(dex_number=sptxt) |
         Q(poke_fk__name__icontains=sptxt)
     ).order_by('dex_number').distinct()
 
@@ -130,7 +135,7 @@ def match_park(search):
 
     res = NstLocation.objects.filter(
         Q(official_name__icontains=search) |
-        Q(nestID=search if str_int(search) else None) |  # if/else needed to prevent Value errors
+        Q(nestID=search) |  # if/else needed to prevent Value errors
         Q(short_name__icontains=search) |
         Q(nstaltname__name__icontains=search)
     ).distinct()
@@ -154,6 +159,21 @@ def mark_action(rpt_row, action):
     return rpt_row, action
 
 
+def str_int(strin):
+    """
+    checks if a string will convert to an int
+    why isn't this in the standard library?
+    :param strin: string to check
+    :return: whether the string can convert to an integer
+    """
+
+    try:
+        int(strin)
+    except ValueError:
+        return False
+    return True
+
+
 def add_a_report(name, nest, time, species, bot, sig=None, server=None, rotation=None):
     """
     Adds a raw report and updates the NSLA if applicable
@@ -173,20 +193,22 @@ def add_a_report(name, nest, time, species, bot, sig=None, server=None, rotation
         4 conflict
         9 error
     """
+    
 
     status = 9
     sp_num, sp_txt = None, None
-    if int(species) == species:
+    print(name, nest, species, sig)
+    if str_int(species):
         sp_num = int(species)
     else:
         sp_txt = species
     if rotation is None:
-        rotation = get_rot8d8(str(time).split('T')[0])
+        rotation = get_rot8d8(str(time).split('T')[0]).num
     if sig is None:
         sig = make_raw_rpt_sig(name, nest, rotation)
 
     rpt_row = NstRawRpt.objects.create(
-        bot_id=bot,
+        bot_id=NstAdminEmail.objects.get(pk=bot).pk,
         user_name=name,
         server_name=server,
         timestamp=time,
@@ -210,7 +232,7 @@ def add_a_report(name, nest, time, species, bot, sig=None, server=None, rotation
     else:
         rpt_row.parklink_id = parklink
 
-    dup_check = NstRawRpt.objects.get(dedupe_sig=sig).order_by('-pk')
+    dup_check = NstRawRpt.objects.filter(dedupe_sig=sig).order_by('-pk')
     if len(dup_check) > 0:
         for line in dup_check:
             if line.attempted_dex_num is not None and line.attempted_dex_num == sp_lnk:
@@ -232,11 +254,10 @@ def import_city(base, bot_id=None):
     sub_dat = get_submission_data_at(base, rpt_start)
     tsd_nnl = transform_submission_data(sub_dat)
 
-    print(tsd_nnl)  # TODO replace me with actual work below the if statement
     if len(tsd_nnl) == 0:
         return None
-    for rpt in tsd_nnl:
-        add_air_rpt(rpt, bot_id)
+    for rpt in tsd_nnl.keys():
+        add_air_rpt(tsd_nnl[rpt], bot_id)
 
     AirtableImportLog.objects.create(
         city=base,
