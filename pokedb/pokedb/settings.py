@@ -38,7 +38,7 @@ hostlist = config.get('Host', 'allowed').split('\n')
 SECRET_KEY = kiskis
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = bug_mode
+DEBUG = False
 
 ALLOWED_HOSTS = [
         'pokemongo.toouter.space',
@@ -113,6 +113,7 @@ DATABASES = {
         'PASSWORD': pwd,
         'HOST': host,
         'PORT': port,
+        'OPTIONS': {'charset': 'utf8mb4'},
     }
 }
 
