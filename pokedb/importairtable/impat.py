@@ -83,7 +83,7 @@ def transform_submission_data(at_obj):
     for line in at_obj:
         num = line['fields']['serial']
         at_tmp[num]['time'] = line['createdTime']
-        at_tmp[num]['rotation'] = get_rot8d8(line['createdTime'].split('T')[0]).num
+        at_tmp[num]['rotation'] = get_rot8d8(line['createdTime'].split('T')[0])
         at_tmp[num]['species'] = int(str(line['fields']['summary']).split(' ')[0][1:])
         at_tmp[num]['whodidit'] = str(line['fields']['Name']).strip().lower()
         
@@ -178,15 +178,12 @@ def str_int(strin):
     return True
 
 
-def update_nsla(raw_row, rotation):
-    # TODO check if a matching NSLA row exists and it not manually overridden, then update it or add a new row
-    return
-
-
 def add_a_report(name, nest, time, species, bot, sig=None, server=None, rotation=None):
     """
     Adds a raw report and updates the NSLA if applicable
     Meant to be generic enough to handle both Discord and Airtable input
+    This thing is **long** and full of ugly business logic
+
     :param name: who submitted the report
     :param server: server identifier
     :param nest: ID of nest, assumed to be unique
@@ -210,19 +207,23 @@ def add_a_report(name, nest, time, species, bot, sig=None, server=None, rotation
     else:
         sp_txt = species
     if rotation is None:
-        rotation = get_rot8d8(str(time).split('T')[0]).num
+        rotation = get_rot8d8(str(time).split('T')[0])
     if sig is None:
-        sig = make_raw_rpt_sig(name, nest, rotation)
+        sig = make_raw_rpt_sig(name, nest, rotation.pk)
+    bot = NstAdminEmail.objects.get(pk=bot)
+    if bot is None:
+        return None, None
 
     rpt_row = NstRawRpt.objects.create(
-        bot=NstAdminEmail.objects.get(pk=bot),
+        bot=bot,
         user_name=name,
         server_name=server,
         timestamp=time,
         raw_species_num=sp_num,
         raw_species_txt=sp_txt,
         raw_park_info=nest,
-        dedupe_sig=sig
+        dedupe_sig=sig,
+        calculated_rotation=rotation
     )
 
     pk_lnk = None
@@ -243,6 +244,7 @@ def add_a_report(name, nest, time, species, bot, sig=None, server=None, rotation
         rpt_row.parklink = parklink
 
     # sort in reverse-chronological order because we mostly care about the most recent duplicate
+    # this might be refactored to its own function one day (or as an internal function)
     dup_check = NstRawRpt.objects.exclude(pk=rpt_row.pk).filter(dedupe_sig=sig).order_by('-timestamp')
     if len(dup_check) > 0:
         line = dup_check[0]  # we really only care about the most recent duplicate report
@@ -255,12 +257,78 @@ def add_a_report(name, nest, time, species, bot, sig=None, server=None, rotation
         if line.raw_species_txt is not None and line.raw_species_txt == species:
             return mark_action(rpt_row, 0)
 
-        # TODO correct most recent report, if available
-        if line.nsla_pk is None:
-            # TODO
-            pass
+    # check the NSLA for matches
+    nsla_check = NstSpeciesListArchive.objects.get(rotation_num=rotation, nestid=parklink)
+    if nsla_check is None:
+        # add new NSLA row, should probably be independent function
+        rpt_row.nsla_pk = NstSpeciesListArchive.objects.create(
+            rotation_num=rotation,
+            nestid=parklink,
+            confirmation=False,
+            species_name_fk=pk_lnk,
+            species_no=pk_lnk.dex_number,
+            species_txt=pk_lnk.name,
+            last_mod_by=bot
+        )
+        rpt_row.nsla_pk_unlink = rpt_row.nsla_pk.pk
+        rpt_row.save()
+        return mark_action(rpt_row, 1)
 
-    return mark_action(rpt_row, 5)  # TODO make this return something correct—this just marks that it's not a duplicate
+    # confirmations
+    if nsla_check.species_name_fk == pk_lnk:
+        nsla_check.confirmation = True
+        nsla_check.last_mod_by = bot
+        nsla_check.save()
+        rpt_row.nsla_pk_unlink = nsla_check.pk
+        rpt_row.nsla_pk = nsla_check
+        rpt_row.save()
+        return mark_action(rpt_row, 2)
+
+    # conflicted nests should be all that's left by now
+    if nsla_check.last_mod_by is None or nsla_check.last_mod_by.bot != 1:
+        # if it was edited by the system, a non-bot, or a God-mode user, just skip it and move on
+        return mark_action(rpt_row, 4)
+    # it's just conflicted nests left by a bot now
+
+    # count the nests from this rotation, then select the nest that most recently has two reports that agree
+    # this assumes that the report being added is always the most recent one (so it may break on historic data import)
+    conf_check = NstRawRpt.objects.filter(
+        rotation=rotation,
+        parklink=parklink,
+        attempted_dex_num=sp_lnk).order_by('-timestamp')
+    if len(conf_check) > 1:
+        nsla_check.confirmation = True
+        nsla_check.species_name_fk = pk_lnk
+        nsla_check.species_no = sp_lnk
+        nsla_check.species_txt = pk_lnk.name
+        nsla_check.last_mod_by = bot
+        nsla_check.save()
+        rpt_row.nsla_pk = nsla_check
+        rpt_row.nsla_pk_unlink = nsla_check.pk
+        rpt_row.save()
+        return mark_action(rpt_row, 2)
+
+    # if it's conflicted single reports, the first one wins
+
+    # unless they're both by the same user
+    namelist = set()
+    namelist.add(name)
+    for raw in NstRawRpt.objects.filter(rotation=rotation,parklink=parklink).order_by('-timestamp'):
+        namelist.add(raw.name)
+    if len(gj) == 1:
+        # then update their initial report
+        nsla_check.confirmation = False
+        nsla_check.species_name_fk = pk_lnk
+        nsla_check.species_no = sp_lnk
+        nsla_check.species_txt = pk_lnk.name
+        nsla_check.last_mod_by = bot
+        nsla_check.save()
+        rpt_row.nsla_pk = nsla_check
+        rpt_row.nsla_pk_unlink = nsla_check.pk
+        rpt_row.save()
+        return mark_action(rpt_row, 1)
+
+    return mark_action(rpt_row, 4)
 
 
 def import_city(base, bot_id=None):
@@ -270,16 +338,28 @@ def import_city(base, bot_id=None):
         rpt_start = rpt_starts[0].end_num
     sub_dat = get_submission_data_at(base, rpt_start)
     tsd_nnl = transform_submission_data(sub_dat)
+    stats = {
+        0: 0,
+        1: 0,
+        2: 0,
+        4: 0,
+        9: 0
+    }  # blank stats list
 
     if len(tsd_nnl) == 0:
         return None
     for rpt in tsd_nnl.keys():
-        add_air_rpt(tsd_nnl[rpt], bot_id)
+        stats[add_air_rpt(tsd_nnl[rpt], bot_id)] += 1  # add/handle the report, then increment the stats counter
 
     AirtableImportLog.objects.create(
         city=base,
         end_num=rpt_start + len(tsd_nnl),
-        time=timezone.now()
+        time=timezone.now(),
+        first_reports=stats[1],
+        confirmations=stats[2],
+        errors=stats[9],
+        conflicts=stats[4],
+        duplicates=stats[0]
     )
 
 
