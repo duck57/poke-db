@@ -317,7 +317,7 @@ def add_a_report(name, nest, time, species, bot, sig=None, server=None, rotation
     # unless they're both by the same user
     namelist = set()
     namelist.add(name)
-    for raw in NstRawRpt.objects.filter(rotation=rotation,parklink=parklink).order_by('-timestamp'):
+    for raw in NstRawRpt.objects.filter(calculated_rotation=rotation,parklink=parklink).order_by('-timestamp'):
         namelist.add(raw.name)
     if len(gj) == 1:
         # then update their initial report
@@ -365,6 +365,7 @@ def import_city(base, bot_id=None):
         conflicts=stats[4],
         duplicates=stats[0]
     )
+    return stats
 
 
 def __main__():
@@ -372,7 +373,7 @@ def __main__():
         # skip improperly configured cities
         if city.airtable_base_id is None or city.airtable_bot_id is None:
             continue
-        import_city(city.airtable_base_id, city.airtable_bot_id)
+        print(city.name, time.localtime(), import_city(city.airtable_base_id, city.airtable_bot_id))
         time.sleep(1)
 
 
