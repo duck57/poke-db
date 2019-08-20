@@ -151,6 +151,7 @@ def update_park(rotnum, search=None, species=None):
         cur.species_no = spnum
         cur.species_txt = species
         cur.species_name_fk = fk
+        cur.last_mod_by = None  # for God user edits
         cur.save()
 
     print()

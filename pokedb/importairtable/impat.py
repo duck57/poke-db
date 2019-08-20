@@ -249,7 +249,6 @@ def add_a_report(name, nest, time, species, bot, sig=None, server=None, rotation
     if len(dup_check) > 0:
         line = dup_check[0]  # we really only care about the most recent duplicate report
         # mark duplicates as duplicate
-        print(line.attempted_dex_num, line.raw_species_num, line.raw_species_txt)
         if line.attempted_dex_num is not None and line.attempted_dex_num == sp_lnk:
             return mark_action(rpt_row, 0)
         if line.raw_species_num is not None and line.raw_species_num == species:
@@ -258,15 +257,17 @@ def add_a_report(name, nest, time, species, bot, sig=None, server=None, rotation
             return mark_action(rpt_row, 0)
 
     # check the NSLA for matches
-    nsla_check = NstSpeciesListArchive.objects.get(rotation_num=rotation, nestid=parklink)
-    if nsla_check is None:
+    nsla_check = None  # p. sure this needs to be defined for scoping things
+    try:
+        nsla_check = NstSpeciesListArchive.objects.get(rotation_num=rotation, nestid=parklink)
+    except:
         # add new NSLA row, should probably be independent function
         rpt_row.nsla_pk = NstSpeciesListArchive.objects.create(
             rotation_num=rotation,
             nestid=parklink,
             confirmation=False,
             species_name_fk=pk_lnk,
-            species_no=pk_lnk.dex_number,
+            species_no=sp_lnk,
             species_txt=pk_lnk.name,
             last_mod_by=bot
         )
@@ -285,15 +286,18 @@ def add_a_report(name, nest, time, species, bot, sig=None, server=None, rotation
         return mark_action(rpt_row, 2)
 
     # conflicted nests should be all that's left by now
-    if nsla_check.last_mod_by is None or nsla_check.last_mod_by.bot != 1:
-        # if it was edited by the system, a non-bot, or a God-mode user, just skip it and move on
+    if nsla_check.last_mod_by is None:
+        # if it was edited by a God-mode user, just skip it and move on
+        return mark_action(rpt_row, 4)
+    if nsla_check.last_mod_by.is_bot != 1:
+        # similarly for humans and the system
         return mark_action(rpt_row, 4)
     # it's just conflicted nests left by a bot now
 
     # count the nests from this rotation, then select the nest that most recently has two reports that agree
     # this assumes that the report being added is always the most recent one (so it may break on historic data import)
     conf_check = NstRawRpt.objects.filter(
-        rotation=rotation,
+        calculated_rotation=rotation,
         parklink=parklink,
         attempted_dex_num=sp_lnk).order_by('-timestamp')
     if len(conf_check) > 1:

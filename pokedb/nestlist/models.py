@@ -186,9 +186,9 @@ class NstSpeciesListArchive(models.Model):
     special_notes = models.CharField(max_length=111, blank=True, null=True)
     species_name_fk = models.ForeignKey('speciesinfo.Pokemon', models.DO_NOTHING, db_column='django_pkmn_key',
                                         to_field='name', null=True, blank=True)
-    last_mod_by = models.ForeignKey(NstAdminEmail, models.SET_NULL, db_column='last_mod_by')
-    city = models.ForeignKey(NstMetropolisMajor, models.SET_NULL, db_column='city')
-    neighborhood = models.ForeignKey(NstNeighborhood, models.SET_NULL, db_column='neighborhood')
+    last_mod_by = models.ForeignKey(NstAdminEmail, models.SET_NULL, db_column='last_mod_by', null=True)
+    city = models.ForeignKey(NstMetropolisMajor, models.SET_NULL, db_column='city', null=True)
+    neighborhood = models.ForeignKey(NstNeighborhood, models.SET_NULL, db_column='neighborhood', null=True)
 
     class Meta:
         managed = False

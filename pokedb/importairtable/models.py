@@ -32,7 +32,7 @@ class NstRawRpt(models.Model):
     parklink = models.ForeignKey('nestlist.NstLocation', models.SET_NULL, null=True)
     action = models.IntegerField(null=True)
     dedupe_sig = models.CharField(null=True, blank=False, max_length=50)
-    calculated_rotation = models.ForeignKey('nestlist.RotationDate', models.SET_NULL, null=True)
+    calculated_rotation = models.ForeignKey('nestlist.NstRotationDate', models.SET_NULL, null=True)
 
     class Meta:
         db_table = 'nst_raw_rpt'
