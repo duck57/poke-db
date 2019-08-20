@@ -9,7 +9,7 @@ import os
 import time
 from collections import defaultdict
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     # Setup environ
     sys.path.append(os.getcwd())
     os.environ.setdefault("DJANGO_SETTINGS_MODULE", "pokedb.settings")
@@ -20,8 +20,14 @@ if __name__ == '__main__':
     django.setup()
 
     # now you can import your ORM models
-    from nestlist.models import NstMetropolisMajor, NstRotationDate, NstLocation, NstSpeciesListArchive,\
-            NstAdminEmail, NestSpecies
+    from nestlist.models import (
+        NstMetropolisMajor,
+        NstRotationDate,
+        NstLocation,
+        NstSpeciesListArchive,
+        NstAdminEmail,
+        NestSpecies,
+    )
     from importairtable.models import AirtableImportLog, NstRawRpt
     from django.utils import timezone
     from django.db.models import Q
@@ -29,7 +35,8 @@ if __name__ == '__main__':
 
 
 # change from a lambda to make PEP8 shut up
-def nested_dict(): return defaultdict(nested_dict)
+def nested_dict():
+    return defaultdict(nested_dict)
 
 
 def get_rot8d8(today):
@@ -41,12 +48,14 @@ def get_rot8d8(today):
     :return: rotation corresponding to the most recent one on or before the supplied date
     """
 
-    res = NstRotationDate.objects.filter(date__lte=today).order_by('-num')
+    res = NstRotationDate.objects.filter(date__lte=today).order_by("-num")
     if len(res) > 0:
         return res[0]
-    print(f"Date {today} is older than anything in the database.  Using oldest data instead.")
+    print(
+        f"Date {today} is older than anything in the database.  Using oldest data instead."
+    )
 
-    return NstRotationDate.objects.all().order_by('date')[0]
+    return NstRotationDate.objects.all().order_by("date")[0]
 
 
 def get_submission_data_at(city_id, start_num):
@@ -57,12 +66,14 @@ def get_submission_data_at(city_id, start_num):
     :return:
     """
 
-    formula_string = 'serial>' + str(start_num)
-    return airtable.Airtable(city_id, 'Submissions Data').get_all(formula=formula_string)
+    formula_string = "serial>" + str(start_num)
+    return airtable.Airtable(city_id, "Submissions Data").get_all(
+        formula=formula_string
+    )
 
 
 def make_raw_rpt_sig(name, park_id, rot_num):
-    return f'{rot_num}🥕{name}🥕{park_id}'
+    return f"{rot_num}🥕{name}🥕{park_id}"
 
 
 def transform_submission_data(at_obj):
@@ -81,34 +92,38 @@ def transform_submission_data(at_obj):
 
     at_tmp = nested_dict()
     for line in at_obj:
-        num = line['fields']['serial']
-        at_tmp[num]['time'] = line['createdTime']
-        at_tmp[num]['rotation'] = get_rot8d8(line['createdTime'].split('T')[0])
-        at_tmp[num]['species'] = int(str(line['fields']['summary']).split(' ')[0][1:])
-        at_tmp[num]['whodidit'] = str(line['fields']['Name']).strip().lower()
-        
-        # this one below is nasty to deal with standard human-readable Airtable stuff
-        at_tmp[num]['park'] = int(str(line['fields']['summary']).split(' at ')[1].split('.')[0].split('"')[-1])
+        num = line["fields"]["serial"]
+        at_tmp[num]["time"] = line["createdTime"]
+        at_tmp[num]["rotation"] = get_rot8d8(line["createdTime"].split("T")[0])
+        at_tmp[num]["species"] = int(str(line["fields"]["summary"]).split(" ")[0][1:])
+        at_tmp[num]["whodidit"] = str(line["fields"]["Name"]).strip().lower()
 
-        at_tmp[num]['sig'] = make_raw_rpt_sig(at_tmp[num]['whodidit'], at_tmp[num]['park'], at_tmp[num]['rotation'])
-        at_tmp[num]['num'] = num
+        # this one below is nasty to deal with standard human-readable Airtable stuff
+        at_tmp[num]["park"] = int(
+            str(line["fields"]["summary"]).split(" at ")[1].split(".")[0].split('"')[-1]
+        )
+
+        at_tmp[num]["sig"] = make_raw_rpt_sig(
+            at_tmp[num]["whodidit"], at_tmp[num]["park"], at_tmp[num]["rotation"]
+        )
+        at_tmp[num]["num"] = num
 
     return at_tmp
 
 
 def add_air_rpt(report, bot):
     line_num, status = add_a_report(
-        report['whodidit'],
-        report['park'],
-        report['time'],
-        report['species'],
+        report["whodidit"],
+        report["park"],
+        report["time"],
+        report["species"],
         bot,
-        server=f'AirTable#{bot}',
-        sig=report['sig'],
-        rotation=report['rotation']
+        server=f"AirTable#{bot}",
+        sig=report["sig"],
+        rotation=report["rotation"],
     )
 
-    line_num.foreign_db_row_num = report['num']
+    line_num.foreign_db_row_num = report["num"]
     line_num.save()
 
     return status
@@ -120,10 +135,13 @@ def match_species(sptxt):
     :param sptxt: pokédex number or species name to match
     :return: species number and either a reference to the pokémon or None for an error
     """
-    reslst = NestSpecies.objects.filter(
-        Q(dex_number=sptxt) |
-        Q(poke_fk__name__icontains=sptxt)
-    ).order_by('dex_number').distinct()
+    reslst = (
+        NestSpecies.objects.filter(
+            Q(dex_number=sptxt) | Q(poke_fk__name__icontains=sptxt)
+        )
+        .order_by("dex_number")
+        .distinct()
+    )
 
     if len(reslst) != 1:
         return None
@@ -138,10 +156,10 @@ def match_park(search):
     """
 
     res = NstLocation.objects.filter(
-        Q(official_name__icontains=search) |
-        Q(nestID=search) |  # if/else needed to prevent Value errors
-        Q(short_name__icontains=search) |
-        Q(nstaltname__name__icontains=search)
+        Q(official_name__icontains=search)
+        | Q(nestID=search)
+        | Q(short_name__icontains=search)  # if/else needed to prevent Value errors
+        | Q(nstaltname__name__icontains=search)
     ).distinct()
 
     if len(res) == 1:
@@ -207,7 +225,7 @@ def add_a_report(name, nest, time, species, bot, sig=None, server=None, rotation
     else:
         sp_txt = species
     if rotation is None:
-        rotation = get_rot8d8(str(time).split('T')[0])
+        rotation = get_rot8d8(str(time).split("T")[0])
     if sig is None:
         sig = make_raw_rpt_sig(name, nest, rotation.pk)
     bot = NstAdminEmail.objects.get(pk=bot)
@@ -223,7 +241,7 @@ def add_a_report(name, nest, time, species, bot, sig=None, server=None, rotation
         raw_species_txt=sp_txt,
         raw_park_info=nest,
         dedupe_sig=sig,
-        calculated_rotation=rotation
+        calculated_rotation=rotation,
     )
 
     pk_lnk = None
@@ -233,7 +251,7 @@ def add_a_report(name, nest, time, species, bot, sig=None, server=None, rotation
         # TODO support free-text reports: "Squritle or Bulbasaur", useful for Discord reports
         return mark_action(rpt_row, 9)
     else:
-        pk_lnk = Pokemon.objects.get(dex_number=sp_lnk, form='Normal')
+        pk_lnk = Pokemon.objects.get(dex_number=sp_lnk, form="Normal")
         rpt_row.attempted_dex_num = sp_lnk
 
     parklink = match_park(nest)
@@ -245,9 +263,15 @@ def add_a_report(name, nest, time, species, bot, sig=None, server=None, rotation
 
     # sort in reverse-chronological order because we mostly care about the most recent duplicate
     # this might be refactored to its own function one day (or as an internal function)
-    dup_check = NstRawRpt.objects.exclude(pk=rpt_row.pk).filter(dedupe_sig=sig).order_by('-timestamp')
+    dup_check = (
+        NstRawRpt.objects.exclude(pk=rpt_row.pk)
+        .filter(dedupe_sig=sig)
+        .order_by("-timestamp")
+    )
     if len(dup_check) > 0:
-        line = dup_check[0]  # we really only care about the most recent duplicate report
+        line = dup_check[
+            0
+        ]  # we really only care about the most recent duplicate report
         # mark duplicates as duplicate
         if line.attempted_dex_num is not None and line.attempted_dex_num == sp_lnk:
             return mark_action(rpt_row, 0)
@@ -259,7 +283,9 @@ def add_a_report(name, nest, time, species, bot, sig=None, server=None, rotation
     # check the NSLA for matches
     nsla_check = None  # p. sure this needs to be defined for scoping things
     try:
-        nsla_check = NstSpeciesListArchive.objects.get(rotation_num=rotation, nestid=parklink)
+        nsla_check = NstSpeciesListArchive.objects.get(
+            rotation_num=rotation, nestid=parklink
+        )
     except:
         # add new NSLA row, should probably be independent function
         rpt_row.nsla_pk = NstSpeciesListArchive.objects.create(
@@ -269,7 +295,7 @@ def add_a_report(name, nest, time, species, bot, sig=None, server=None, rotation
             species_name_fk=pk_lnk,
             species_no=sp_lnk,
             species_txt=pk_lnk.name,
-            last_mod_by=bot
+            last_mod_by=bot,
         )
         rpt_row.nsla_pk_unlink = rpt_row.nsla_pk.pk
         rpt_row.save()
@@ -297,9 +323,8 @@ def add_a_report(name, nest, time, species, bot, sig=None, server=None, rotation
     # count the nests from this rotation, then select the nest that most recently has two reports that agree
     # this assumes that the report being added is always the most recent one (so it may break on historic data import)
     conf_check = NstRawRpt.objects.filter(
-        calculated_rotation=rotation,
-        parklink=parklink,
-        attempted_dex_num=sp_lnk).order_by('-timestamp')
+        calculated_rotation=rotation, parklink=parklink, attempted_dex_num=sp_lnk
+    ).order_by("-timestamp")
     if len(conf_check) > 1:
         nsla_check.confirmation = True
         nsla_check.species_name_fk = pk_lnk
@@ -317,7 +342,9 @@ def add_a_report(name, nest, time, species, bot, sig=None, server=None, rotation
     # unless they're both by the same user
     namelist = set()
     namelist.add(name)
-    for raw in NstRawRpt.objects.filter(rotation=rotation,parklink=parklink).order_by('-timestamp'):
+    for raw in NstRawRpt.objects.filter(rotation=rotation, parklink=parklink).order_by(
+        "-timestamp"
+    ):
         namelist.add(raw.name)
     if len(gj) == 1:
         # then update their initial report
@@ -337,23 +364,19 @@ def add_a_report(name, nest, time, species, bot, sig=None, server=None, rotation
 
 def import_city(base, bot_id=None):
     rpt_start = 0
-    rpt_starts = AirtableImportLog.objects.filter(city=base).order_by('-pk')
+    rpt_starts = AirtableImportLog.objects.filter(city=base).order_by("-pk")
     if len(rpt_starts) > 0:
         rpt_start = rpt_starts[0].end_num
     sub_dat = get_submission_data_at(base, rpt_start)
     tsd_nnl = transform_submission_data(sub_dat)
-    stats = {
-        0: 0,
-        1: 0,
-        2: 0,
-        4: 0,
-        9: 0
-    }  # blank stats list
+    stats = {0: 0, 1: 0, 2: 0, 4: 0, 9: 0}  # blank stats list
 
     if len(tsd_nnl) == 0:
         return None
     for rpt in tsd_nnl.keys():
-        stats[add_air_rpt(tsd_nnl[rpt], bot_id)] += 1  # add/handle the report, then increment the stats counter
+        stats[
+            add_air_rpt(tsd_nnl[rpt], bot_id)
+        ] += 1  # add/handle the report, then increment the stats counter
 
     AirtableImportLog.objects.create(
         city=base,
@@ -363,7 +386,7 @@ def import_city(base, bot_id=None):
         confirmations=stats[2],
         errors=stats[9],
         conflicts=stats[4],
-        duplicates=stats[0]
+        duplicates=stats[0],
     )
 
 
@@ -376,5 +399,5 @@ def __main__():
         time.sleep(1)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     __main__()

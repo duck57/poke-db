@@ -8,6 +8,7 @@ from dateutil.parser import *
 from dateutil.relativedelta import *
 from collections import defaultdict
 import readline
+
 # note: importing readline here makes click act up in the all the modules that rely on this one
 # however, I've only noticed this with the rewrite, since I never encounter the circumstances leading to the bug in
 # my normal use of these programs (I always use the command line flags)
@@ -48,14 +49,19 @@ def getdate(question, date=None):
             date = input(question)
         if date.strip() == "" or (len(date) == 1 and date[0].lower() == "t"):
             return today.date()
-        if date[0].lower() in "ymwt" and len(date) > 2 and date[1] in "+-" and str_int(date[1:]):
+        if (
+            date[0].lower() in "ymwt"
+            and len(date) > 2
+            and date[1] in "+-"
+            and str_int(date[1:])
+        ):
             date_shift = int(date[1:])
             units = date[0].lower()
             create_date = today + {
-                'y': relativedelta(years=date_shift),
-                'm': relativedelta(months=date_shift),
-                'w': relativedelta(weeks=date_shift),
-                't': relativedelta(days=date_shift)
+                "y": relativedelta(years=date_shift),
+                "m": relativedelta(months=date_shift),
+                "w": relativedelta(weeks=date_shift),
+                "t": relativedelta(days=date_shift),
             }.get(units, 0)
             return create_date.date()
         try:
@@ -85,7 +91,7 @@ def true_if_y(st):
 
     if st.strip() == "":
         return False
-    if st[0].upper() == 'Y':
+    if st[0].upper() == "Y":
         return True
     return False
 
@@ -99,7 +105,9 @@ def disp_qs_select(qs, none_option=True):
 
     many = len(qs)
     if many < 2:
-        assert "Programming Error: This should be used if there are at least two options."
+        assert (
+            "Programming Error: This should be used if there are at least two options."
+        )
 
     count = 1
 
@@ -109,7 +117,7 @@ def disp_qs_select(qs, none_option=True):
     if none_option is not False:
         print(f"0. {none_option}")
     for thing in qs:
-        print(f'{count}. {thing}')
+        print(f"{count}. {thing}")
         count += 1
 
     return many
@@ -155,6 +163,7 @@ def input_with_prefill(prompt, text):
     :param text:
     :return:
     """
+
     def hook():
         readline.insert_text(text)
         readline.redisplay()

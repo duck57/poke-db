@@ -6,14 +6,21 @@
 
 import os
 import sys
-from asciimatics.widgets import Frame, Layout, Divider, Text, \
-    Button, Widget, MultiColumnListBox
+from asciimatics.widgets import (
+    Frame,
+    Layout,
+    Divider,
+    Text,
+    Button,
+    Widget,
+    MultiColumnListBox,
+)
 from asciimatics.scene import Scene
 from asciimatics.screen import Screen
 from asciimatics.exceptions import ResizeScreenError, NextScene, StopApplication
 from collections import defaultdict
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     # Setup environ
     sys.path.append(os.getcwd())
     os.environ.setdefault("DJANGO_SETTINGS_MODULE", "pokedb.settings")
@@ -42,7 +49,7 @@ class TypeModel(object):
             -2: "Weak",
             -1: "usualDMG",
             -99: "Immune",
-            -98: "Resist"
+            -98: "Resist",
         }
         self.list = {}
 
@@ -51,7 +58,7 @@ class TypeModel(object):
         h = []
         g.execute("SELECT name, id FROM type_list ORDER BY id ASC")
         for type in g.fetchall():
-            h.append(([type["name"], '[' + str(type["id"]) + ']'], type["id"]))
+            h.append(([type["name"], "[" + str(type["id"]) + "]"], type["id"]))
             self.list[type["id"]] = type["name"]
         return h
 
@@ -60,7 +67,10 @@ class TypeModel(object):
         h = {}
         for relation in self.relations.values():
             h[relation] = []
-        g.execute("SELECT * from type_effectiveness WHERE otype=%s OR dtype=%s", (type_id, type_id))
+        g.execute(
+            "SELECT * from type_effectiveness WHERE otype=%s OR dtype=%s",
+            (type_id, type_id),
+        )
         for trelation in g.fetchall():
             rel = trelation["relation"]
             if trelation["otype"] == type_id:
@@ -100,23 +110,30 @@ class TypeModel(object):
         return profile, sections
 
     def update_current_type(self, details):
-        self._db.cursor().execute('''
+        self._db.cursor().execute(
+            """
             UPDATE type_effectiveness SET name=:name, phone=:phone, address=:address,
-            email=:email, notes=:notes WHERE id=:id''',
-                                  details)
+            email=:email, notes=:notes WHERE id=:id""",
+            details,
+        )
         self._db.commit()
 
     def set_current_type(self, type_id):
         self.current_id = type_id
 
     def get_cur_type_name(self):
-        return "None" if self.current_id is None else str(self.list(self.list[self.current_id]))
+        return (
+            "None"
+            if self.current_id is None
+            else str(self.list(self.list[self.current_id]))
+        )
 
 
 def genquery(off=None):
     type = "otype" if off else "dtype"
     side = "o" if off else "d"
-    query = """SELECT
+    query = (
+        """SELECT
                    o.name OType
                    ,te.otype oid
                    ,te.relation
@@ -127,18 +144,25 @@ def genquery(off=None):
                FROM type_effectiveness te
                LEFT OUTER JOIN type_list o ON te.otype = o.id
                LEFT OUTER JOIN type_list d on te.dtype = d.id
-               WHERE (te.""" + type + " = %s OR " + side + ".name LIKE %s) AND te.relation = %s"
+               WHERE (te."""
+        + type
+        + " = %s OR "
+        + side
+        + ".name LIKE %s) AND te.relation = %s"
+    )
     return query
 
 
 class ListView(Frame):
     def __init__(self, screen, model):
-        super(ListView, self).__init__(screen,
-                                       screen.height * 2 // 3,
-                                       screen.width * 2 // 3,
-                                       on_load=self._reload_list,
-                                       hover_focus=True,
-                                       title="Type List")
+        super(ListView, self).__init__(
+            screen,
+            screen.height * 2 // 3,
+            screen.width * 2 // 3,
+            on_load=self._reload_list,
+            hover_focus=True,
+            title="Type List",
+        )
         # Save off the model that accesses the types database.
         self._model = model
 
@@ -149,7 +173,8 @@ class ListView(Frame):
             model.get_summary(),
             name="types",
             on_change=self._on_pick,
-            on_select=self._edit)
+            on_select=self._edit,
+        )
         self._edit_button = Button("Edit", self._edit)
         self._delete_button = Button("Delete", self._delete)
         layout = Layout([100], fill_frame=True)
@@ -194,13 +219,15 @@ class ListView(Frame):
 
 class TypeView(Frame):
     def __init__(self, screen, model):
-        super(TypeView, self).__init__(screen,
-                                       screen.height,
-                                       screen.width,
-                                       hover_focus=True,
-                                       title="Type Effectiveness Editor",
-                                       # title=model.get_cur_type_name(),
-                                       reduce_cpu=True)
+        super(TypeView, self).__init__(
+            screen,
+            screen.height,
+            screen.width,
+            hover_focus=True,
+            title="Type Effectiveness Editor",
+            # title=model.get_cur_type_name(),
+            reduce_cpu=True,
+        )
         # Save off the model that accesses the type database.
         self._model = model
 
@@ -238,7 +265,7 @@ class TypeView(Frame):
 def demo(screen, scene):
     scenes = [
         Scene([ListView(screen, types)], -1, name="Main"),
-        Scene([TypeView(screen, types)], -1, name="Edit Type")
+        Scene([TypeView(screen, types)], -1, name="Edit Type"),
     ]
 
     screen.set_title("Type Effectiveness Editor")

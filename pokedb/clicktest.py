@@ -4,6 +4,7 @@
 # vim: set fileencoding=UTF-8 :
 
 import click
+
 # import readline
 
 
@@ -18,24 +19,20 @@ a lack of newline bug """
 
 
 # @click.command()
-@click.option(
-    'test',
-    prompt='Is this a test'
-)
+@click.option("test", prompt="Is this a test")
 def home(test):
     click.echo(test)
 
 
 @click.command()
-@click.option('--count', default=1, help='Number of greetings.')
-@click.option('--name', prompt='Your name',
-              help='The person to greet.')
+@click.option("--count", default=1, help="Number of greetings.")
+@click.option("--name", prompt="Your name", help="The person to greet.")
 def hello(count, name):
     """Simple program that greets NAME for a total of COUNT times."""
     for x in range(count):
-        click.echo('Hello %s!' % name)
+        click.echo("Hello %s!" % name)
     # home(None)
 
-if __name__ == '__main__':
-    hello()
 
+if __name__ == "__main__":
+    hello()

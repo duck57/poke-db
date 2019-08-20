@@ -7,7 +7,7 @@ import sys
 import os
 import click
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     # Setup environ
     sys.path.append(os.getcwd())
     os.environ.setdefault("DJANGO_SETTINGS_MODULE", "pokedb.settings")
@@ -18,10 +18,22 @@ if __name__ == '__main__':
     django.setup()
 
     # now you can import your ORM models
-    from nestlist.models import NstRotationDate, NstSpeciesListArchive, NstLocation, NestSpecies,\
-        NstMetropolisMajor, NstAdminEmail
+    from nestlist.models import (
+        NstRotationDate,
+        NstSpeciesListArchive,
+        NstLocation,
+        NestSpecies,
+        NstMetropolisMajor,
+        NstAdminEmail,
+    )
     from django.db.models import Q
-    from nestlist.utils import pick_from_qs, input_with_prefill, getdate, nested_dict, str_int
+    from nestlist.utils import (
+        pick_from_qs,
+        input_with_prefill,
+        getdate,
+        nested_dict,
+        str_int,
+    )
 
 
 def search_nest_query(search):
@@ -30,12 +42,16 @@ def search_nest_query(search):
     :return: a nest
     """
 
-    res = NstLocation.objects.filter(
-        Q(official_name__icontains=search) |
-        Q(nestID=search if str_int(search) else None) |  # if/else needed to prevent Value errors
-        Q(short_name__icontains=search) |
-        Q(nstaltname__name__icontains=search)
-    ).distinct().order_by('official_name')
+    res = (
+        NstLocation.objects.filter(
+            Q(official_name__icontains=search)
+            | Q(nestID=search if str_int(search) else None)
+            | Q(short_name__icontains=search)  # if/else needed to prevent Value errors
+            | Q(nstaltname__name__icontains=search)
+        )
+        .distinct()
+        .order_by("official_name")
+    )
 
     if len(res) == 1:
         return res[0]
@@ -43,8 +59,10 @@ def search_nest_query(search):
         print("No nests found")
         return 0
 
-    choice = pick_from_qs("Enter the number of the park you would like to display: ", res, True)
-    return res[choice-1] if choice > 0 else 0  # prevent out-of-bound indices
+    choice = pick_from_qs(
+        "Enter the number of the park you would like to display: ", res, True
+    )
+    return res[choice - 1] if choice > 0 else 0  # prevent out-of-bound indices
 
 
 def get_rot8d8(today):
@@ -56,11 +74,13 @@ def get_rot8d8(today):
     :return: rotation corresponding to the most recent one on or before the supplied date
     """
 
-    res = NstRotationDate.objects.filter(date__lte=today).order_by('-num')
+    res = NstRotationDate.objects.filter(date__lte=today).order_by("-num")
     if len(res) > 0:
         return res[0]
-    print(f"Date {today} is older than anything in the database.  Using oldest data instead.")
-    return NstRotationDate.objects.all().order_by('date')[0]
+    print(
+        f"Date {today} is older than anything in the database.  Using oldest data instead."
+    )
+    return NstRotationDate.objects.all().order_by("date")[0]
 
 
 def match_species(sptxt):
@@ -69,20 +89,30 @@ def match_species(sptxt):
     :param sptxt:
     :return:
     """
-    reslst = NestSpecies.objects.filter(
-        Q(dex_number=sptxt if str_int(sptxt) else None) |
-        Q(poke_fk__name__icontains=sptxt)
-    ).order_by('dex_number').distinct()
+    reslst = (
+        NestSpecies.objects.filter(
+            Q(dex_number=sptxt if str_int(sptxt) else None)
+            | Q(poke_fk__name__icontains=sptxt)
+        )
+        .order_by("dex_number")
+        .distinct()
+    )
 
     if len(reslst) == 0:
         return None, sptxt, None
     if len(reslst) == 1:
         return reslst[0].dex_number, reslst[0].poke_fk.name, reslst[0].poke_fk
 
-    choice = pick_from_qs("Index of species (not species number): ", reslst, f"{sptxt} [None]")
+    choice = pick_from_qs(
+        "Index of species (not species number): ", reslst, f"{sptxt} [None]"
+    )
     if choice > 0:
         choice -= 1  # deal with the 0 option
-        return reslst[choice].dex_number, reslst[choice].poke_fk.name, reslst[choice].poke_fk
+        return (
+            reslst[choice].dex_number,
+            reslst[choice].poke_fk.name,
+            reslst[choice].poke_fk,
+        )
     return None, sptxt, None
 
 
@@ -96,12 +126,14 @@ def update_park(rotnum, search=None, species=None):
     """
     if search is None:
         search = input("Which park do you want to search? ").strip().lower()
-    if search == '':
+    if search == "":
         return 1
-    if search == 'q':
+    if search == "q":
         return -5
-    if search == '?':
-        print("Search for parks here.  Leave blank or enter a lowercase q to exit.  ? to display this help again.")
+    if search == "?":
+        print(
+            "Search for parks here.  Leave blank or enter a lowercase q to exit.  ? to display this help again."
+        )
         return False
 
     results1 = search_nest_query(search)
@@ -117,17 +149,17 @@ def update_park(rotnum, search=None, species=None):
         current = cur.species_txt
         confirm = cur.confirmation
     except NstSpeciesListArchive.DoesNotExist:
-        current = '' if species is None else species
+        current = "" if species is None else species
         confirm = False
 
     if confirm is True:
         current += "|1"
     species = input_with_prefill("Species|confirm? ", current).strip()
 
-    conf = True if len(species.split('|')) > 1 else None
-    species = species.split('|')[0]
+    conf = True if len(species.split("|")) > 1 else None
+    species = species.split("|")[0]
 
-    if species == '':
+    if species == "":
         if cur is None:  # Nothing currently there, so nothing to delete
             return False
         cur.delete()
@@ -144,7 +176,7 @@ def update_park(rotnum, search=None, species=None):
             confirmation=conf,
             species_no=spnum,
             species_txt=species,
-            species_name_fk=fk
+            species_name_fk=fk,
         )
     else:
         cur.confirmation = conf
@@ -160,15 +192,15 @@ def update_park(rotnum, search=None, species=None):
 
 @click.command()
 @click.option(
-    '-d',
-    '--date',
+    "-d",
+    "--date",
     default="today",
     prompt="Date to edit",
-    help="Date you choose to edit, can be absolute (YYYY-MM-DD) or relative (w+2)"
+    help="Date you choose to edit, can be absolute (YYYY-MM-DD) or relative (w+2)",
 )
-@click.option('-n', '--park', help='Quick access to park for testing')
-@click.option('-s', '--poke', help='Quick pokémon entry for testing')
-def main(date='t', park=None, poke=None):
+@click.option("-n", "--park", help="Quick access to park for testing")
+@click.option("-s", "--poke", help="Quick pokémon entry for testing")
+def main(date="t", park=None, poke=None):
     """
 
     :param date:
@@ -176,8 +208,8 @@ def main(date='t', park=None, poke=None):
     :param poke:
     :return:
     """
-    if date.strip().lower() == 'today' or date is None:
-        date = 't'
+    if date.strip().lower() == "today" or date is None:
+        date = "t"
     rot_num = get_rot8d8(getdate("When were the nests reported? ", date))
     print(f"Editing rotation {rot_num}")
     stop = False

@@ -10,7 +10,7 @@ import pyperclip
 from utils import getdate, decorate_text, nested_dict, pick_from_qs, str_int
 import click
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     # Setup environ
     sys.path.append(os.getcwd())
     os.environ.setdefault("DJANGO_SETTINGS_MODULE", "pokedb.settings")
@@ -21,22 +21,29 @@ if __name__ == '__main__':
     django.setup()
 
     # now you can import your ORM models
-    from nestlist.models import NstRotationDate, NstSpeciesListArchive, NstLocation, \
-        NstNeighborhood, NstCombinedRegion, NstAltName, NstMetropolisMajor
+    from nestlist.models import (
+        NstRotationDate,
+        NstSpeciesListArchive,
+        NstLocation,
+        NstNeighborhood,
+        NstCombinedRegion,
+        NstAltName,
+        NstMetropolisMajor,
+    )
     from typeedit.models import Type
     from django.db.models import Q
 
 
 # maybe this should be in a config file in the future
-private_reminder = '☝'
-ghost_icon = '👻'
-giraffe_icon = '🦒'
-small_whale = '🐳'
-large_whale = '🐋'
-rat_icon = '🐀'
-hoothoot = '🦉'
-water_icon = '💦'
-fish_icon = '🐠'
+private_reminder = "☝"
+ghost_icon = "👻"
+giraffe_icon = "🦒"
+small_whale = "🐳"
+large_whale = "🐋"
+rat_icon = "🐀"
+hoothoot = "🦉"
+water_icon = "💦"
+fish_icon = "🐠"
 
 
 def gen_parenthetical(notes):
@@ -47,7 +54,7 @@ def gen_parenthetical(notes):
     :return: a parenthetical statement containing notes and any private property reminders
     """
 
-    return decorate_text('; '.join(notes), '()')
+    return decorate_text("; ".join(notes), "()")
 
 
 def FB_format_nests(nnl):
@@ -61,16 +68,19 @@ def FB_format_nests(nnl):
     for location in sorted(nnl.keys()):
         # use "ZZZ" instead of just "Z" to accommodate Zanesville
         # and any city that two consecutive Z in its name
-        list_txt += decorate_text(location.split("ZZZ")[-1], "{~()~}") + '\n'
+        list_txt += decorate_text(location.split("ZZZ")[-1], "{~()~}") + "\n"
         for nest in sorted(nnl[location]):
             # nest = nnl[location][nest_txt]
-            if nest.species_name_fk is not None \
-                    and nest.species_name_fk.is_type(Type.objects.get(id=8)):  # type 8 is Ghost
+            if nest.species_name_fk is not None and nest.species_name_fk.is_type(
+                Type.objects.get(id=8)
+            ):  # type 8 is Ghost
                 list_txt += ghost_icon
             if nest.nestid.private is True:
                 list_txt += private_reminder  # private property reminder
             list_txt += nest.nestid.get_name()  # nest name
-            alts = NstAltName.objects.filter(main_entry=nest.nestid).exclude(hide_me=True)
+            alts = NstAltName.objects.filter(main_entry=nest.nestid).exclude(
+                hide_me=True
+            )
             if len(alts) > 0:
                 for alt in alts:
                     list_txt += "/" + alt.name
@@ -81,11 +91,15 @@ def FB_format_nests(nnl):
                 if nest.special_notes is not None:
                     notef.append(nest.special_notes)
                 list_txt += " " + gen_parenthetical(notef)
-            list_txt += ": " + (nest.species_name_fk.name if nest.species_name_fk is not None else nest.species_txt)
+            list_txt += ": " + (
+                nest.species_name_fk.name
+                if nest.species_name_fk is not None
+                else nest.species_txt
+            )
             if nest.confirmation is not True:
                 list_txt += "*"
-            list_txt += '\n'  # prepare for next item
-        list_txt += '\n'
+            list_txt += "\n"  # prepare for next item
+        list_txt += "\n"
     return list_txt
 
 
@@ -96,7 +110,7 @@ def FB_empty(empties):
     :return: formatted string of parks arranged by neighborhood
     """
 
-    mt_txt = decorate_text("No Reports", "[--  --]") + '\n'
+    mt_txt = decorate_text("No Reports", "[--  --]") + "\n"
     for location in sorted(empties.keys()):
         mt_txt += "• " + location + ": "
         first = True
@@ -107,7 +121,7 @@ def FB_empty(empties):
                 mt_txt += private_reminder
             mt_txt += park.get_name()
             first = False
-        mt_txt += '\n'
+        mt_txt += "\n"
     return mt_txt
 
 
@@ -117,21 +131,21 @@ def annotate_species_txt(species_txt):
     :return: an emoji or an empty string to match the species
     """
 
-    if species_txt.lower() == 'water biome':
+    if species_txt.lower() == "water biome":
         return water_icon
-    if species_txt.lower() == 'wailmer':
+    if species_txt.lower() == "wailmer":
         return small_whale
-    if species_txt.lower() == 'wailord':
+    if species_txt.lower() == "wailord":
         return large_whale
-    if species_txt.lower() == 'girafarig':
+    if species_txt.lower() == "girafarig":
         return giraffe_icon
-    if species_txt.lower() == 'hoothoot':
+    if species_txt.lower() == "hoothoot":
         return hoothoot
-    if species_txt.lower() == 'rattata':
+    if species_txt.lower() == "rattata":
         return rat_icon
-    if 'karp' in species_txt.lower():
+    if "karp" in species_txt.lower():
         return fish_icon
-    return ''
+    return ""
 
 
 def annotate_species(nest):
@@ -144,19 +158,19 @@ def annotate_species(nest):
         return annotate_species_txt(nest.species_txt)
     if nest.species_name_fk.is_type(Type.objects.get(id=8)):  # Ghost-type ID = 8
         return ghost_icon
-    if nest.species_name_fk.name == 'Wailmer':
+    if nest.species_name_fk.name == "Wailmer":
         return small_whale
-    if nest.species_name_fk.name == 'Wailord':
+    if nest.species_name_fk.name == "Wailord":
         return large_whale
-    if nest.species_name_fk.name == 'Girafarig':
+    if nest.species_name_fk.name == "Girafarig":
         return giraffe_icon
-    if nest.species_name_fk.name == 'Hoothoot':
+    if nest.species_name_fk.name == "Hoothoot":
         return hoothoot
-    if nest.species_name_fk.name == 'Rattata':
+    if nest.species_name_fk.name == "Rattata":
         return rat_icon
-    if nest.species_name_fk.name == 'Magikarp':
+    if nest.species_name_fk.name == "Magikarp":
         return fish_icon
-    return ''
+    return ""
 
 
 def FB_summary(summary):
@@ -222,28 +236,39 @@ def disc_important_species(s_list):
     :return: a species summary for the popular species
     """
 
-    important_species = ["Magikarp", "Walimer", "Water Biome", "Cubone", "Omanyte", "Kabuto"]
+    important_species = [
+        "Magikarp",
+        "Walimer",
+        "Water Biome",
+        "Cubone",
+        "Omanyte",
+        "Kabuto",
+    ]
     out = decorate_text("Popular Species", "__****__")
     pre_list = {}
 
     # list of nests with noteworthy species
     s_list = s_list.filter(
-        Q(species_txt__in=important_species) |  # important/popular species for quests
-        Q(species_name_fk__type1=8) |  # (ghosts for Kanto research)
-        Q(species_name_fk__type2=8) |
-        Q(species_name_fk__category=50)  # starters
+        Q(species_txt__in=important_species)
+        | Q(species_name_fk__type1=8)  # important/popular species for quests
+        | Q(species_name_fk__type2=8)  # (ghosts for Kanto research)
+        | Q(species_name_fk__category=50)  # starters
     )
 
     if len(s_list) == 0:
-        return ''
+        return ""
 
     # Sort the list into categories/species
-    pre_list[f"Ghost|{ghost_icon}Ghosts"] = s_list.filter(Q(species_name_fk__type1=8) | Q(species_name_fk__type2=8))
+    pre_list[f"Ghost|{ghost_icon}Ghosts"] = s_list.filter(
+        Q(species_name_fk__type1=8) | Q(species_name_fk__type2=8)
+    )
     s_list = s_list.exclude(Q(species_name_fk__type1=8) | Q(species_name_fk__type2=8))
     pre_list["Start|Starters"] = s_list.filter(species_name_fk__category=50)
     s_list = s_list.exclude(species_name_fk__category=50)
     for i_s in important_species:
-        pre_list[f'{i_s}|{annotate_species_txt(i_s)}{i_s}'] = s_list.filter(species_txt=i_s)
+        pre_list[f"{i_s}|{annotate_species_txt(i_s)}{i_s}"] = s_list.filter(
+            species_txt=i_s
+        )
 
     # actually generate the output string
     for sp_cat in sorted(pre_list.keys()):
@@ -273,7 +298,9 @@ def copy_list(outparts):
         if num == 1:
             print("Copied to clipboard.")
         elif pos < num:
-            input(f"Copied part {pos} of {num} to the clipboard. Press enter or return to continue.")
+            input(
+                f"Copied part {pos} of {num} to the clipboard. Press enter or return to continue."
+            )
         else:
             print(f"Copied part {pos} of {num} to the clipboard.")
 
@@ -298,20 +325,28 @@ def disc_posts(nnl2, rundate, shiftdate, rotnum=0, raw_nests=None):
     max = 2000  # Discord post length limit
     pre = disc_preamble(rundate, shiftdate, rotnum)
     olen += len(pre)
-    list.append('')  # this is required for things to split up right later
+    list.append("")  # this is required for things to split up right later
     list.append(pre)
 
     for loc in sorted(nnl2.keys()):
-        loclst = decorate_text(loc, '__****__') + '\n'
+        loclst = decorate_text(loc, "__****__") + "\n"
         for nest in sorted(nnl2[loc]):
             loclst += nest.nestid.get_name()
-            alts = NstAltName.objects.filter(main_entry=nest.nestid).exclude(hide_me=True)
+            alts = NstAltName.objects.filter(main_entry=nest.nestid).exclude(
+                hide_me=True
+            )
             for alt in alts:
-                loclst += '/' + alt.name
-            loclst += ": " + decorate_text(nest.species_txt, '****' if nest.confirmation else '__') + '\n'
+                loclst += "/" + alt.name
+            loclst += (
+                ": "
+                + decorate_text(nest.species_txt, "****" if nest.confirmation else "__")
+                + "\n"
+            )
         if len(loclst) > 2000:
-            raise Exception(f"""Nest list for sub-region {loc} exceeds 2000 characters,\
-which causes Discord problems.  Consider breaking into smaller areas.""")
+            raise Exception(
+                f"""Nest list for sub-region {loc} exceeds 2000 characters,\
+which causes Discord problems.  Consider breaking into smaller areas."""
+            )
         olen += len(loclst)
         list.append(loclst)
 
@@ -368,11 +403,13 @@ def get_rot8d8(today):
     :return: rotation corresponding to the most recent one on or before the supplied date
     """
 
-    res = NstRotationDate.objects.filter(date__lte=today).order_by('-num')
+    res = NstRotationDate.objects.filter(date__lte=today).order_by("-num")
     if len(res) > 0:
         return res[0]
-    print(f"Date {today} is older than anything in the database.  Using oldest data instead.")
-    return NstRotationDate.objects.all().order_by('date')[0]
+    print(
+        f"Date {today} is older than anything in the database.  Using oldest data instead."
+    )
+    return NstRotationDate.objects.all().order_by("date")[0]
 
 
 def nestname(nestrow):
@@ -382,7 +419,9 @@ def nestname(nestrow):
     :return: The name
     """
 
-    return nestrow.short_name if nestrow.short_name is not None else nestrow.official_name
+    return (
+        nestrow.short_name if nestrow.short_name is not None else nestrow.official_name
+    )
 
 
 def get_nests(rotnum, ct=None):
@@ -398,24 +437,29 @@ def get_nests(rotnum, ct=None):
 
     if ct is None:
         nests = NstSpeciesListArchive.objects.filter(rotation_num=rotnum)
-        empties = NstLocation.objects.exclude(nstrotationdate=rotnum).order_by('official_name')
+        empties = NstLocation.objects.exclude(nstrotationdate=rotnum).order_by(
+            "official_name"
+        )
         neighborhoods = NstNeighborhood.objects.filter(
-            nstlocation__nstrotationdate=rotnum).order_by('name')
-        regions = NstCombinedRegion.objects.filter(nstneighborhood__in=neighborhoods).order_by('name')
+            nstlocation__nstrotationdate=rotnum
+        ).order_by("name")
+        regions = NstCombinedRegion.objects.filter(
+            nstneighborhood__in=neighborhoods
+        ).order_by("name")
         neighborhoods = neighborhoods.exclude(region__gt=0)
         # clever way to check for non-null regions in a neighborhood
     else:
         pot_nests = NstLocation.objects.filter(neighborhood__major_city=ct)
         nests = NstSpeciesListArchive.objects.filter(
-            rotation_num=rotnum,
-            nestid__in=pot_nests
+            rotation_num=rotnum, nestid__in=pot_nests
         )
-        empties = pot_nests.exclude(nstrotationdate=rotnum).order_by('official_name')
+        empties = pot_nests.exclude(nstrotationdate=rotnum).order_by("official_name")
         neighborhoods = NstNeighborhood.objects.filter(
-            nstlocation__nstrotationdate=rotnum,
-            major_city=ct
-        ).order_by('name')
-        regions = NstCombinedRegion.objects.filter(nstneighborhood__in=neighborhoods).order_by('name')
+            nstlocation__nstrotationdate=rotnum, major_city=ct
+        ).order_by("name")
+        regions = NstCombinedRegion.objects.filter(
+            nstneighborhood__in=neighborhoods
+        ).order_by("name")
 
     for neighborhood in neighborhoods:
         nestout[neighborhood.name] = set()
@@ -450,9 +494,9 @@ def fetch_city(search=None):
     """
 
     res = NstMetropolisMajor.objects.filter(
-        Q(name__icontains=search) |
-        Q(id=search if str_int(search) else None) |  # if/else needed to prevent Value errors
-        Q(short_name__icontains=search)
+        Q(name__icontains=search)
+        | Q(id=search if str_int(search) else None)
+        | Q(short_name__icontains=search)  # if/else needed to prevent Value errors
     ).distinct()
 
     if len(res) == 1:
@@ -461,28 +505,29 @@ def fetch_city(search=None):
         print("No cities found")
         sys.exit(404)
 
-    return res[pick_from_qs("Which region? ", res, False)-1]
+    return res[pick_from_qs("Which region? ", res, False) - 1]
 
 
 @click.command()
 @click.option(
-    '-d',
-    '--date',
+    "-d",
+    "--date",
     default=str(datetime.today().date()),
     prompt="Generate list of nests as of this date",
-    help="Generate list of nests as of this date"
+    help="Generate list of nests as of this date",
 )
 @click.option(
-    '-o',
-    '--format',
-    type=click.Choice(['FB', 'Facebook', 'f', 'd', 'Discord', 'disc']),
+    "-o",
+    "--format",
+    type=click.Choice(["FB", "Facebook", "f", "d", "Discord", "disc"]),
     prompt="Output format",
-    help="Specify the output formatting for the nest list")
+    help="Specify the output formatting for the nest list",
+)
 @click.option(
-    '-c',
-    '--city',
-    prompt='Anchor city for the region',
-    help='Provide which city this is run for'
+    "-c",
+    "--city",
+    prompt="Anchor city for the region",
+    help="Provide which city this is run for",
 )
 def main(date=None, format=None, city=None):
     """
@@ -494,7 +539,7 @@ def main(date=None, format=None, city=None):
 
     date = getdate("For which date do you wish to generate the nests list?: ", date)
     ct = fetch_city(city)
-    run_date = date.strftime('%d %b %Y')
+    run_date = date.strftime("%d %b %Y")
     print(f"Gathering nests as of {run_date}")
 
     rotation = get_rot8d8(date)
@@ -502,11 +547,13 @@ def main(date=None, format=None, city=None):
     rotnum = int(rotation.num)
     nests, empties, species, nest_raw = get_nests(rotation, ct)
     print(f"Using the nest list from the {shiftdate} nest rotation")
-    if format[0].lower() == 'f':
+    if format[0].lower() == "f":
         # format_name = "Facebook"
-        f = FB_post(nests, run_date, shiftdate, slist=species, mt=empties, rotnum=rotnum)
+        f = FB_post(
+            nests, run_date, shiftdate, slist=species, mt=empties, rotnum=rotnum
+        )
         copy_list([f])
-    if format[0].lower() == 'd':
+    if format[0].lower() == "d":
         # format_name = "Discord"
         d = disc_posts(nests, run_date, shiftdate, rotnum=rotnum, raw_nests=nest_raw)
         copy_list(d)
