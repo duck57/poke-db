@@ -8,6 +8,7 @@ class NstAdminEmail(models.Model):
     city = models.ForeignKey('NstMetropolisMajor', models.DO_NOTHING, db_column='city', blank=True, null=True)
     shortname = models.CharField(max_length=20, blank=True, null=True)
     e_mail = models.CharField(db_column='e-mail', max_length=90, blank=True, null=True)
+    is_bot = models.PositiveSmallIntegerField(null=True)
 
     class Meta:
         managed = False

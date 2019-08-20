@@ -19,11 +19,11 @@ if __name__ == '__main__':
     django.setup()
 
     # now you can import your ORM models
-    from nestlist.models import NstMetropolisMajor, NstRotationDate, NstLocation
+    from nestlist.models import NstMetropolisMajor, NstRotationDate, NstLocation, NstSpeciesListArchive, NstAdminEmail
     from importairtable.models import AirtableImportLog, NstRawRpt
     from django.utils import timezone
     from django.db.models import Q
-    # from speciesinfo.models import Pokemon
+    from speciesinfo.models import Pokemon
 
 
 # change from a lambda to make PEP8 shut up
@@ -173,6 +173,11 @@ def str_int(strin):
     return True
 
 
+def update_nsla(raw_row, rotation):
+    # TODO check if a matching NSLA row exists and it not manually overridden, then update it or add a new row
+    return
+
+
 def add_a_report(name, nest, time, species, bot, sig=None, server=None, rotation=None):
     """
     Adds a raw report and updates the NSLA if applicable
@@ -186,13 +191,12 @@ def add_a_report(name, nest, time, species, bot, sig=None, server=None, rotation
     :param sig: pre-calculated sig, assumed to be correct
     :param rotation: pre-calculated rotation number
     :return: Status of the report
-        0 duplicate
+        0 duplicate [no action]
         1 first report
         2 confirmation
         4 conflict
         9 error
     """
-    
 
     status = 9
     sp_num, sp_txt = None, None
@@ -232,8 +236,10 @@ def add_a_report(name, nest, time, species, bot, sig=None, server=None, rotation
         rpt_row.parklink_id = parklink
 
     dup_check = NstRawRpt.objects.filter(dedupe_sig=sig).order_by('-pk')
+    print(dup_check)
     if len(dup_check) > 0:
         for line in dup_check:
+            # mark duplicates as duplicate
             if line.attempted_dex_num is not None and line.attempted_dex_num == sp_lnk:
                 return mark_action(rpt_row, 0)
             if line.raw_species_num is not None and line.raw_species_num == species:
@@ -241,8 +247,12 @@ def add_a_report(name, nest, time, species, bot, sig=None, server=None, rotation
             if line.raw_species_txt is not None and line.raw_species_txt == species:
                 return mark_action(rpt_row, 0)
 
+            # TODO correct most recent report, if available
+            if line.nsla_pk is None:
+                # TODO
+                continue
 
-    return rpt_row, status
+    return mark_action(rpt_row, 5)  # TODO make this return something correct—this just marks that it's not a duplicate
 
 
 def import_city(base, bot_id=None):

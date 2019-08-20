@@ -36,4 +36,7 @@ class NstRawRpt(models.Model):
     class Meta:
         db_table = 'nst_raw_rpt'
 
+    def __str__(self):
+        return f'{self.dedupe_sig} {self.raw_species_txt}{self.raw_species_num}'
+
 
