@@ -86,7 +86,10 @@ def transform_submission_data(at_obj):
         at_tmp[num]['rotation'] = get_rot8d8(line['createdTime'].split('T')[0]).num
         at_tmp[num]['species'] = int(str(line['fields']['summary']).split(' ')[0][1:])
         at_tmp[num]['whodidit'] = str(line['fields']['Name']).strip().lower()
-        at_tmp[num]['park'] = int(str(line['fields']['summary']).split(' at ')[1].split('.')[0])
+        
+        # this one below is nasty to deal with standard human-readable Airtable stuff
+        at_tmp[num]['park'] = int(str(line['fields']['summary']).split(' at ')[1].split('.')[0].split('"')[-1])
+
         at_tmp[num]['sig'] = make_raw_rpt_sig(at_tmp[num]['whodidit'], at_tmp[num]['park'], at_tmp[num]['rotation'])
         at_tmp[num]['num'] = num
 
@@ -239,9 +242,10 @@ def add_a_report(name, nest, time, species, bot, sig=None, server=None, rotation
     else:
         rpt_row.parklink = parklink
 
-    dup_check = NstRawRpt.objects.exclude(pk=rpt_row.pk).filter(dedupe_sig=sig).order_by('-pk')
+    # sort in reverse-chronological order because we mostly care about the most recent duplicate
+    dup_check = NstRawRpt.objects.exclude(pk=rpt_row.pk).filter(dedupe_sig=sig).order_by('-timestamp')
     if len(dup_check) > 0:
-        line = dup_check[-1]  # we really only care about the most recent duplicate report
+        line = dup_check[0]  # we really only care about the most recent duplicate report
         # mark duplicates as duplicate
         print(line.attempted_dex_num, line.raw_species_num, line.raw_species_txt)
         if line.attempted_dex_num is not None and line.attempted_dex_num == sp_lnk:
