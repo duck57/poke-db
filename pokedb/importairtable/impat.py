@@ -6,6 +6,7 @@
 import airtable
 import sys
 import os
+import time
 from collections import defaultdict
 
 if __name__ == '__main__':
@@ -19,7 +20,8 @@ if __name__ == '__main__':
     django.setup()
 
     # now you can import your ORM models
-    from nestlist.models import NstMetropolisMajor, NstRotationDate, NstLocation, NstSpeciesListArchive, NstAdminEmail
+    from nestlist.models import NstMetropolisMajor, NstRotationDate, NstLocation, NstSpeciesListArchive,\
+            NstAdminEmail, NestSpecies
     from importairtable.models import AirtableImportLog, NstRawRpt
     from django.utils import timezone
     from django.db.models import Q
@@ -200,7 +202,6 @@ def add_a_report(name, nest, time, species, bot, sig=None, server=None, rotation
 
     status = 9
     sp_num, sp_txt = None, None
-    print(name, nest, species, sig)
     if str_int(species):
         sp_num = int(species)
     else:
@@ -211,7 +212,7 @@ def add_a_report(name, nest, time, species, bot, sig=None, server=None, rotation
         sig = make_raw_rpt_sig(name, nest, rotation)
 
     rpt_row = NstRawRpt.objects.create(
-        bot_id=NstAdminEmail.objects.get(pk=bot).pk,
+        bot=NstAdminEmail.objects.get(pk=bot),
         user_name=name,
         server_name=server,
         timestamp=time,
@@ -221,11 +222,14 @@ def add_a_report(name, nest, time, species, bot, sig=None, server=None, rotation
         dedupe_sig=sig
     )
 
+    pk_lnk = None
     sp_lnk = match_species(species)
     if sp_lnk is None:
         # error out if species can't be uniquely matched
+        # TODO support free-text reports: "Squritle or Bulbasaur", useful for Discord reports
         return mark_action(rpt_row, 9)
     else:
+        pk_lnk = Pokemon.objects.get(dex_number=sp_lnk, form='Normal')
         rpt_row.attempted_dex_num = sp_lnk
 
     parklink = match_park(nest)
@@ -233,18 +237,24 @@ def add_a_report(name, nest, time, species, bot, sig=None, server=None, rotation
         # error out if park can't be uniquely matched
         return mark_action(rpt_row, 9)
     else:
-        rpt_row.parklink_id = parklink
+        rpt_row.parklink = parklink
 
-    dup_check = NstRawRpt.objects.filter(dedupe_sig=sig).order_by('-pk')
-    print(dup_check)
+    dup_check = NstRawRpt.objects.exclude(pk=rpt_row.pk).filter(dedupe_sig=sig).order_by('-pk')
     if len(dup_check) > 0:
         for line in dup_check:
+            if line == rpt_row:
+                # don't mark as duplicate if this is the row being consitered
+                continue
             # mark duplicates as duplicate
+            print(line.attempted_dex_num, line.raw_species_num, line.raw_species_txt)
             if line.attempted_dex_num is not None and line.attempted_dex_num == sp_lnk:
+                print(f"Duplicate pk_dex_num: {sp_lnk}")
                 return mark_action(rpt_row, 0)
             if line.raw_species_num is not None and line.raw_species_num == species:
+                print(f"Duplicate raw species num: {species}")
                 return mark_action(rpt_row, 0)
             if line.raw_species_txt is not None and line.raw_species_txt == species:
+                print(f"Duplicate species text: {species}")
                 return mark_action(rpt_row, 0)
 
             # TODO correct most recent report, if available
@@ -281,6 +291,7 @@ def __main__():
         if city.airtable_base_id is None or city.airtable_bot_id is None:
             continue
         import_city(city.airtable_base_id, city.airtable_bot_id)
+        time.sleep(1)
 
 
 if __name__ == '__main__':

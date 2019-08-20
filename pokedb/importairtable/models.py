@@ -18,8 +18,8 @@ class AirtableImportLog(models.Model):
 
 
 class NstRawRpt(models.Model):
-    nsla_pk = models.ForeignKey(NstSpeciesListArchive, models.SET_NULL, null=True)
-    bot_id = models.ForeignKey(NstAdminEmail, models.SET_NULL, null=True)
+    nsla_pk = models.ForeignKey('nestlist.NstSpeciesListArchive', models.SET_NULL, null=True, db_column='nsla_pk')
+    bot = models.ForeignKey('nestlist.NstAdminEmail', models.SET_NULL, null=True)
     user_name = models.CharField(max_length=120, blank=False, null=True)
     server_name = models.CharField(max_length=120, null=True, blank=True)
     nsla_pk_unlink = models.IntegerField(default=0)
@@ -27,9 +27,9 @@ class NstRawRpt(models.Model):
     foreign_db_row_num = models.IntegerField(null=True)
     raw_species_num = models.IntegerField(null=True)
     raw_species_txt = models.CharField(max_length=120, null=True)
-    attempted_dex_num = models.ForeignKey('speciesinfo.Pokemon', models.SET_NULL, db_column='attempted_dex_num')
+    attempted_dex_num = models.IntegerField(null=True)
     raw_park_info = models.CharField(max_length=120, null=True, blank=True)
-    parklink_id = models.ForeignKey(NstLocation, models.SET_NULL, null=True)
+    parklink = models.ForeignKey('nestlist.NstLocation', models.SET_NULL, null=True)
     action = models.IntegerField(null=True)
     dedupe_sig = models.CharField(null=True, blank=False, max_length=50)
 
