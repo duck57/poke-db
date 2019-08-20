@@ -27,7 +27,7 @@ class NstRawRpt(models.Model):
     foreign_db_row_num = models.IntegerField(null=True)
     raw_species_num = models.IntegerField(null=True)
     raw_species_txt = models.CharField(max_length=120, null=True)
-    attempted_dex_num = models.IntegerField(null=True)
+    attempted_dex_num = models.IntegerField(null=True)  # Needs to be Int and not FK to play well with Django
     raw_park_info = models.CharField(max_length=120, null=True, blank=True)
     parklink = models.ForeignKey('nestlist.NstLocation', models.SET_NULL, null=True)
     action = models.IntegerField(null=True)

@@ -241,26 +241,20 @@ def add_a_report(name, nest, time, species, bot, sig=None, server=None, rotation
 
     dup_check = NstRawRpt.objects.exclude(pk=rpt_row.pk).filter(dedupe_sig=sig).order_by('-pk')
     if len(dup_check) > 0:
-        for line in dup_check:
-            if line == rpt_row:
-                # don't mark as duplicate if this is the row being consitered
-                continue
-            # mark duplicates as duplicate
-            print(line.attempted_dex_num, line.raw_species_num, line.raw_species_txt)
-            if line.attempted_dex_num is not None and line.attempted_dex_num == sp_lnk:
-                print(f"Duplicate pk_dex_num: {sp_lnk}")
-                return mark_action(rpt_row, 0)
-            if line.raw_species_num is not None and line.raw_species_num == species:
-                print(f"Duplicate raw species num: {species}")
-                return mark_action(rpt_row, 0)
-            if line.raw_species_txt is not None and line.raw_species_txt == species:
-                print(f"Duplicate species text: {species}")
-                return mark_action(rpt_row, 0)
+        line = dup_check[-1]  # we really only care about the most recent duplicate report
+        # mark duplicates as duplicate
+        print(line.attempted_dex_num, line.raw_species_num, line.raw_species_txt)
+        if line.attempted_dex_num is not None and line.attempted_dex_num == sp_lnk:
+            return mark_action(rpt_row, 0)
+        if line.raw_species_num is not None and line.raw_species_num == species:
+            return mark_action(rpt_row, 0)
+        if line.raw_species_txt is not None and line.raw_species_txt == species:
+            return mark_action(rpt_row, 0)
 
-            # TODO correct most recent report, if available
-            if line.nsla_pk is None:
-                # TODO
-                continue
+        # TODO correct most recent report, if available
+        if line.nsla_pk is None:
+            # TODO
+            pass
 
     return mark_action(rpt_row, 5)  # TODO make this return something correct—this just marks that it's not a duplicate
 
