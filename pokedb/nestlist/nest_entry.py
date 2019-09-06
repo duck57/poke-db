@@ -66,9 +66,14 @@ def get_rot8d8(today):
 def match_species(sptxt):
     """
 
-    :param sptxt:
-    :return:
+    :param sptxt: pokémon name or number to search for
+    :return: the pokémon that matches the species text
     """
+
+    # hardcoded Abra match so it does not match Crabwaler every time
+    if sptxt.lower().strip() == 'abra':
+        return 63, 'Abra', NestSpecies.objects.get(dex_number=63).poke_fk
+
     reslst = NestSpecies.objects.filter(
         Q(dex_number=sptxt if str_int(sptxt) else None) |
         Q(poke_fk__name__icontains=sptxt)

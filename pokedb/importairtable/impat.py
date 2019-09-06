@@ -319,7 +319,7 @@ def add_a_report(name, nest, time, species, bot, sig=None, server=None, rotation
     namelist.add(name)
     for raw in NstRawRpt.objects.filter(calculated_rotation=rotation,parklink=parklink).order_by('-timestamp'):
         namelist.add(raw.name)
-    if len(gj) == 1:
+    if len(namelist) == 1:
         # then update their initial report
         nsla_check.confirmation = False
         nsla_check.species_name_fk = pk_lnk
