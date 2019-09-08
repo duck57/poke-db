@@ -1,16 +1,35 @@
 h1. Pokémon Database 3.0
 
 This is a repo for a database that stores data primarily related to Pokémon Go.
+See below for folder descriptions
 
-Folder @pokedb@ is a Django project containing several apps:
+h2. pokedb
 
-* @nestlist@ is an app for editing and displaying data for various nest migrations
-* @typeedit@ is more of a demonstration-only app for editing the Pokémon types
-* @speciesinfo@ contains an editor for editing and adding new Pokémon when they get released
-* @pokeperfect@ checks your Pokémon's CP to calculate whether it is 100% or 0% IVs
+A Django project containing several apps.
 
-Folder @pokescrape@ contains spcapy scrapers for wikis of Pokémon fangames to gather the
-data from custom species to add to the database.
+h3. nestlist 
 
-Folder @stats_source@ has various data files that went into the data of the database.
-Some organized seed data and SQL setup scripts may eventually go there as well.
+Apps for editing and displaying data for various nest migrations.  This is the main part of the repo and has its own readme.
+
+h3. typeedit 
+
+Demonstration-only TUI app for editing the Pokémon types.
+
+h3. speciesinfo
+
+Editor for editing and adding new Pokémon when they get released.
+
+h3. pokeperfect
+
+Checks your Pokémon's CP to calculate whether it is 100% or 0% IVs.
+
+h2. pokescrape
+
+@scrapy@ scrapers for wikis of Pokémon fangames to gather the data from custom
+species to add to the database.
+
+h2. stats_source
+
+Various data files that went into the data of the database.  Some organized
+seed data and SQL setup scripts may eventually go there as well.  This may
+end up becoming a @dolt@ repo.

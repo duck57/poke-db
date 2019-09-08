@@ -27,8 +27,9 @@ if __name__ == "__main__":
         NstSpeciesListArchive,
         NstAdminEmail,
         NestSpecies,
+        AirtableImportLog,
+        NstRawRpt
     )
-    from importairtable.models import AirtableImportLog, NstRawRpt
     from django.utils import timezone
     from django.db.models import Q
     from speciesinfo.models import Pokemon

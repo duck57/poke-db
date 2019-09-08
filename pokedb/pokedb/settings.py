@@ -62,7 +62,6 @@ INSTALLED_APPS = [
     "speciesinfo.apps.SpeciesinfoConfig",
     "nestlist.apps.NestlistConfig",
     "pokeperfect.apps.PokeperfectConfig",
-    "importairtable.apps.ImportairtableConfig",
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",

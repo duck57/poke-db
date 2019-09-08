@@ -2,14 +2,18 @@ h1. Future Plans (all modules)
 
 h2. pokescrape
 
-This will eventually be replaced with scrapy scripts to create tables for import from wikis.
-Challenges include looping to the next pokémon, filtering out canonical pokémon, and mega evolutions.
+This will eventually be replaced with scrapy scripts to create tables for
+import from wikis.  Challenges include looping to the next pokémon, filtering
+out canonical pokémon, and mega evolutions.
+
+At this point, it may make more sense to manually scrape and enter the data.
 
 h2. nestlist
 
 * Add a TUI editor for nests 
 * Make the web output prettier
 * Have separate webpage and copypage views
+* Discord bot hooks
 
 h2. pokeperfect
 
