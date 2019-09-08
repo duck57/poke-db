@@ -1,0 +1,106 @@
+h1. Discord Nest Bot Stuff
+
+h2. Functions
+
+h3. Report a nest
+
+Something like @report@ could work with the obligatory prefix of @!@, @.@, or
+@$@.  @?@ or @>@ could even work, I think.  However, it'd be nice if there were
+some rudimentary grammar processing to access posts like "Snorlax at Schiller"
+or "Highbanks is Dratini" would be useful.  Posts that are random chatter
+should be politely ignored.
+
+The DB server function would be something like @report(name, species, park)@.
+It would return a 4-part response consisting of the following:
+
+1. Errors? (boolean)
+2. Parks/Species (list)
+3. Species/Parks (list)
+4. Error text/code (string, probably)
+
+A successful nest report will have @False@ and @None@ as the 1^st & 4^th
+parts of the response and the length of items 2 & 3 will be 1.
+
+Once the nest has been successfully reported, add a duck emoji to the post.
+
+h4. Dealing with complications
+
+These complications will also arise for the other functions.
+
+h5. Multiple matches
+
+If the report matches multiple nests or species (using a case-insensitive
+substring query), present the user with one of those fancy auto-deleting posts
+with the 0-9 emojis as reactions.  
+
+* 1–9 will be for a position in a list of matching options for the user to pick.
+* 0 will be a "none of the above" option that cancels that report
+* If there are more than 9 matches, give some "too many matches, please be more specific" error
+
+h5. No matches
+
+Give a "please check spelling" error.  If it's for a park, direct user to tell
+admins if they're sure the name is spelled correctly (either to suggest a new
+park for the DB or add an alt name to existing park).
+
+h5. Conflicting report
+
+Add the duck react and also message that this is a conflict and a second user
+will have to confirm before it updates the list.
+
+h4. NLP?
+
+It may be a good idea of strip the final @s@ off the species string in case
+the user pluralized their report.
+
+h5. Words to split
+
+Some trigger words for determining if a give line contains a report or not.
+
+* species +at+ park
+* species +@+ park
+* park +has+ species
+* park +=+ species 
+
+h3. @parkinfo <park name>@
+
+Command to display information about the park.
+
+* Name (& short name)
+* Address
+* Alternate names
+* Current nest
+* Other info, if available
+
+h3. @find <species or type>@
+
+Finds all locations that currently host the specified species or type.
+Optionally, give the user a choice if they want to view the park info
+(via the number emoji reactions) if there are fewer than 10 results.
+
+h3. @speciesinfo@
+
+This one is probably already covered by another bot with a better-maintained
+species stats database.  Nice to have but strictly optional.
+
+h2. Questions
+
+h3. Where to divide responsibility between the Discord bot and the DB server?
+
+For example, when dealing with multiple options for order of parameters in user
+input, should the Discord bot retry the other order after the server gives an
+error or should the server have a function like @report_nest_unspecified_order@
+that tries both options (or even does the NLP) in the DB server?
+
+Additionally, should the bot have the major city ID stored in its config files
+to send to the server in every request or should the server have the bot's
+major city stored and the major city in the request is implicit by the bot
+making the request?  I strongly lean toward option 2 here.
+
+h3. Order of parameters
+
+Specifically for the @report@ function.
+
+h3. @whereis@
+
+Should this command be an alias of @parkinfo@ or @find@?
