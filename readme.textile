@@ -3,7 +3,7 @@ h1. Pokémon Database 3.0
 This is a repo for a database that stores data primarily related to Pokémon Go.
 See below for folder descriptions.
 
-!https://img.shields.io/badge/code%20style-black-000000.svg(Code style: black)!:https://github.com/psf/black
+!>https://img.shields.io/badge/code%20style-black-000000.svg(Code style: black)!:https://github.com/psf/black
 
 Please blacken your Python files before sending in a PR.
 

@@ -1,34 +1,50 @@
 h1. PoGo Nest Lister
+
 h5. A system for tracking PoGo nest migrations for your city's parks
+
 h3. "Link to the list's outupt":https://pokemongo.toouter.space/city/1
+
 h2. Usage
+
 All commands should be run from the parent directory (@pokedb@ Django root) as @nestlist/<module>.py@ 
+
 h3. rotate.py
+
 Prepares your database for the next nest migration.
 
 Syntax is @nestlist/rotate.py -d <date>@.  Will prompt you for a date if you do
 not specify one at the command line.
+
 h3. nest_entry.py
+
 The main loop for manual entry of new nest reports in God mode.
 
 Can retroactively update old nest reports with the @-d@ CLI param.
+
 h3. update.py
+
 Output for Discord or Facebook.
 More formats can be requested if you make a polite pull request with them.
 Use the @-f@ parameter to specify which formatting regimen to use.
 
 *This is no longer actively supported now that the web interface exists*
+
 h3. importairtable.py
+
 Imports from AirTable bases.  Expected format of the @summary@ field is 
 @#420 Cherubi at 69. Fint Park by Somepony at 2020-04-20T04:20:14@ so the 
 import process can extract the park ID and pokédex number without making
 additional requests to AirTable.
-The only *important* part of this field is @#420 Cherubi at 69.@.
+The only _important_ part of this field is @#420 Cherubi at 69.@ as the
+rest of it is ignored because the information is available elsewhere.
 
 This script is best used in a cronjob with your AirTable API key in an
 environment variable. 
+
 h2. Notes
+
 h3. Dependencies
+
 * @django@
 * @sortedcontainers@
 * @click@
@@ -36,3 +52,9 @@ h3. Dependencies
 * @airtable-python-wrapper@ (for the AirTable importer)
 
 (I believe these are all of them)
+
+h3. To-Do
+
+* "Discord API-like hooks":discord.textile 
+* Prettier output
+** Mouseover text with park addresses (if available)
