@@ -1,0 +1,3 @@
+This folder has assorted source files for the stats in the content of the pokédex database.
+
+A @dolt@ repo may eventually come into this directory, as may verified output from @pokescrape@.
