@@ -14,7 +14,7 @@ A Django project containing several apps.
 h3. nestlist 
 
 Apps for editing and displaying data for various nest migrations.  
-This is the main part of the repo and has its own readme.
+This is the main part of the repo and "has its own readme":pokedb/nestlist/readme.textile.
 
 h3. typeedit 
 
