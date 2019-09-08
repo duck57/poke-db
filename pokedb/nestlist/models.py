@@ -309,10 +309,7 @@ class AirtableImportLog(models.Model):
 
 class NstRawRpt(models.Model):
     nsla_pk = models.ForeignKey(
-        NstSpeciesListArchive,
-        models.SET_NULL,
-        null=True,
-        db_column="nsla_pk",
+        NstSpeciesListArchive, models.SET_NULL, null=True, db_column="nsla_pk"
     )
     bot = models.ForeignKey(NstAdminEmail, models.SET_NULL, null=True)
     user_name = models.CharField(max_length=120, blank=False, null=True)
@@ -329,9 +326,7 @@ class NstRawRpt(models.Model):
     parklink = models.ForeignKey(NstLocation, models.SET_NULL, null=True)
     action = models.IntegerField(null=True)
     dedupe_sig = models.CharField(null=True, blank=False, max_length=50)
-    calculated_rotation = models.ForeignKey(
-        NstRotationDate, models.SET_NULL, null=True
-    )
+    calculated_rotation = models.ForeignKey(NstRotationDate, models.SET_NULL, null=True)
 
     class Meta:
         db_table = "nst_raw_rpt"
