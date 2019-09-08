@@ -1,0 +1,7 @@
+h1. Pokémon Wiki Scraper
+
+To-build
+
+* Get 6 stats, height/weight (metric), typing, egg groups, name, number, & form from wikis
+* Make some way to handle mega evolutions and alternate forms
+* Output to spreadsheet (that can be fed into the DB after verification)

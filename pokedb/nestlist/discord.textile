@@ -2,7 +2,7 @@ h1. Discord Nest Bot Stuff
 
 h2. Functions
 
-h3. Report a nest
+h3. @report@
 
 Something like @report@ could work with the obligatory prefix of @!@, @.@, or
 @$@.  @?@ or @>@ could even work, I think.  However, it'd be nice if there were
@@ -18,7 +18,7 @@ It would return a 4-part response consisting of the following:
 3. Species/Parks (list)
 4. Error text/code (string, probably)
 
-A successful nest report will have @False@ and @None@ as the 1^st & 4^th
+A successful nest report will have @False@ and @None@ as the 1^st^ & 4^th^
 parts of the response and the length of items 2 & 3 will be 1.
 
 Once the nest has been successfully reported, add a duck emoji to the post.
@@ -61,6 +61,7 @@ Some trigger words for determining if a give line contains a report or not.
 * species +@+ park
 * park +has+ species
 * park +=+ species 
+* park +is+ species
 
 h3. @parkinfo <park name>@
 
@@ -104,3 +105,4 @@ Specifically for the @report@ function.
 h3. @whereis@
 
 Should this command be an alias of @parkinfo@ or @find@?
+Should there also be a @whereare@ command?  If so, should they be different?

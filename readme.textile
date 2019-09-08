@@ -1,7 +1,7 @@
 h1. Pokémon Database 3.0
 
 This is a repo for a database that stores data primarily related to Pokémon Go.
-See below for folder descriptions
+See below for folder descriptions.
 
 h2. pokedb
 
@@ -9,7 +9,8 @@ A Django project containing several apps.
 
 h3. nestlist 
 
-Apps for editing and displaying data for various nest migrations.  This is the main part of the repo and has its own readme.
+Apps for editing and displaying data for various nest migrations.  
+This is the main part of the repo and has its own readme.
 
 h3. typeedit 
 
