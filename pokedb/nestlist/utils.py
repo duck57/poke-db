@@ -8,6 +8,7 @@ from dateutil.parser import *
 from dateutil.relativedelta import *
 from collections import defaultdict
 import readline
+import pytz
 
 # note: importing readline here makes click act up in the all the modules that rely on this one
 # however, I've only noticed this with the rewrite, since I never encounter the circumstances leading to the bug in
@@ -41,14 +42,14 @@ def getdate(question, date=None):
     :return: a datetime object
     """
 
-    today = datetime.today()
+    today = datetime.now(tz=pytz.utc)
     # question = f"What is the date of the nest rotation (blank for today, {today.date()})? "
 
     while True:
         if date is None:
             date = input(question)
         if date.strip() == "" or (len(date) == 1 and date[0].lower() == "t"):
-            return today.date()
+            return today
         if (
             date[0].lower() in "ymwt"
             and len(date) > 2
@@ -63,9 +64,9 @@ def getdate(question, date=None):
                 "w": relativedelta(weeks=date_shift),
                 "t": relativedelta(days=date_shift),
             }.get(units, 0)
-            return create_date.date()
+            return create_date
         try:
-            return parse(date).date()
+            return pytz.utc.localize(parse(date))
         except (ValueError, TypeError):
             print("Please enter a valid date.")
             date = input(question)

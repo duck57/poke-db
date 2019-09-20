@@ -1,4 +1,5 @@
 from django.db import models
+from django.utils import timezone
 from speciesinfo.models import Pokemon
 from typeedit.models import Type  # needed to prevent Django from complaining
 
@@ -115,6 +116,9 @@ class NstLocation(models.Model):
     def __lt__(self, other):
         return self.official_name < other.official_name
 
+    def ct(self):
+        return self.neighborhood.major_city
+
 
 class NstMetropolisMajor(models.Model):
     name = models.CharField(db_column="Name", max_length=123)
@@ -126,7 +130,7 @@ class NstMetropolisMajor(models.Model):
     note = models.CharField(max_length=255, blank=True, null=True)
     admin_names = models.CharField(max_length=255, blank=True, null=True)
     airtable_base_id = models.CharField(max_length=30, blank=True, null=True)
-    airtable_bot = models.ForeignKey(NstAdminEmail, models.SET_NULL)
+    airtable_bot = models.ForeignKey(NstAdminEmail, models.SET_NULL, null=True)
 
     class Meta:
         managed = False
@@ -179,7 +183,7 @@ class NstParkSystem(models.Model):
 
 class NstRotationDate(models.Model):
     num = models.AutoField(primary_key=True)
-    date = models.DateField(max_length=11)
+    date = models.DateTimeField()
     special_note = models.CharField(max_length=123, blank=True, null=True)
     date_list = models.ManyToManyField(
         "NstLocation", through="NstSpeciesListArchive", symmetrical=True
@@ -190,7 +194,7 @@ class NstRotationDate(models.Model):
         db_table = "nst_rotation_dates"
 
     def __str__(self):
-        return f"{self.num} [{self.date}]"
+        return f"{self.num} [{str(self.date).split(' ')[0]}]"
 
     def __cmp__(self, other):
         return self.date.__cmp__(other.date)
