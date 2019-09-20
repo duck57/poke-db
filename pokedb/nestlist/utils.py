@@ -66,10 +66,16 @@ def getdate(question, date=None):
             }.get(units, 0)
             return create_date
         try:
-            return pytz.utc.localize(parse(date))
+            d = parse(date)
         except (ValueError, TypeError):
             print("Please enter a valid date.")
-            date = input(question)
+            date = None
+            continue
+
+        if d.tzinfo is None:
+            return pytz.utc.localize(d)
+        else:
+            return d.astimezone(pytz.utc)
 
 
 def decorate_text(text, decor):
