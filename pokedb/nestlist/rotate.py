@@ -61,7 +61,7 @@ def niantic_event_time(dtin):
 def main(date):
     # date manipulation
     rot8d8time = getdate(
-        f"What is the date of the nest rotation (blank for today, {datetime.today()})? ",
+        f"What is the date of the nest rotation (blank for today, {datetime.today().date()})? ",
         date.strip(),
     )  # should always be in UTC
     if rot8d8time.microsecond != 0:  # for relative dates in the t+1 form

@@ -34,49 +34,60 @@ def str_int(strin):
     return True
 
 
+def parse_relative_date(date):
+    today = datetime.now(tz=pytz.utc)
+    date_shift = int(date[1:])
+    units = date[0].lower()
+
+    return today + {
+        "y": relativedelta(years=date_shift),
+        "m": relativedelta(months=date_shift),
+        "w": relativedelta(weeks=date_shift),
+        "t": relativedelta(days=date_shift),
+        "h": relativedelta(hours=date_shift),
+    }.get(units, 0)
+
+
+def parse_date(date=""):
+    date = date.strip().lower()
+    if not date:
+        return parse_date("t")  # return today as a default
+    if date == "t":
+        return parse_date("t+0")  # these two could be direct calls for marginal performance gain
+    if (
+            date[0] in "hymwt"
+            and len(date) > 2
+            and date[1] in "+-"
+            and str_int(date[1:])
+    ):
+        return parse_relative_date(date)
+
+    d = parse(date)
+    if d.tzinfo is None:
+        return pytz.utc.localize(d)
+    else:
+        return d.astimezone(pytz.utc)
+
+
 def getdate(question, date=None):
     """
     gets a date (also accepts relative dates like y-1, t+3, w+2)
     will keep prompting you until you get it right
     :param date: freeform date to check
+    :param question: string to prompt the user
     :return: a datetime object
     """
 
-    today = datetime.now(tz=pytz.utc)
-    # question = f"What is the date of the nest rotation (blank for today, {today.date()})? "
-
-    while True:
+    date_out = None
+    while date_out is None:
         if date is None:
             date = input(question)
-        if date.strip() == "" or (len(date) == 1 and date[0].lower() == "t"):
-            return today
-        if (
-            date[0].lower() in "ymwt"
-            and len(date) > 2
-            and date[1] in "+-"
-            and str_int(date[1:])
-        ):
-            date_shift = int(date[1:])
-            units = date[0].lower()
-            create_date = today + {
-                "y": relativedelta(years=date_shift),
-                "m": relativedelta(months=date_shift),
-                "w": relativedelta(weeks=date_shift),
-                "t": relativedelta(days=date_shift),
-                "h": relativedelta(hours=date_shift),
-            }.get(units, 0)
-            return create_date
         try:
-            d = parse(date)
+            date_out = parse_date(date)
         except (ValueError, TypeError):
             print("Please enter a valid date.")
-            date = None
-            continue
-
-        if d.tzinfo is None:
-            return pytz.utc.localize(d)
-        else:
-            return d.astimezone(pytz.utc)
+            date, date_out = None, None
+    return date_out
 
 
 def decorate_text(text, decor):
