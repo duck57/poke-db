@@ -5,7 +5,8 @@
 
 import os
 import sys
-from datetime import datetime
+from datetime import datetime, time
+import pytz
 
 from utils import getdate
 import click
@@ -17,6 +18,7 @@ if __name__ == "__main__":
 
     # Setup django
     import django
+    from django.utils import timezone
 
     django.setup()
 
@@ -29,6 +31,24 @@ if __name__ == "__main__":
     )
 
 
+def local_time_on_date(date, hour, tz, minute=None):
+    loctm = tz.localize(datetime(date.year, date.month, date.day))
+    loctm = loctm.replace(hour=hour)
+    if minute is not None:
+        loctm = loctm.replace(minute=minute)
+    return loctm
+
+
+def pacific1pm(dtin):
+    niatime = pytz.timezone("America/Los_Angeles")
+    nia_date = dtin.astimezone(niatime)
+    return local_time_on_date(nia_date, 13, niatime, minute=0)
+
+
+def niantic_event_time(dtin):
+    return pacific1pm(dtin)
+
+
 @click.command()
 @click.option(
     "-d",
@@ -39,17 +59,38 @@ if __name__ == "__main__":
 )
 # main method
 def main(date):
-    d8 = str(
-        getdate(
-            f"What is the date of the nest rotation (blank for today, {datetime.today()})? ",
-            date.strip(),
-        )
-    )
+    # date manipulation
+    rot8d8time = getdate(
+        f"What is the date of the nest rotation (blank for today, {datetime.today()})? ",
+        date.strip(),
+    )  # should always be in UTC
+    if rot8d8time.microsecond != 0:  # for relative dates in the t+1 form
+        # print("Using a live time")
+        rot8d8time = rot8d8time.replace(minute=0, second=0, microsecond=0)
+        if rot8d8time.weekday() == 3:
+            # print("Normal rotation date")
+            rot8d8time = rot8d8time.replace(
+                hour=0
+            )  # normal midnight UTC Thursday migration
+        else:
+            # 1 PM Pacific, DST-aware
+            # print("Abnormal 1 PM Pacific date")
+            rot8d8time = niantic_event_time(rot8d8time)
+    else:  # if a future date is passed that is not a Thursday UTC
+        if (
+            rot8d8time.weekday() != 3
+            and rot8d8time.hour == 0
+            and rot8d8time.minute == 0
+        ):
+            rot8d8time = niantic_event_time(rot8d8time)
+    d8 = str(rot8d8time.date())
     if len(NstRotationDate.objects.filter(date=d8)) > 0:
         print(f"Rotation already exists for {d8}")
-        return
+        return  # don't go for multiple rotations on the same day
+
+    # generate date to save
     prev_rot = NstRotationDate.objects.latest("num")
-    new_rot = NstRotationDate.objects.create(date=d8, num=prev_rot.num + 1)
+    new_rot = NstRotationDate.objects.create(date=rot8d8time, num=prev_rot.num + 1)
     new_rot.save()
     perm_nst = NstLocation.objects.exclude(permanent_species__isnull=True).exclude(
         permanent_species__exact=""

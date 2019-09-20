@@ -63,6 +63,7 @@ def getdate(question, date=None):
                 "m": relativedelta(months=date_shift),
                 "w": relativedelta(weeks=date_shift),
                 "t": relativedelta(days=date_shift),
+                "h": relativedelta(hours=date_shift),
             }.get(units, 0)
             return create_date
         try:
