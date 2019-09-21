@@ -1,0 +1,7 @@
+django
+sortercontainers
+pre-commit
+python-dateutil
+click
+airtable-python-wrapper
+scrapy
