@@ -287,7 +287,7 @@ def add_a_report(name, nest, time, species, bot, sig=None, server=None, rotation
         nsla_check = NstSpeciesListArchive.objects.get(
             rotation_num=rotation, nestid=parklink
         )
-    except:
+    except NstSpeciesListArchive.DoesNotExist:
         # add new NSLA row, should probably be independent function
         rpt_row.nsla_pk = NstSpeciesListArchive.objects.create(
             rotation_num=rotation,

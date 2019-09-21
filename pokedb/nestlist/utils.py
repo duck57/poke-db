@@ -53,13 +53,10 @@ def parse_date(date=""):
     if not date:
         return parse_date("t")  # return today as a default
     if date == "t":
-        return parse_date("t+0")  # these two could be direct calls for marginal performance gain
-    if (
-            date[0] in "hymwt"
-            and len(date) > 2
-            and date[1] in "+-"
-            and str_int(date[1:])
-    ):
+        return parse_date(
+            "t+0"
+        )  # these two could be direct calls for marginal performance gain
+    if date[0] in "hymwt" and len(date) > 2 and date[1] in "+-" and str_int(date[1:]):
         return parse_relative_date(date)
 
     d = parse(date)
