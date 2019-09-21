@@ -99,9 +99,7 @@ class Pokemon(models.Model):
     generation = models.ForeignKey(
         "Generation", models.DO_NOTHING, db_column="Generation"
     )
-    evolved_from = models.ForeignKey(
-        "self", models.DO_NOTHING, db_column="evolved_from"
-    )
+    evolved_from = models.IntegerField(db_column="evolved_from")  # integer field to fix Django assumptions
     pogonerf = models.BooleanField(db_column="PoGoNerf", default=False)
     type1 = models.ForeignKey(
         "typeedit.Type",

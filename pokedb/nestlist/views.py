@@ -1,5 +1,10 @@
 from django.shortcuts import render
-from django.http import HttpResponseRedirect, HttpResponseBadRequest, Http404, HttpResponseNotFound
+from django.http import (
+    HttpResponseRedirect,
+    HttpResponseBadRequest,
+    Http404,
+    HttpResponseNotFound,
+)
 from django.shortcuts import get_object_or_404, render
 from django.urls import reverse
 from django.views import generic
@@ -42,14 +47,38 @@ class CityView(generic.ListView):
         ).order_by("nestid__official_name")
 
         if sp_filter is None:
-            return out
+            return out  # no filter
+
         sp_filter = sp_filter.strip().lower()
+
         if "start" in sp_filter:
             return out.filter(
                 species_name_fk__category=50
             )  # Starter Pokémon are category 50
+
         if str_int(sp_filter):  # numbers search by Pokédex number
-            return out.filter(species_name_fk__dex_number=sp_filter)
+            try:
+                # matching for previous evolutions so you can search for the number of the evolved form
+                q = Pokemon.objects.get(dex_number=sp_filter, form="Normal")
+                p1 = Pokemon.objects.get(dex_number=q.evolved_from, form="Normal")
+                p0 = Pokemon.objects.get(dex_number=p1.evolved_from, form="Normal")
+
+                # don't match so far back as to hit nests of commons
+                if p1.dex_number == 0:
+                    p1 = Pokemon.objects.get(dex_number=-999)
+                if p0.dex_number == 0:
+                    p1 = Pokemon.objects.get(dex_number=-999)
+
+            except Pokemon.DoesNotExist:
+                return out.filter(species_name_fk__dex_number=sp_filter)
+            return out.filter(
+                Q(species_name_fk__dex_number=sp_filter)
+                | Q(species_name_fk=p1)
+                | Q(species_name_fk=p0)
+            )
+
+        q = Pokemon.objects.filter(name="Can't find me!")  # will be useful later
+
         if len(sp_filter) > 3:  # to prevent "ch" from matching "Psychic"
             # Test by type
             try:
@@ -71,10 +100,24 @@ class CityView(generic.ListView):
             except Generation.MultipleObjectsReturned:
                 pass
 
+            # Gather previous generations
+            # In this if block to prevent excessive results from short queries
+            q = Pokemon.objects.filter(name__icontains=sp_filter)
+            q2 = q
+            for species in q:
+                if species.evolved_from:
+                    p1 = Pokemon.objects.filter(dex_number=species.evolved_from)
+                    q2 = q2 | p1
+                    for species1 in p1:
+                        if species1.evolved_from:
+                            q2 = q2 | Pokemon.objects.filter(dex_number=species1.evolved_from)
+            q = q2.exclude(dex_number__in=[0, -999]).distinct()
+
         # Search by species name
         return out.filter(
             Q(species_txt__icontains=sp_filter)
             | Q(species_name_fk__name__icontains=sp_filter)
+            | Q(species_name_fk__in=q)
         )
 
     def get(self, request, *args, **kwargs):
