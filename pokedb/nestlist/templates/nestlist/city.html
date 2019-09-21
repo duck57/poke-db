@@ -1,9 +1,13 @@
-{% load static %}
-<link rel="stylesheet" type="text/css" href="{% static 'nestlist/css/style.css' %}">
-<script type="text/javascript" src="{% static 'nestlist/js/sort_t.js' %}"></script>
-
-{% if current_nest_list %}
+<!DOCTYPE html>
+<html lang="en-us">
+<head>
+    <meta charset="UTF-8">
+    {% load static %}
+    <link rel="stylesheet" type="text/css" href="{% static 'nestlist/css/style.css' %}">
+    <script type="text/javascript" src="{% static 'nestlist/js/sort_t.js' %}"></script>
     <title>{{ current_nest_list.0.nestid.neighborhood.major_city.short_name }} Nests!</title>
+</head>
+<body>
     <center>
     <table id="myTable2">
         <caption>{{ current_nest_list.0.nestid.neighborhood.major_city }}<br>#{{ current_nest_list.0.rotation_num }}</caption>
@@ -28,6 +32,4 @@
         {% endfor %}
     </table>
     </center>
-{% else %}
-    <p>No nests for {{ current_nest_list.rotation_num }}.</p>
-{% endif %}
+</body></html>
