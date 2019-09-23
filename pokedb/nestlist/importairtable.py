@@ -264,15 +264,17 @@ def add_a_report(name, nest, time, species, bot, sig=None, server=None, rotation
 
     # sort in reverse-chronological order because we mostly care about the most recent duplicate
     # this might be refactored to its own function one day (or as an internal function)
+    # excludes errored and conflicting rows
     dup_check = (
         NstRawRpt.objects.exclude(pk=rpt_row.pk)
-        .filter(dedupe_sig=sig)
+        .filter(
+            dedupe_sig=sig, action__in=[1, 2, 0]
+        )  # count successful reports only during dedupe
         .order_by("-timestamp")
     )
     if len(dup_check) > 0:
-        line = dup_check[
-            0
-        ]  # we really only care about the most recent duplicate report
+        # we only care about the most recent duplicate report
+        line = dup_check[0]
         # mark duplicates as duplicate
         if line.attempted_dex_num is not None and line.attempted_dex_num == sp_lnk:
             return mark_action(rpt_row, 0)
@@ -282,7 +284,6 @@ def add_a_report(name, nest, time, species, bot, sig=None, server=None, rotation
             return mark_action(rpt_row, 0)
 
     # check the NSLA for matches
-    nsla_check = None  # p. sure this needs to be defined for scoping things
     try:
         nsla_check = NstSpeciesListArchive.objects.get(
             rotation_num=rotation, nestid=parklink
