@@ -1,7 +1,9 @@
 django
-sortercontainers
+django-rest-framework
+sortedcontainers
 pre-commit
 python-dateutil
 click
 airtable-python-wrapper
 scrapy
+readline
