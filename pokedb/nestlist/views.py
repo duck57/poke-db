@@ -28,55 +28,69 @@ from .serializers import ParkSerializer
 
 
 def get_rotation(date):
+    """
+    Returns a NstRotation object
+    :param date: some form of date or rotation number (either int or str)
+    :return: NstRotation object on or before the specified date
+    """
     date = str(date)  # handle both str and int input
     if len(date) < 4 and str_int(date):
-        try:
+        try:  # using the input as a direct rotation number
             return NstRotationDate.objects.get(pk=int(date))
         except NstRotationDate.DoesNotExist:
             get_rotation("t")  # default to today if it's junk
-    return NstRotationDate.objects.filter(date__lte=parse_date(date)).order_by("-date")[
-        0
-    ]
+    date = parse_date(date)  # parse the date
+    return NstRotationDate.objects.filter(date__lte=date).order_by("-date")[0]
 
 
 def filter_nsla_by_species_name(out, sp_filter):
+    """
+
+    :param out:
+    :param sp_filter:
+    :return:
+    """
     q = Pokemon.objects.filter(name="Can't find me!")  # will be useful later
 
-    if len(sp_filter) > 3:  # to prevent "ch" from matching "Psychic"
-        # Test by type
-        try:
-            ts = Type.objects.get(name__icontains=sp_filter)
-            return out.filter(
-                Q(species_name_fk__type1=ts) | Q(species_name_fk__type2=ts)
-            )
-        except Type.DoesNotExist:
-            pass
-        except Type.MultipleObjectsReturned:
-            pass
+    if len(sp_filter) < 3:  # handle short queries
+        return out.filter(
+            Q(species_txt__icontains=sp_filter)
+            | Q(species_name_fk__name__icontains=sp_filter)
+        )  # refactored to minimize the amount of indented code
 
-        # Test by region/generation
-        try:
-            gen = Generation.objects.get(region__icontains=sp_filter)
-            return out.filter(species_name_fk__generation=gen)
-        except Generation.DoesNotExist:
-            pass
-        except Generation.MultipleObjectsReturned:
-            pass
+    # Test by type
+    """Note how there needs to be at least 3 characters in the query
+    to reach here.  This is to prevent 'ch' from matching 'Psychic'."""
+    try:
+        ts = Type.objects.get(name__icontains=sp_filter)
+        return out.filter(Q(species_name_fk__type1=ts) | Q(species_name_fk__type2=ts))
+    except Type.DoesNotExist:
+        pass
+    except Type.MultipleObjectsReturned:
+        pass
 
-        # Gather previous generations
-        # In this if block to prevent excessive results from short queries
-        q = Pokemon.objects.filter(name__icontains=sp_filter)
-        q2 = q
-        for species in q:
-            if species.evolved_from:
-                p1 = Pokemon.objects.filter(dex_number=species.evolved_from)
-                q2 = q2 | p1
-                for species1 in p1:
-                    if species1.evolved_from:
-                        q2 = q2 | Pokemon.objects.filter(
-                            dex_number=species1.evolved_from
-                        )
-        q = q2.exclude(dex_number__in=[0, -999]).distinct()
+    # Test by region/generation
+    try:
+        gen = Generation.objects.get(region__icontains=sp_filter)
+        return out.filter(species_name_fk__generation=gen)
+    except Generation.DoesNotExist:
+        pass
+    except Generation.MultipleObjectsReturned:
+        pass
+
+    # Gather previous generations
+    """This is after the short query filter to keep results at a 
+    reasonable length."""
+    q = Pokemon.objects.filter(name__icontains=sp_filter)
+    q2 = q
+    for species in q:
+        if species.evolved_from:
+            p1 = Pokemon.objects.filter(dex_number=species.evolved_from)
+            q2 = q2 | p1
+            for species1 in p1:
+                if species1.evolved_from:
+                    q2 = q2 | Pokemon.objects.filter(dex_number=species1.evolved_from)
+    q = q2.exclude(dex_number__in=[0, -999]).distinct()
 
     # Search by species name
     return out.filter(
@@ -87,6 +101,12 @@ def filter_nsla_by_species_name(out, sp_filter):
 
 
 def filter_nsla_by_species_number(out, sp_filter):
+    """
+
+    :param out:
+    :param sp_filter:
+    :return:
+    """
     try:
         # matching for previous evolutions so you can search for the number of the evolved form
         q = Pokemon.objects.get(dex_number=sp_filter, form="Normal")
@@ -108,12 +128,18 @@ def filter_nsla_by_species_number(out, sp_filter):
 
 
 def filter_nsla(out, sp_filter):
+    """
+
+    :param out:
+    :param sp_filter:
+    :return:
+    """
     sp_filter = str(sp_filter).strip().lower()
     if "start" in sp_filter:
         return out.filter(
             species_name_fk__category=50
         )  # Starter Pokémon are category 50
-    if str_int(sp_filter):  # numbers search by Pokédex number
+    if str_int(sp_filter):  # numeric queries search by Pokédex number
         return filter_nsla_by_species_number(out, sp_filter)
     return filter_nsla_by_species_name(out, sp_filter)
 
@@ -126,16 +152,18 @@ class CityView(generic.ListView):
     allow_empty = False
 
     def get_queryset(self):
+        """
+
+        :return:
+        """
         srg = self.request.GET
         sp_filter = srg.get("pokemon", srg.get("species", srg.get("pokémon", None)))
         out = NstSpeciesListArchive.objects.filter(
             nestid__neighborhood__major_city=self.kwargs["city_id"],
             rotation_num=get_rotation(self.kwargs.get("date", "t")),
         ).order_by("nestid__official_name")
-
         if sp_filter is None:
             return out  # no filter
-
         return filter_nsla(out, sp_filter)
 
     def get(self, request, *args, **kwargs):
@@ -151,6 +179,11 @@ class CityView(generic.ListView):
                 errstring += f" matching a search for {ss}"
             errstring += f"."
             return HttpResponseNotFound(errstring)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["city"] = NstMetropolisMajor.objects.get(pk=self.kwargs["city_id"])
+        return context
 
 
 class NeighborhoodIndex(generic.ListView):

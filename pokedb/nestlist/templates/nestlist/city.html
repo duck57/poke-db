@@ -4,13 +4,16 @@
     <meta charset="UTF-8">
     {% load static %}
     <link rel="stylesheet" type="text/css" href="{% static 'nestlist/css/style.css' %}">
+    <!-- TODO: update icon later -->
+    <link rel="icon" type="image/png" href="{% static 'nestlist/images/ballhead cc.png' %}">
     <script type="text/javascript" src="{% static 'nestlist/js/sort_t.js' %}"></script>
-    <title>{{ current_nest_list.0.nestid.neighborhood.major_city.short_name }} Nests!</title>
+    <title>{{ city.short_name }} Nests!</title>
 </head>
 <body>
     <center>
+        <header><a href="report/">Report a nest!</a></header>
     <table id="myTable2">
-        <caption>{{ current_nest_list.0.nestid.neighborhood.major_city }}<br>#{{ current_nest_list.0.rotation_num }}</caption>
+        <caption>{{ city }}<br>#{{ current_nest_list.0.rotation_num }}</caption>
         <tr>
             <th onclick="sortTable('myTable2', 0)">Neighborhood</th>
             <th onclick="sortTable('myTable2', 1)">Park</th>
@@ -20,7 +23,19 @@
         {% for nest in current_nest_list %}
             <tr id="{{ nest.id }}">
                 <td class="{{ nest.nestid.neighborhood.place_name }}">{{ nest.nestid.neighborhood }}</td>
-                <td class="nest-name">{{ nest.nestid.get_name }}</td>
+                <td class="nest-name tooltip">
+                    {{ nest.nestid.get_name }}
+                    <span class="tooltiptext">
+                        {% if nest.nestid.address %}
+                        {{ nest.nestid.address }}
+                        {% else %}
+                        <div class="address-error">No address on file</div>
+                        {% endif %}
+                        {% if nest.nestid.private %}
+                        <div class="privacy-notice">Private property, please be respectful</div>
+                        {% endif %}
+                    </span>
+                </td>
                 {% if nest.confirmation %}
                     <td class="confirmed number con-num">{{ nest.species_no }}</td>
                     <td class="confirmed species con-sp">{{ nest.species_txt }}</td>
@@ -31,5 +46,10 @@
             </tr>
         {% endfor %}
     </table>
+        <hr>
+        <footer>
+            <p>Species with a <b>bold name</b> and an <i>italic pokédex number</i> have multiple confirming reports.</p>
+            <p>Mid-rotation events may throw off the accuracy of the list.</p>
+        </footer>
     </center>
 </body></html>
