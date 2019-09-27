@@ -11,11 +11,15 @@ th:hover {
     background-color: #e8e8d9;
 }
 
-.con-num {
-    font-style: italic;
+tr.confirmed:hover {
+    background-color: #d9e8d9;
 }
-.con-sp {
+
+.confirmed .species {
     font-weight: bold;
+}
+.confirmed .number {
+    font-style: italic;
 }
 
 .tooltip {
@@ -24,7 +28,7 @@ th:hover {
 
 .tooltip .tooltiptext {
   visibility: hidden;
-  width: 120px;
+  width: 128px;
   background-color: black;
   color: #e8e8d9;
   text-align: center;

@@ -11,9 +11,9 @@
 </head>
 <body>
     <center>
-        <header><a href="report/">Report a nest!</a></header>
+        <header><p><a href="report/">Report a nest!</a></p></header>
     <table id="myTable2">
-        <caption>{{ city }}<br>#{{ current_nest_list.0.rotation_num }}</caption>
+        <caption>{{ city }}<br>#{{ rotation }}</caption>
         <tr>
             <th onclick="sortTable('myTable2', 0)">Neighborhood</th>
             <th onclick="sortTable('myTable2', 1)">Park</th>
@@ -21,8 +21,8 @@
             <th onclick="sortTable('myTable2', 3)">Species</th>
         </tr>
         {% for nest in current_nest_list %}
-            <tr id="{{ nest.id }}">
-                <td class="{{ nest.nestid.neighborhood.place_name }}">{{ nest.nestid.neighborhood }}</td>
+            <tr id="{{ nest.id }}" class="nest {% if nest.confirmation %}confirmed{% else %}unconfirmed{% endif %}">
+                <td id="{{ nest.nestid.neighborhood.pk }}">{{ nest.nestid.neighborhood }}</td>
                 <td class="nest-name tooltip">
                     {{ nest.nestid.get_name }}
                     <span class="tooltiptext">
@@ -36,20 +36,16 @@
                         {% endif %}
                     </span>
                 </td>
-                {% if nest.confirmation %}
-                    <td class="confirmed number con-num">{{ nest.species_no }}</td>
-                    <td class="confirmed species con-sp">{{ nest.species_txt }}</td>
-                {% else %}
-                    <td class="unconfirmed number un-num">{{ nest.species_no }}</td>
-                    <td class="unconfirmed species un-sp">{{ nest.species_txt }}</td>
-                {% endif %}
+                <td class="number">{{ nest.species_no }}</td>
+                <td class="species">{{ nest.species_txt }}</td>
             </tr>
         {% endfor %}
     </table>
         <hr>
         <footer>
-            <p>Species with a <b>bold name</b> and an <i>italic pokédex number</i> have multiple confirming reports.</p>
+            <p class="confirmed">Species with a <span class="species">bold name</span> and an <span class="number">italic pokédex number</span> have multiple confirming reports.</p>
             <p>Mid-rotation events may throw off the accuracy of the list.</p>
+            <a href="report/">Report a nest!</a>
         </footer>
     </center>
 </body></html>

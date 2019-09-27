@@ -27,6 +27,18 @@ from typeedit.models import Type
 from .serializers import ParkSerializer
 
 
+def report_nest(request, **kwargs):
+    """
+    TODO: replace this with real class-based methods
+    This is a placeholder until further dev work finishes to
+    allow this to take precedence
+    :param request:
+    :param kwargs:
+    :return:
+    """
+    return HttpResponseRedirect("http://columbusnestreport.cf")
+
+
 def get_rotation(date):
     """
     Returns a NstRotation object
@@ -50,7 +62,6 @@ def filter_nsla_by_species_name(out, sp_filter):
     :param sp_filter:
     :return:
     """
-    q = Pokemon.objects.filter(name="Can't find me!")  # will be useful later
 
     if len(sp_filter) < 3:  # handle short queries
         return out.filter(
@@ -183,6 +194,7 @@ class CityView(generic.ListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["city"] = NstMetropolisMajor.objects.get(pk=self.kwargs["city_id"])
+        context["rotation"] = get_rotation(self.kwargs.get("date", "t"))
         return context
 
 

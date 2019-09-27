@@ -162,12 +162,6 @@ class NstNeighborhood(models.Model):
     def __str__(self):
         return self.name
 
-    def place_name(self):
-        if self.region is None:
-            return self.name
-        else:
-            return self.region.name
-
 
 class NstParkSystem(models.Model):
     name = models.CharField(max_length=123)

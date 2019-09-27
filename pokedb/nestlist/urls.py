@@ -1,4 +1,5 @@
 from django.urls import path
+from django.shortcuts import redirect
 from . import views
 
 app_name = "nestlist"
@@ -11,5 +12,7 @@ urlpatterns = [
         views.CityView.as_view(),
         name="city_historic_date",
     ),
+    # TODO: rewrite this to use the local reporting form
+    path("<int:city_id>/report/", views.report_nest, name="report_nest"),
     path("<int:city_id>/", views.CityView.as_view(), name="city"),
 ]
