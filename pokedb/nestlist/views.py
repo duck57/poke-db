@@ -21,6 +21,7 @@ from .models import (
     NstLocation,
     NstRotationDate,
     NstNeighborhood,
+    get_rotation,
 )
 from speciesinfo.models import Pokemon, Generation
 from typeedit.models import Type
@@ -37,22 +38,6 @@ def report_nest(request, **kwargs):
     :return:
     """
     return HttpResponseRedirect("http://columbusnestreport.cf")
-
-
-def get_rotation(date):
-    """
-    Returns a NstRotation object
-    :param date: some form of date or rotation number (either int or str)
-    :return: NstRotation object on or before the specified date
-    """
-    date = str(date)  # handle both str and int input
-    if len(date) < 4 and str_int(date):
-        try:  # using the input as a direct rotation number
-            return NstRotationDate.objects.get(pk=int(date))
-        except NstRotationDate.DoesNotExist:
-            get_rotation("t")  # default to today if it's junk
-    date = parse_date(date)  # parse the date
-    return NstRotationDate.objects.filter(date__lte=date).order_by("-date")[0]
 
 
 def filter_nsla_by_species_name(out, sp_filter):
@@ -146,6 +131,11 @@ def filter_nsla(out, sp_filter):
     :return:
     """
     sp_filter = str(sp_filter).strip().lower()
+    if sp_filter == "abra":
+        # hardcode Abra so Crabwaler doesn't match®
+        return out.filter(
+            Q(species_name_fk="Abra") | Q(species_txt__lower="abra") | Q(species_no=63)
+        )
     if "start" in sp_filter:
         return out.filter(
             species_name_fk__category=50
@@ -163,10 +153,6 @@ class CityView(generic.ListView):
     allow_empty = False
 
     def get_queryset(self):
-        """
-
-        :return:
-        """
         srg = self.request.GET
         sp_filter = srg.get("pokemon", srg.get("species", srg.get("pokémon", None)))
         out = NstSpeciesListArchive.objects.filter(

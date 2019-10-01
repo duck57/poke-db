@@ -1,5 +1,6 @@
 from django.db import models
-from typeedit.models import Type
+from django.db.models import Q
+from nestlist.utils import str_int
 
 # Create your models here.
 
@@ -99,7 +100,9 @@ class Pokemon(models.Model):
     generation = models.ForeignKey(
         "Generation", models.DO_NOTHING, db_column="Generation"
     )
-    evolved_from = models.IntegerField(db_column="evolved_from")  # integer field to fix Django assumptions
+    evolved_from = models.IntegerField(
+        db_column="evolved_from"
+    )  # integer field to fix Django assumptions
     pogonerf = models.BooleanField(db_column="PoGoNerf", default=False)
     type1 = models.ForeignKey(
         "typeedit.Type",
@@ -212,3 +215,35 @@ class Pokemon(models.Model):
         if self.form < other.form:
             return -1
         return 1
+
+
+def match_species_by_name_or_number(sp_txt, only_one=False):
+    """
+    :param sp_txt: pokémon name or number to search for
+    :param only_one: set to True to enforce returning only a single pokémon
+    :return: a QuerySet of pokémon matching the input string if only_one is False
+    otherwise, return the pokémon that matches or raise an exception for multiple matches
+
+    Always returns None for empty lists
+    """
+
+    # hardcoded Abra match so it does not match Crabwaler every time
+    if str(sp_txt).lower().strip() == "abra":
+        res_lst = [Pokemon.objects.get(pk="Abra")]
+    else:
+        res_lst = (
+            Pokemon.objects.filter(
+                Q(dex_number=sp_txt if str_int(sp_txt) else None)
+                | Q(name__icontains=sp_txt)
+            )
+            .order_by("dex_number")
+            .distinct()
+        )
+    num_res = len(res_lst)
+    if num_res == 0:
+        return None
+    if only_one:
+        if num_res == 1:
+            return res_lst[0]
+        raise 9 from RuntimeError("Too many results")
+    return res_lst

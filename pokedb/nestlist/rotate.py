@@ -3,12 +3,18 @@
 # -*- coding: UTF-8 -*-
 # vim: set fileencoding=UTF-8 :
 
+"""
+Script for adding a new rotation.
+
+Currently, rotations do not have an easy undo mechanism, so be careful.
+"""
+
 import os
 import sys
-from datetime import datetime, time
+from datetime import datetime
 import pytz
 
-from utils import getdate
+from .utils import getdate, local_time_on_date
 import click
 
 if __name__ == "__main__":
@@ -18,7 +24,7 @@ if __name__ == "__main__":
 
     # Setup django
     import django
-    from django.utils import timezone
+    from django.db.models import Q
 
     django.setup()
 
@@ -31,15 +37,14 @@ if __name__ == "__main__":
     )
 
 
-def local_time_on_date(date, hour, tz, minute=None):
-    loctm = tz.localize(datetime(date.year, date.month, date.day))
-    loctm = loctm.replace(hour=hour)
-    if minute is not None:
-        loctm = loctm.replace(minute=minute)
-    return loctm
-
-
 def pacific1pm(dtin):
+    """
+    Appends 1pm Pacific to the input date
+
+    The helper function this uses accounts for DST
+    :param dtin: date object in
+    :return: date object with 13:00 Pacific added
+    """
     niatime = pytz.timezone("America/Los_Angeles")
     nia_date = dtin.astimezone(niatime)
     return local_time_on_date(nia_date, 13, niatime, minute=0)
@@ -92,16 +97,18 @@ def main(date):
     prev_rot = NstRotationDate.objects.latest("num")
     new_rot = NstRotationDate.objects.create(date=rot8d8time, num=prev_rot.num + 1)
     new_rot.save()
-    perm_nst = NstLocation.objects.exclude(permanent_species__isnull=True).exclude(
-        permanent_species__exact=""
+    perm_nst = NstLocation.objects.exclude(
+        Q(permanent_species__isnull=True) | Q(permanent_species__exact="")
     )
     for nst in perm_nst:
         psp = str(nst.permanent_species).split("|")
+        # TODO: replace the below section with a shared NSLA log
         new = NstSpeciesListArchive.objects.create(
             rotation_num=new_rot,
             species_txt=psp[0],
             nestid=nst,
             confirmation=True,
+            # TODO: set system bot in config file
             last_mod_by=NstAdminEmail.objects.get(pk=7),  # hardcoded ID of system bot
         )
         # Add a species number to permanent nests

@@ -10,13 +10,20 @@ from collections import defaultdict
 import readline
 import pytz
 
-# note: importing readline here makes click act up in the all the modules that rely on this one
-# however, I've only noticed this with the rewrite, since I never encounter the circumstances leading to the bug in
-# my normal use of these programs (I always use the command line flags)
-# tl;dr: readline causes newlines not to happen when accepting a default value by entering nothing in click
+"""
+Module of miscellaneous static helper functions that are re-used between modules.
+
+NOTE on READLINE:
+Importing readline here makes click act up in the all the modules that rely on this one
+however, I've only noticed this with the rewrite, since I never encounter the circumstances leading to the bug in
+my normal use of these programs (I always use the command line flags)
+tl;dr: readline causes newlines not to happen when accepting a default value by entering nothing in click
+"""
 
 
-nested_dict = lambda: defaultdict(nested_dict)
+# change from a lambda to make PEP8 shut up
+def nested_dict():
+    return defaultdict(nested_dict)
 
 
 def str_int(strin):
@@ -188,3 +195,20 @@ def input_with_prefill(prompt, text):
     result = input(prompt)
     readline.set_pre_input_hook()
     return result
+
+
+def local_time_on_date(date, hour, tz, minute=None):
+    """
+    :param date: date
+    :param hour: hour of local time
+    :param tz: timezone
+    :param minute: minute of local time
+    :return: a datetime object with the hour & minute appended to
+    the date in the specified timezone.  Calculates whether the time
+    was during DST or not.
+    """
+    loctm = tz.localize(datetime(date.year, date.month, date.day))
+    loctm = loctm.replace(hour=hour)
+    if minute is not None:
+        loctm = loctm.replace(minute=minute)
+    return loctm

@@ -7,7 +7,7 @@ import airtable
 import sys
 import os
 import time
-from collections import defaultdict
+from .utils import nested_dict
 
 if __name__ == "__main__":
     # Setup environ
@@ -22,41 +22,17 @@ if __name__ == "__main__":
     # now you can import your ORM models
     from nestlist.models import (
         NstMetropolisMajor,
-        NstRotationDate,
         NstLocation,
         NstSpeciesListArchive,
         NstAdminEmail,
         NestSpecies,
         AirtableImportLog,
         NstRawRpt,
+        get_rotation,
     )
     from django.utils import timezone
     from django.db.models import Q
     from speciesinfo.models import Pokemon
-
-
-# change from a lambda to make PEP8 shut up
-def nested_dict():
-    return defaultdict(nested_dict)
-
-
-def get_rot8d8(today):
-    """
-    select the most recent date on or before the supplied date from the database
-
-    this is copied from update.py to make django shut up about a NameError
-    :param today: date to check
-    :return: rotation corresponding to the most recent one on or before the supplied date
-    """
-
-    res = NstRotationDate.objects.filter(date__lte=today).order_by("-num")
-    if len(res) > 0:
-        return res[0]
-    print(
-        f"Date {today} is older than anything in the database.  Using oldest data instead."
-    )
-
-    return NstRotationDate.objects.all().order_by("date")[0]
 
 
 def get_submission_data_at(city_id, start_num):
@@ -95,7 +71,7 @@ def transform_submission_data(at_obj):
     for line in at_obj:
         num = line["fields"]["serial"]
         at_tmp[num]["time"] = line["createdTime"]
-        at_tmp[num]["rotation"] = get_rot8d8(line["createdTime"].split("T")[0])
+        at_tmp[num]["rotation"] = get_rotation(line["createdTime"].split("T")[0])
         at_tmp[num]["species"] = int(str(line["fields"]["summary"]).split(" ")[0][1:])
         at_tmp[num]["whodidit"] = str(line["fields"]["Name"]).strip().lower()
 
@@ -197,16 +173,22 @@ def str_int(strin):
     return True
 
 
-def add_a_report(name, nest, time, species, bot, sig=None, server=None, rotation=None):
+# on the next commit, this one gets refactored all by itself
+def add_a_report(
+    name, nest, timestamp, species, bot, sig=None, server=None, rotation=None
+):
     """
     Adds a raw report and updates the NSLA if applicable
     Meant to be generic enough to handle both Discord and Airtable input
     This thing is **long** and full of ugly business logic
 
+    TODO: next commit, make this THE location for updating nest reports
+    For "bots" with an is_bot != 1, reports always succeed at updating
+
     :param name: who submitted the report
     :param server: server identifier
     :param nest: ID of nest, assumed to be unique
-    :param time: timestamp of report
+    :param timestamp: timestamp of report
     :param species: pokédex number
     :param bot: bot ID
     :param sig: pre-calculated sig, assumed to be correct
@@ -219,14 +201,13 @@ def add_a_report(name, nest, time, species, bot, sig=None, server=None, rotation
         9 error
     """
 
-    status = 9
     sp_num, sp_txt = None, None
     if str_int(species):
         sp_num = int(species)
     else:
         sp_txt = species
     if rotation is None:
-        rotation = get_rot8d8(str(time).split("T")[0])
+        rotation = get_rotation(str(timestamp).split("T")[0])
     if sig is None:
         sig = make_raw_rpt_sig(name, nest, rotation.pk)
     bot = NstAdminEmail.objects.get(pk=bot)
@@ -237,7 +218,7 @@ def add_a_report(name, nest, time, species, bot, sig=None, server=None, rotation
         bot=bot,
         user_name=name,
         server_name=server,
-        timestamp=time,
+        timestamp=timestamp,
         raw_species_num=sp_num,
         raw_species_txt=sp_txt,
         raw_park_info=nest,
@@ -245,7 +226,6 @@ def add_a_report(name, nest, time, species, bot, sig=None, server=None, rotation
         calculated_rotation=rotation,
     )
 
-    pk_lnk = None
     sp_lnk = match_species(species)
     if sp_lnk is None:
         # error out if species can't be uniquely matched

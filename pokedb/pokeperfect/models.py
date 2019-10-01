@@ -1,5 +1,7 @@
 from django.db import models
-from speciesinfo.models import Pokemon, PokeCategory, Type
+
+# from speciesinfo.models import Pokemon, PokeCategory
+# from typeedit.models import Type
 
 # Create your models here.
 

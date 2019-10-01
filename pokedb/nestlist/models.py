@@ -1,7 +1,13 @@
+"""
+Models for the nest list
+
+After all the class-based models are the static methods for dealing with the models
+which will prove useful all over the place.
+"""
+
+from .utils import parse_date, str_int
 from django.db import models
-from django.utils import timezone
-from speciesinfo.models import Pokemon
-from typeedit.models import Type  # needed to prevent Django from complaining
+from django.db.models import Q
 
 
 class NstAdminEmail(models.Model):
@@ -331,3 +337,61 @@ class NstRawRpt(models.Model):
 
     def __str__(self):
         return f"{self.dedupe_sig} {self.raw_species_txt}{self.raw_species_num}"
+
+
+def get_rotation(date):
+    """
+    Returns a NstRotation object
+    :param date: some form of date or rotation number (either int or str)
+    :return: NstRotation object on or before the specified date
+    """
+    date = str(date)  # handle both str and int input
+    if len(date) < 4 and str_int(date):
+        try:  # using the input as a direct rotation number
+            return NstRotationDate.objects.get(pk=int(date))
+        except NstRotationDate.DoesNotExist:
+            get_rotation("t")  # default to today if it's junk
+    date = parse_date(date)  # parse the date
+    return NstRotationDate.objects.filter(date__lte=date).order_by("-date")[0]
+
+
+def query_nests(search, location_id=None, location_type="", only_one=False):
+    """
+    Queries nests that match a given name
+
+    To return all nests in an area, set search to ""
+
+    :param search: name to match on nest, set to "" to match all nests
+    :param location_id:
+    :param location_type:
+    :param only_one: 
+    :return:
+    """
+    out = (
+        NstLocation.objects.filter(
+            Q(official_name__icontains=search)
+            | Q(
+                nestID=search if str_int(search) else None
+            )  # handle 18th street library
+            | Q(short_name__icontains=search)
+            | Q(nstaltname__name__icontains=search)
+        )
+        .distinct()
+        .order_by("official_name")
+    )
+    if location_id:
+        location_type = location_type.strip().lower()
+        if location_type == "city":
+            out = out.filter(neighborhood__major_city=location_id)
+        elif location_type == "neighborhood":
+            out = out.filter(neighborhood=location_id)
+        elif location_type == "region":
+            # TODO: update this once regions are improved
+            out = out.filter(neighborhood__region=location_id)
+    if only_one:
+        if len(out) > 1:
+            raise 9 from RuntimeError("Too many results")
+        if len(out) == 0:
+            return None
+        return out[0]
+    return out
