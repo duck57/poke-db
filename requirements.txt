@@ -1,3 +1,6 @@
+airtable
+pytz
+djangorestframework
 django
 django-rest-framework
 sortedcontainers
@@ -7,3 +10,4 @@ click
 airtable-python-wrapper
 scrapy
 readline
+pyperclip

@@ -3,11 +3,13 @@
 # -*- coding: UTF-8 -*-
 # vim: set fileencoding=UTF-8 :
 
+"""Import Airtable into the database"""
+
 import airtable
 import sys
 import os
 import time
-from .utils import nested_dict
+from nestlist.utils import nested_dict
 
 if __name__ == "__main__":
     # Setup environ
@@ -50,6 +52,7 @@ def get_submission_data_at(city_id, start_num):
 
 
 def make_raw_rpt_sig(name, park_id, rot_num):
+    """Carrot-delimited string"""
     return f"{rot_num}🥕{name}🥕{park_id}"
 
 

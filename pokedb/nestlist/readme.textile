@@ -2,18 +2,18 @@ h1. PoGo Nest Lister
 
 h5. A system for tracking PoGo nest migrations for your city's parks
 
-h3. "Link to the list's outupt":https://pokemongo.toouter.space/city/1
+h3. "Link to the list's output":https://pokemongo.toouter.space/city/1
 
 h2. Usage
 
-All commands should be run from the parent directory (@pokedb@ Django root) as @nestlist/<module>.py@ 
+All commands should be run from the parent directory (@pokedb@ Django root) as @nestlist/tools/<module>.py@
 
 h3. rotate.py
 
 Prepares your database for the next nest migration.
 
-Syntax is @nestlist/rotate.py -d <date>@.  Will prompt you for a date if you do
-not specify one at the command line.
+Syntax is @nestlist/tools/rotate.py -d <date>@.  Will prompt you for a date
+if you do not specify one at the command line.
 
 h3. nest_entry.py
 
@@ -29,7 +29,7 @@ Use the @-f@ parameter to specify which formatting regimen to use.
 
 *This is no longer actively supported now that the web interface exists*
 
-h3. importairtable.py
+h3. airtable.py
 
 Imports from AirTable bases.  Expected format of the @summary@ field is 
 @#420 Cherubi at 69. Fint Park by Somepony at 2020-04-20T04:20:14@ so the 
@@ -43,18 +43,6 @@ environment variable.
 
 h2. Notes
 
-h3. Dependencies
+Check the package docstrings for more details
 
-* @django@
-* @sortedcontainers@
-* @click@
-* @python-dateutil@
-* @airtable-python-wrapper@ (for the AirTable importer)
-
-(I believe these are all of them)
-
-h3. To-Do
-
-* "Discord API-like hooks":discord.textile 
-* Prettier output
-** Mouseover text with park addresses (if available)
+h3. "Dependencies":../requirements.txt

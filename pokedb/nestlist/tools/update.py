@@ -3,11 +3,16 @@
 # -*- coding: UTF-8 -*-
 # vim: set fileencoding=UTF-8 :
 
+"""
+This is the old output file for exporting data to Facebook or Discord.
+It may not be updated at all and could easily break in the future.
+"""
+
 import os
 import sys
 from datetime import datetime
 import pyperclip
-from utils import getdate, decorate_text, nested_dict, pick_from_qs, str_int
+from nestlist.utils import getdate, decorate_text, nested_dict, pick_from_qs, str_int
 import click
 
 if __name__ == "__main__":
