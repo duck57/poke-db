@@ -1,10 +1,5 @@
-<!DOCTYPE html>
-<html lang="en-us">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
+{% extends "city.html" %}
 
-</body>
-</html>
+{% block information %}
+<h3>{{ location.name }}</h3>
+{% endblock %}

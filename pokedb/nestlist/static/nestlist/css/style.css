@@ -10,6 +10,10 @@ th:hover {
     font-style: italic;
     background-color: #e8e8d9;
 }
+th:focus {
+    font-style: italic;
+    background-color: #e8e8e8;
+}
 
 tr.confirmed:hover {
     background-color: #d9e8d9;

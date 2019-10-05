@@ -154,10 +154,12 @@ class CityView(generic.ListView):
 
     def get_queryset(self):
         srg = self.request.GET
+        # handle both /rotation/<date> and ?date=yyyy-mm-dd formats
+        date = self.kwargs.get("date", srg.get("date", srg.get("rotation", "t")))
         sp_filter = srg.get("pokemon", srg.get("species", srg.get("pokémon", None)))
         out = NstSpeciesListArchive.objects.filter(
             nestid__neighborhood__major_city=self.kwargs["city_id"],
-            rotation_num=get_rotation(self.kwargs.get("date", "t")),
+            rotation_num=get_rotation(date),
         ).order_by("nestid__official_name")
         if sp_filter is None:
             return out  # no filter
@@ -169,8 +171,8 @@ class CityView(generic.ListView):
         except ValueError:
             return HttpResponseBadRequest(f"Try again with a valid date.")
         except Http404:
-            errstring = f"No nests found for city #{self.kwargs['city_id']} on {self.kwargs.get('date', 'today')}"
             srg = self.request.GET
+            errstring = f"No nests found for city #{self.kwargs['city_id']} on {srg.get('date', srg.get('rotation', 'today'))}"
             ss = srg.get("pokemon", srg.get("species", srg.get("pokémon", None)))
             if ss:
                 errstring += f" matching a search for {ss}"
@@ -179,7 +181,7 @@ class CityView(generic.ListView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["city"] = NstMetropolisMajor.objects.get(pk=self.kwargs["city_id"])
+        context["location"] = NstMetropolisMajor.objects.get(pk=self.kwargs["city_id"])
         context["rotation"] = get_rotation(self.kwargs.get("date", "t"))
         return context
 
@@ -198,7 +200,7 @@ class IndexView(generic.ListView):
     context_object_name = "city_list"
 
     def get_queryset(self):
-        return NstMetropolisMajor.objects.all()
+        return NstMetropolisMajor.objects.filter(active=True)
 
 
 class NestView(generic.DetailView):

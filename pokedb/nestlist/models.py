@@ -30,7 +30,10 @@ class NstAdminEmail(models.Model):
 class NstAltName(models.Model):
     name = models.CharField(max_length=222)
     main_entry = models.ForeignKey(
-        "NstLocation", models.DO_NOTHING, db_column="main_entry"
+        "NstLocation",
+        models.DO_NOTHING,
+        db_column="main_entry",
+        related_name="alternate_name",
     )
     hide_me = models.BooleanField(db_column="hideme", default=False)
     id = models.AutoField(primary_key=True, db_column="dj_key")
@@ -64,6 +67,9 @@ class NstCombinedRegion(models.Model):
         if self < other:
             return -1
         return 1
+
+    def short_name(self):
+        return self.name
 
 
 class NstLocation(models.Model):
@@ -137,6 +143,7 @@ class NstMetropolisMajor(models.Model):
     admin_names = models.CharField(max_length=255, blank=True, null=True)
     airtable_base_id = models.CharField(max_length=30, blank=True, null=True)
     airtable_bot = models.ForeignKey(NstAdminEmail, models.SET_NULL, null=True)
+    active = models.BooleanField(default=False)
 
     class Meta:
         managed = False
@@ -203,7 +210,7 @@ class NstRotationDate(models.Model):
         return self.date < other.date
 
     def date_priority_display(self):
-        return f"{self.date} (rotation {self.num})"
+        return f"{self.date.strftime('%Y-%m-%d')} (rotation {self.num})"
 
 
 class NstSpeciesListArchive(models.Model):

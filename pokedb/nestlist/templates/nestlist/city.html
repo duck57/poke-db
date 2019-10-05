@@ -2,30 +2,52 @@
 <html lang="en-us">
 <head>
     <meta charset="UTF-8">
+    <meta property="og:site_name" content="Duck's Nest List">
+    <meta property="og:type" content="list">
+    <meta property="og:locale" content="en_US">
+    <meta property="og:title" content="{{ location }} nests as of {{ rotation.date_priority_display }}">
+    <meta property="og:url" content="rotation/{{ rotation.num }}">
     {% load static %}
     <link rel="stylesheet" type="text/css" href="{% static 'nestlist/css/style.css' %}">
     <!-- TODO: update icon later -->
     <link rel="icon" type="image/png" href="{% static 'nestlist/images/ballhead cc.png' %}">
+
+    <style>
+        {% if history %}
+        tr.confirmed { background-color: #d9e8d9; }
+        tr.unconfirmed { background-color: #e8d9d9; }
+        {% else %}
+        td.rotation,th.rotation {
+            display: none;
+        }{% endif %}
+        {% if neighbor_view %}
+        td.neighborhood,th.neighborhood {
+            display: none;
+        }{% endif %}
+    </style>
+
     <script type="text/javascript" src="{% static 'nestlist/js/sort_t.js' %}"></script>
-    <title>{{ city.short_name }} Nests!</title>
+    <title>{{ location.short_name }} Nests!</title>
 </head>
-<body>
+<body ontouchstart="" onclick="">
     <center>
-        <header><p><a href="report/">Report a nest!</a></p></header>
-    <table id="myTable2">
-        <caption>{{ city }}<br>#{{ rotation }}</caption>
+        <header>{% block top-nav %}<p><a href="report/">Report a nest!</a></p>{% endblock %}</header>
+    <table id="nestList">
+        <caption>{% block information %} {{ location }}<br>#{{ rotation }} {% endblock %}</caption>
         <tr>
-            <th onclick="sortTable('myTable2', 0)">Neighborhood</th>
-            <th onclick="sortTable('myTable2', 1)">Park</th>
-            <th onclick="sortTable('myTable2', 2)">#</th>
-            <th onclick="sortTable('myTable2', 3)">Species</th>
+            <th onclick="sortTable('nestList', 0)" tabindex="0" class="heading rotation">Rotation</th>
+            <th onclick="sortTable('nestList', 1)" tabindex="1" class="heading neighborhood">Neighborhood</th>
+            <th onclick="sortTable('nestList', 2)" tabindex="2" class="heading nest-name">Park</th>
+            <th onclick="sortTable('nestList', 3)" tabindex="3" class="heading number">#</th>
+            <th onclick="sortTable('nestList', 4)" tabindex="4" class="heading species">Species</th>
         </tr>
         {% for nest in current_nest_list %}
-            <tr id="{{ nest.id }}" class="nest {% if nest.confirmation %}confirmed{% else %}unconfirmed{% endif %}">
-                <td id="{{ nest.nestid.neighborhood.pk }}">{{ nest.nestid.neighborhood }}</td>
-                <td class="nest-name tooltip">
+            <tr id="{{ nest.id }}" class="nest {% if nest.confirmation %}confirmed{% else %}unconfirmed{% endif %}" itemscope itemtype="https://schema.org/Place">
+                <td class="rotation">{{ nest.rotation }}</td>
+                <td class="neighborhood" itemprop="containedInPlace" id="{{ nest.nestid.neighborhood.pk }}" ondrag="alert('{{ nest.nestid.neighborhood.pk }}')">{{ nest.nestid.neighborhood }}</td>
+                <td class="nest-name tooltip" itemprop="name">
                     {{ nest.nestid.get_name }}
-                    <span class="tooltiptext">
+                    <span class="tooltiptext" itemprop="address">
                         {% if nest.nestid.address %}
                         {{ nest.nestid.address }}
                         {% else %}
@@ -43,9 +65,11 @@
     </table>
         <hr>
         <footer>
+            {% block bottom-notes %}
             <p class="confirmed">Species with a <span class="species">bold name</span> and an <span class="number">italic pokédex number</span> have multiple confirming reports.</p>
             <p>Mid-rotation events may throw off the accuracy of the list.</p>
             <a href="report/">Report a nest!</a>
+            {% endblock %}
         </footer>
     </center>
 </body></html>
