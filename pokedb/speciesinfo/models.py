@@ -173,6 +173,13 @@ class Pokemon(models.Model):
     nia_cust_hp = models.IntegerField(db_column="NIA_cust_HP", blank=True, null=True)
     nia_cust_atk = models.IntegerField(db_column="NIA_cust_ATK", blank=True, null=True)
     nia_cust_def = models.IntegerField(db_column="NIA_cust_DEF", blank=True, null=True)
+    previous_evolution = models.ForeignKey(
+        "Pokemon",
+        models.SET_NULL,
+        related_name="evolves_to",
+        null=True,
+        db_column="ef_fk_dj",
+    )
 
     class Meta:
         managed = False

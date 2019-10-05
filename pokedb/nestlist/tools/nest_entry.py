@@ -42,7 +42,7 @@ def match_species_with_prompts(sptxt):
     )
     if choice > 0:
         choice -= 1  # deal with the 0 option
-        return (reslst[choice].dex_number, reslst[choice].name, reslst[choice])
+        return reslst[choice].dex_number, reslst[choice].name, reslst[choice]
     return None, sptxt, None
 
 
@@ -61,7 +61,7 @@ def search_nest_query(search):
         return 0
 
     choice = pick_from_qs(
-        "Enter the number of the park you would like to display: ", res, True
+        "Enter the index number of the park you would like to display: ", res, True
     )
     return res[choice - 1] if choice > 0 else 0  # prevent out-of-bound indices
 
