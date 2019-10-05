@@ -6,7 +6,7 @@
     <meta property="og:type" content="list">
     <meta property="og:locale" content="en_US">
     <meta property="og:title" content="{{ location }} nests as of {{ rotation.date_priority_display }}">
-    <meta property="og:url" content="rotation/{{ rotation.num }}">
+    <meta property="og:url" content="{% url 'nestlist:city_historic_date' location.id rotation.pk %}">
     {% load static %}
     <link rel="stylesheet" type="text/css" href="{% static 'nestlist/css/style.css' %}">
     <!-- TODO: update icon later -->
@@ -31,7 +31,7 @@
 </head>
 <body ontouchstart="" onclick="">
     <center>
-        <header>{% block top-nav %}<p><a href="report/">Report a nest!</a></p>{% endblock %}</header>
+        <header>{% block top-nav %}<p><a href="{% url 'nestlist:report_nest' location.id %}">Report a nest!</a></p>{% endblock %}</header>
     <table id="nestList">
         <caption>{% block information %} {{ location }}<br>#{{ rotation }} {% endblock %}</caption>
         <tr>
@@ -68,7 +68,7 @@
             {% block bottom-notes %}
             <p class="confirmed">Species with a <span class="species">bold name</span> and an <span class="number">italic pokédex number</span> have multiple confirming reports.</p>
             <p>Mid-rotation events may throw off the accuracy of the list.</p>
-            <a href="report/">Report a nest!</a>
+            <a href="{% url 'nestlist:report_nest' location.id %}">Report a nest!</a>
             {% endblock %}
         </footer>
     </center>

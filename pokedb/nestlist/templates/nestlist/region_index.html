@@ -1,0 +1,3 @@
+{% extends "nestlist/city_index.html" %}
+
+{% block place_URL %} {% url 'nestlist:region' parent_city.pk place.pk %} {% endblock %}

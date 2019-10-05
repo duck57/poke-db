@@ -19,7 +19,7 @@ from .models import (
     NstSpeciesListArchive,
     NstMetropolisMajor,
     NstLocation,
-    NstRotationDate,
+    NstCombinedRegion,
     NstNeighborhood,
     get_rotation,
 )
@@ -183,24 +183,68 @@ class CityView(generic.ListView):
         context = super().get_context_data(**kwargs)
         context["location"] = NstMetropolisMajor.objects.get(pk=self.kwargs["city_id"])
         context["rotation"] = get_rotation(self.kwargs.get("date", "t"))
+        context["title"] = "List of Nest Databases"
         return context
 
 
 class NeighborhoodIndex(generic.ListView):
     model = NstNeighborhood
-    context_object_name = "neighborhood_list"
+    context_object_name = "place_list"
+    template_name = "nestlist/neighborhood_index.html"
 
     def get_queryset(self):
-        return NstNeighborhood.objects.filter(major_city=self.kwargs["city_id"])
+        return NstNeighborhood.objects.filter(
+            major_city=self.kwargs["city_id"]
+        ).order_by("name")
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["scope_name"] = "neighborhood"
+        context["scope_plural"] = "neighborhoods"
+        context[
+            "title"
+        ] = f"Neighborhoods & Suburbs of {NstMetropolisMajor.objects.get(pk=self.kwargs['city_id']).name}"
+        return context
 
 
-class IndexView(generic.ListView):
+class RegionalIndex(generic.ListView):
+    model = NstNeighborhood
+    context_object_name = "place_list"
+    template_name = "nestlist/region_index.html"
+
+    def get_queryset(self):
+        return (
+            NstCombinedRegion.objects.filter(
+                nstneighborhood__major_city=self.kwargs["city_id"]
+            )
+            .distinct()
+            .order_by("name")
+        )
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["scope_name"] = "region"
+        context["scope_plural"] = "regions"
+        context["parent_city"] = NstMetropolisMajor.objects.get(
+            pk=self.kwargs["city_id"]
+        )
+        context["title"] = f"Regions of {context['parent_city'].name}"
+        return context
+
+
+class CityIndex(generic.ListView):
     model = NstMetropolisMajor
-    template_name = "nestlist/index.html"
-    context_object_name = "city_list"
+    template_name = "nestlist/city_index.html"
+    context_object_name = "place_list"
 
     def get_queryset(self):
         return NstMetropolisMajor.objects.filter(active=True)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["scope_name"] = "city"
+        context["scope_plural"] = "cities"
+        return context
 
 
 class NestView(generic.DetailView):

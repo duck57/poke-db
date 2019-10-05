@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en-us">
+<head>
+    <meta charset="UTF-8">
+    <meta property="og:site_name" content="Duck's Nest List">
+    <meta property="og:type" content="list">
+    <meta property="og:locale" content="en_US">
+    <meta property="og:title" content="{{ title }}">
+    <meta property="og:url" content="{% block self-url %}{% url 'nestlist:list_of_cities' %}{% endblock %}">
+    {% load static %}
+    <link rel="stylesheet" type="text/css" href="{% static 'nestlist/css/style.css' %}">
+    <!-- TODO: update icon later -->
+    <link rel="icon" type="image/png" href="{% static 'nestlist/images/ballhead cc.png' %}">
+    <title>{{ title }}</title>
+</head>
+<body>
+<h1>{{ title }}</h1>
+
+{% if place_list %}
+    <ul>
+    {% for place in place_list %}
+    <li><a href="{% block place_URL %}{% url 'nestlist:city' place.pk %}{% endblock %}">{{ place.name }}</a></li>
+    {% endfor %}
+    </ul>
+{% else %}
+    <p>No {{ scope_plural }} in database{% block city_specification %}{% endblock %}.</p>
+{% endif %}
+</body>
+</html>

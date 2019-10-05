@@ -3,8 +3,8 @@ from . import views
 
 app_name = "nestlist"
 urlpatterns = [
-    path("", views.IndexView.as_view(), name="index"),
-    path("<int:city_id>/", views.CityView.as_view(), name="city_date"),
+    path("", views.CityIndex.as_view(), name="list_of_cities"),
+    path("<int:city_id>/", views.CityView.as_view(), name="city"),
     path(
         "<int:city_id>/nest/<int:nest_id>/",
         views.NestView.as_view(),
@@ -15,11 +15,15 @@ urlpatterns = [
     # path("<int:city_id>/nests/confirmed/"),
     # path("<int:city_id>/nests/unconfirmed/"),
     # path("<int:city_id>/nests/<int:nest_id>/", views."),
-    # path("<int:city_id>/neighborhood/")
+    path(
+        "<int:city_id>/neighborhood/",
+        views.NeighborhoodIndex.as_view(),
+        name="neighborhood_list",
+    ),
     path(
         "<int:city_id>/neighborhood/<int:neighborhood_id>/",
         views.CityView.as_view(),
-        name="neighborhood_view",
+        name="neighborhood",
     ),
     # path("<int:city_id>/neighborhoods/"),
     # path("<int:city_id>/neighborhoods/<int:neighborhood_id>/"),
@@ -33,11 +37,9 @@ urlpatterns = [
     #     views.CityView.as_view(),
     #     name="city_historic_date",
     # ),
-    # path("<int:city_id>/region/", ),
+    path("<int:city_id>/region/", views.RegionalIndex.as_view(), name="region_index"),
     path(
-        "<int:city_id>/region/<int:region_id>/",
-        views.CityView.as_view(),
-        name="region_view",
+        "<int:city_id>/region/<int:region_id>/", views.CityView.as_view(), name="region"
     ),
     # path("<int:city_id>/regions/"),
     # path("<int:city_id>/regions/<int:region_id>/"),
