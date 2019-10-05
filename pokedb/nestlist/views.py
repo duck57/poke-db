@@ -201,9 +201,10 @@ class NeighborhoodIndex(generic.ListView):
         context = super().get_context_data(**kwargs)
         context["scope_name"] = "neighborhood"
         context["scope_plural"] = "neighborhoods"
-        context[
-            "title"
-        ] = f"Neighborhoods & Suburbs of {NstMetropolisMajor.objects.get(pk=self.kwargs['city_id']).name}"
+        context["parent_city"] = NstMetropolisMajor.objects.get(
+            pk=self.kwargs["city_id"]
+        )
+        context["title"] = f"Neighborhoods & Suburbs of {context['parent_city'].name}"
         return context
 
 
