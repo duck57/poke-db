@@ -16,11 +16,17 @@ if __name__ == "__main__":
     import django
 
     django.setup()
+    from django.conf import settings
 
     # now you can import your ORM models
-    from nestlist.models import get_rotation, NstSpeciesListArchive, query_nests
-    from nestlist.utils import pick_from_qs, input_with_prefill, getdate
+    from nestlist.models import (
+        get_rotation,
+        NstSpeciesListArchive,
+        query_nests,
+        NstAdminEmail,
+    )
     from speciesinfo.models import match_species_by_name_or_number
+    from nestlist.utils import pick_from_qs, input_with_prefill, getdate
 
 
 def match_species_with_prompts(sptxt):
@@ -42,7 +48,7 @@ def match_species_with_prompts(sptxt):
     )
     if choice > 0:
         choice -= 1  # deal with the 0 option
-        return (reslst[choice].dex_number, reslst[choice].name, reslst[choice])
+        return reslst[choice].dex_number, reslst[choice].name, reslst[choice]
     return None, sptxt, None
 
 
@@ -127,13 +133,14 @@ def update_park(rotnum, search=None, species=None):
             species_no=spnum,
             species_txt=species,
             species_name_fk=fk,
+            last_mod_by=NstAdminEmail.objects.get(id=settings.SYSTEM_BOT_USER),
         )
     else:
         cur.confirmation = conf
         cur.species_no = spnum
         cur.species_txt = species
         cur.species_name_fk = fk
-        cur.last_mod_by = None  # for God user edits
+        cur.last_mod_by = settings.SYSTEM_BOT_USER  # for God user edits
         cur.save()
 
     print()

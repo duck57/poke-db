@@ -13,8 +13,6 @@ import os
 import sys
 from datetime import datetime
 import pytz
-
-from .utils import getdate, local_time_on_date
 import click
 
 if __name__ == "__main__":
@@ -25,6 +23,7 @@ if __name__ == "__main__":
     # Setup django
     import django
     from django.db.models import Q
+    from django.conf import settings
 
     django.setup()
 
@@ -35,6 +34,7 @@ if __name__ == "__main__":
         NstSpeciesListArchive,
         NstAdminEmail,
     )
+    from nestlist.utils import getdate, local_time_on_date
 
 
 def pacific1pm(dtin):
@@ -81,16 +81,12 @@ def main(date):
             # 1 PM Pacific, DST-aware
             # print("Abnormal 1 PM Pacific date")
             rot8d8time = niantic_event_time(rot8d8time)
-    else:  # if a future date is passed that is not a Thursday UTC
-        if (
-            rot8d8time.weekday() != 3
-            and rot8d8time.hour == 0
-            and rot8d8time.minute == 0
-        ):
-            rot8d8time = niantic_event_time(rot8d8time)
-    d8 = str(rot8d8time.date())
-    if len(NstRotationDate.objects.filter(date=d8)) > 0:
-        print(f"Rotation already exists for {d8}")
+    elif (
+        rot8d8time.weekday() != 3 and rot8d8time.hour == 0 and rot8d8time.minute == 0
+    ):  # if a future date is passed that is not a Thursday UTC
+        rot8d8time = niantic_event_time(rot8d8time)
+    if len(NstRotationDate.objects.filter(date__contains=rot8d8time.date())) > 0:
+        print(f"Rotation already exists for {rot8d8time.date()}")
         return  # don't go for multiple rotations on the same day
 
     # generate date to save
@@ -109,7 +105,9 @@ def main(date):
             nestid=nst,
             confirmation=True,
             # TODO: set system bot in config file
-            last_mod_by=NstAdminEmail.objects.get(pk=7),  # hardcoded ID of system bot
+            last_mod_by=NstAdminEmail.objects.get(
+                pk=settings.SYSTEM_BOT_USER
+            ),  # hardcoded ID of system bot
         )
         # Add a species number to permanent nests
         if len(psp) > 1:
