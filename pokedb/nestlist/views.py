@@ -9,7 +9,6 @@ from django.urls import reverse
 from django.views import generic
 from rest_framework import viewsets
 from rest_framework.generics import ListAPIView, CreateAPIView, RetrieveAPIView
-from django.db.models import Q
 
 # Create your views here.
 from .models import (
@@ -20,7 +19,6 @@ from .models import (
     NstNeighborhood,
     get_rotation,
 )
-from speciesinfo.models import match_species_by_name_or_number
 from .serializers import ParkSerializer
 
 
@@ -45,19 +43,11 @@ class CityView(generic.ListView):
 
     def get_queryset(self):
         srg = self.request.GET
-        sp_filter = srg.get("pokemon", srg.get("species", srg.get("pokémon", None)))
-        out = get_local_nsla_for_rotation(
-            get_rotation(self.kwargs.get("date", "t")), self.kwargs["city_id"], "city"
-        )
-        if sp_filter is None:
-            return out  # no filter
-        return out.filter(
-            Q(
-                species_name_fk__in=match_species_by_name_or_number(
-                    sp_txt=sp_filter, previous_evolution_search=True
-                )
-            )
-            | Q(species_txt__icontains=sp_filter)  # for free-text row-matching
+        return get_local_nsla_for_rotation(
+            get_rotation(self.kwargs.get("date", "t")),
+            self.kwargs["city_id"],
+            "city",
+            species=srg.get("pokemon", srg.get("species", srg.get("pokémon", None))),
         )
 
     def get(self, request, *args, **kwargs):
