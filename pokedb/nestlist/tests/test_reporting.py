@@ -1,4 +1,10 @@
 from django.test import TestCase
+from nestlist.models import (
+    NstSpeciesListArchive,
+    add_a_report,
+    NstRawRpt,
+    NstAdminEmail,
+)
 
 
 # Create your tests here.
