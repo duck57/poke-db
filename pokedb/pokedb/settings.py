@@ -45,6 +45,7 @@ ALLOWED_HOSTS = [
     "pogo.toouter.space",
     "localhost",
     "127.0.0.1",
+    "ptest.slowgames.xyz",
 ]
 
 SECURE_CONTENT_TYPE_NOSNIFF = True
@@ -159,3 +160,17 @@ USE_TZ = True
 
 STATIC_URL = "/static/"
 STATIC_ROOT = "/var/www/toouter.space/static/"
+
+CACHES = {
+   'default': {
+      'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache',
+      'LOCATION': 'unix:/tmp/memcached.sock',
+   }
+}
+
+MIDDLEWARE_CLASSES = (
+   'django.middleware.cache.UpdateCacheMiddleware',
+   'django.middleware.common.CommonMiddleware',
+   'django.middleware.cache.FetchFromCacheMiddleware',
+)
+
