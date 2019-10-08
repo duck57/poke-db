@@ -37,7 +37,7 @@ if __name__ == "__main__":
     from nestlist.utils import getdate, local_time_on_date
 
 
-def pacific1pm(dtin):
+def pacific1pm(dtin: datetime) -> datetime:
     """
     Appends 1pm Pacific to the input date
 
@@ -50,25 +50,13 @@ def pacific1pm(dtin):
     return local_time_on_date(nia_date, 13, niatime, minute=0)
 
 
-def niantic_event_time(dtin):
+def niantic_event_time(dtin: datetime) -> datetime:
+    """In case Niantic changes things on us, edit here"""
     return pacific1pm(dtin)
 
 
-@click.command()
-@click.option(
-    "-d",
-    "--date",
-    default=str(datetime.today().date()),
-    prompt="Date of nest shift",
-    help="Date when the nest shift occurred, can be absolute (YYYY-MM-DD) or relative (w+2)",
-)
-# main method
-def main(date):
-    # date manipulation
-    rot8d8time = getdate(
-        f"What is the date of the nest rotation (blank for today, {datetime.today().date()})? ",
-        date.strip(),
-    )  # should always be in UTC
+def decide_rotation_time(rot8d8time: datetime) -> datetime:
+    """For choosing the best estimated UTC rotation time"""
     if rot8d8time.microsecond != 0:  # for relative dates in the t+1 form
         # print("Using a live time")
         rot8d8time = rot8d8time.replace(minute=0, second=0, microsecond=0)
@@ -85,6 +73,26 @@ def main(date):
         rot8d8time.weekday() != 3 and rot8d8time.hour == 0 and rot8d8time.minute == 0
     ):  # if a future date is passed that is not a Thursday UTC
         rot8d8time = niantic_event_time(rot8d8time)
+    return rot8d8time
+
+
+@click.command()
+@click.option(
+    "-d",
+    "--date",
+    default=str(datetime.today().date()),
+    prompt="Date of nest shift",
+    help="Date when the nest shift occurred, can be absolute (YYYY-MM-DD) or relative (w+2)",
+)
+# main method
+def main(date):
+    # date manipulation
+    rot8d8time = decide_rotation_time(
+        getdate(
+            f"What is the date of the nest rotation (blank for today, {datetime.today().date()})? ",
+            date.strip(),
+        )
+    )  # should always be in UTC
     if len(NstRotationDate.objects.filter(date__contains=rot8d8time.date())) > 0:
         print(f"Rotation already exists for {rot8d8time.date()}")
         return  # don't go for multiple rotations on the same day
@@ -92,7 +100,6 @@ def main(date):
     # generate date to save
     prev_rot = NstRotationDate.objects.latest("num")
     new_rot = NstRotationDate.objects.create(date=rot8d8time, num=prev_rot.num + 1)
-    new_rot.save()
     perm_nst = NstLocation.objects.exclude(
         Q(permanent_species__isnull=True) | Q(permanent_species__exact="")
     )
@@ -104,10 +111,7 @@ def main(date):
             species_txt=psp[0],
             nestid=nst,
             confirmation=True,
-            # TODO: set system bot in config file
-            last_mod_by=NstAdminEmail.objects.get(
-                pk=settings.SYSTEM_BOT_USER
-            ),  # hardcoded ID of system bot
+            last_mod_by=NstAdminEmail.objects.get(pk=settings.SYSTEM_BOT_USER),
         )
         # Add a species number to permanent nests
         if len(psp) > 1:
@@ -117,4 +121,4 @@ def main(date):
 
 
 if __name__ == "__main__":
-    main(None)
+    main()

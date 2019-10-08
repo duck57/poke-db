@@ -6,6 +6,7 @@
 import sys
 import os
 import click
+from typing import Union, Optional
 
 if __name__ == "__main__":
     # Setup environ
@@ -29,9 +30,8 @@ if __name__ == "__main__":
     from nestlist.utils import pick_from_qs, input_with_prefill, getdate
 
 
-def match_species_with_prompts(sptxt):
+def match_species_with_prompts(sptxt: Union[str, int]):
     """
-
     :param sptxt: pokémon name or number to search for
     :return: the pokémon that matches the species text
     """
@@ -52,7 +52,7 @@ def match_species_with_prompts(sptxt):
     return None, sptxt, None
 
 
-def search_nest_query(search):
+def search_nest_query(search: Union[int, str]) -> int:
     """
     :param search: either a nest ID or a string to search
     :return: a nest
@@ -72,7 +72,9 @@ def search_nest_query(search):
     return res[choice - 1] if choice > 0 else 0  # prevent out-of-bound indices
 
 
-def update_park(rotnum, search=None, species=None):
+def update_park(
+    rotnum: object, search: Optional[str] = None, species: Optional[str] = None
+):
     """
     TODO: replace the meat of this method with the new method factored out of importairtable
     :param rotnum:

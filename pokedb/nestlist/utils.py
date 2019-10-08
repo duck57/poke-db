@@ -9,6 +9,7 @@ from dateutil.relativedelta import *
 from collections import defaultdict
 import readline
 import pytz
+from typing import Union, Optional
 
 """
 Module of miscellaneous static helper functions that are re-used between modules.
@@ -22,11 +23,11 @@ tl;dr: readline causes newlines not to happen when accepting a default value by 
 
 
 # change from a lambda to make PEP8 shut up
-def nested_dict():
+def nested_dict() -> defaultdict:
     return defaultdict(nested_dict)
 
 
-def str_int(strin):
+def str_int(strin: Union[str, int]) -> bool:
     """
     checks if a string will convert to an int
     why isn't this in the standard library?
@@ -41,7 +42,8 @@ def str_int(strin):
     return True
 
 
-def parse_relative_date(date):
+def parse_relative_date(date: str) -> datetime:
+    """For dates of the w+3 variety"""
     today = datetime.now(tz=pytz.utc)
     date_shift = int(date[1:])
     units = date[0].lower()
@@ -52,10 +54,10 @@ def parse_relative_date(date):
         "w": relativedelta(weeks=date_shift),
         "t": relativedelta(days=date_shift),
         "h": relativedelta(hours=date_shift),
-    }.get(units, 0)
+    }.get(units, relativedelta(seconds=0))
 
 
-def parse_date(date=""):
+def parse_date(date: str = "") -> datetime:
     date = date.strip().lower()
     if not date:
         return parse_date("t")  # return today as a default
@@ -73,7 +75,7 @@ def parse_date(date=""):
         return d.astimezone(pytz.utc)
 
 
-def getdate(question, date=None):
+def getdate(question: str, date: Optional[str] = None) -> datetime:
     """
     gets a date (also accepts relative dates like y-1, t+3, w+2)
     will keep prompting you until you get it right
@@ -81,8 +83,7 @@ def getdate(question, date=None):
     :param question: string to prompt the user
     :return: a datetime object
     """
-
-    date_out = None
+    date_out: Optional[datetime] = None
     while date_out is None:
         if date is None:
             date = input(question)
@@ -94,24 +95,22 @@ def getdate(question, date=None):
     return date_out
 
 
-def decorate_text(text, decor):
+def decorate_text(text: str, decor: str) -> str:
     """
     decorates a string of text by inserting it halfway between the decoration string
     :param text: the text to decorate
     :param decor: a symmetrical string that has the text inserted at its middle
     :return: the decorated text
     """
-
     stl = len(decor) // 2
     return decor[:stl] + text + decor[stl:]
 
 
-def true_if_y(st):
+def true_if_y(st: str) -> bool:
     """
     :param st: string to check
     :return: True if the first character of the string is a Y (case-insensitive)
     """
-
     if st.strip() == "":
         return False
     if st[0].upper() == "Y":
@@ -119,7 +118,7 @@ def true_if_y(st):
     return False
 
 
-def disp_qs_select(qs, none_option=True):
+def disp_qs_select(qs, none_option: Union[bool, str] = True) -> int:
     """
     :param qs: A previously-sorted QuerySet
     :param none_option: display an option 0 for 'none of the above'
@@ -134,10 +133,10 @@ def disp_qs_select(qs, none_option=True):
 
     count = 1
 
-    if none_option is True:
+    if str(none_option) == "True":
         none_option = "None of these"
 
-    if none_option is not False:
+    if none_option:
         print(f"0. {none_option}")
     for thing in qs:
         print(f"{count}. {thing}")
@@ -146,7 +145,7 @@ def disp_qs_select(qs, none_option=True):
     return many
 
 
-def select_from_list(prompt, size, start):
+def select_from_list(prompt: str, size: int, start: int) -> int:
     """
     Prompt the user to select an item from a list
     :param prompt: Text to prompt the user
@@ -167,7 +166,7 @@ def select_from_list(prompt, size, start):
             continue
 
 
-def pick_from_qs(prompt, qs, allow_none=True):
+def pick_from_qs(prompt: str, qs, allow_none: Union[bool, str] = True) -> int:
     """
     Pick an option from a QuerySet
     :param prompt: prompt for the user
@@ -179,7 +178,7 @@ def pick_from_qs(prompt, qs, allow_none=True):
     return select_from_list(prompt, maxi, 0 if allow_none else 1)
 
 
-def input_with_prefill(prompt, text):
+def input_with_prefill(prompt: str, text: str) -> str:
     """
 
     :param prompt:
@@ -197,7 +196,9 @@ def input_with_prefill(prompt, text):
     return result
 
 
-def local_time_on_date(date, hour, tz, minute=None):
+def local_time_on_date(
+    date: datetime, hour: int, tz, minute: Optional[int] = None
+) -> datetime:
     """
     :param date: date
     :param hour: hour of local time
