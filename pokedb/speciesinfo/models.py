@@ -312,9 +312,14 @@ def match_species_by_name_or_number(
 
     region_text_matches = input_set.filter(generation__region__icontains=sp_txt)
     typed_matches = match_species_by_type(sp_txt, input_set)
-    # Queries matching a Region or Type do not get the previous/next evolution searches
-    if region_text_matches or typed_matches:
-        return return_me(region_text_matches | typed_matches)
+    egg_match = (
+        match_species_by_egg_group(sp_txt[4:], input_set)
+        if len(sp_txt) > 7 and sp_txt[:4] == "egg:"
+        else input_set.none()
+    )
+    # Queries matching a Region, Type, or egg do not get the previous/next evolution searches
+    if region_text_matches or typed_matches or egg_match:
+        return return_me(region_text_matches | typed_matches | egg_match)
 
     # search by name and respect future/past evolution searching
     return return_me(
@@ -337,16 +342,22 @@ def nestable_species() -> "QuerySet[Pokemon]":
     )
 
 
+def match_species_by_egg_group(
+    target_group: str, input_list: "QuerySet[Pokemon]" = Pokemon.objects.all()
+) -> "QuerySet[Pokemon]":
+    return input_list.filter(
+        Q(egg1__name__icontains=target_group)
+        | Q(egg1__stadium2name__icontains=target_group)
+        | Q(egg2__name__icontains=target_group)
+        | Q(egg2__stadium2name__icontains=target_group)
+    ).order_by("dex_number")
+
+
 def match_species_by_type(
     target_type: str, input_list: "QuerySet[Pokemon]" = Pokemon.objects.all()
 ) -> "QuerySet[Pokemon]":
     return input_list.filter(
-        Q(type1=target_type if str_int(target_type) else None)
-        | Q(
-            type2=target_type if str_int(target_type) else 6969420
-        )  # prevent matching on single-typed 'mon
-        | Q(type1__name__icontains=target_type)
-        | Q(type1__name__icontains=target_type)
+        Q(type1__name__icontains=target_type) | Q(type1__name__icontains=target_type)
     ).order_by("dex_number")
 
 
