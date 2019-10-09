@@ -235,6 +235,10 @@ def match_species_by_name_or_number(
     only_one: bool = False,
 ) -> "QuerySet[Pokemon]":
     """
+    If you want only a single result, call this function with only_one = True and .get() after
+    Works best in a try/except block
+    charmander = match_species_by_name_or_number(4, only_one=True).get()
+
     :param sp_txt: pokémon name or number to search for
                     if the "name" starts with "start" or is a type or region name, return those species
     :param only_one: set to True to enforce returning only a single pokémon
@@ -310,16 +314,24 @@ def match_species_by_name_or_number(
     if len(sp_txt) < 3:
         return return_me(input_set.filter(name__icontains=sp_txt))
 
-    region_text_matches = input_set.filter(generation__region__icontains=sp_txt)
-    typed_matches = match_species_by_type(sp_txt, input_set)
-    egg_match = (
-        match_species_by_egg_group(sp_txt[4:], input_set)
-        if len(sp_txt) > 7 and sp_txt[:4] == "egg:"
-        else input_set.none()
-    )
+    # using this dict as a way to be extensible and comment why these functions get called
+    attribute_match: dict = {
+        "region": input_set.filter(generation__region__icontains=sp_txt),
+        "type": match_species_by_type(sp_txt, input_set),
+        "egg group": (
+            match_species_by_egg_group(sp_txt[4:], input_set)
+            if len(sp_txt) > 7 and sp_txt[:4] == "egg:"
+            else input_set.none()
+        ),
+    }
     # Queries matching a Region, Type, or egg do not get the previous/next evolution searches
-    if region_text_matches or typed_matches or egg_match:
-        return return_me(region_text_matches | typed_matches | egg_match)
+    if not all(bool(value) is False for value in attribute_match.values()):
+        # There has to be a better way to do this
+        # this = join unknown multiple QuerySets from a list
+        out = input_set.none()
+        for attr in attribute_match.keys():
+            out = out | attribute_match[attr]
+        return return_me(out)
 
     # search by name and respect future/past evolution searching
     return return_me(
@@ -359,25 +371,3 @@ def match_species_by_type(
     return input_list.filter(
         Q(type1__name__icontains=target_type) | Q(type1__name__icontains=target_type)
     ).order_by("dex_number")
-
-
-def pick_species_by_name_or_number(
-    sp_txt: Union[str, int],
-    input_set: "QuerySet[Pokemon]" = Pokemon.objects.all(),
-    age_up: bool = False,
-    previous_evolution_search: bool = False,
-) -> Pokemon:
-    """Same as match_species_by_name_or_number but restricted to a single result"""
-    w = match_species_by_name_or_number(
-        sp_txt,
-        input_set=input_set,
-        age_up=age_up,
-        previous_evolution_search=previous_evolution_search,
-        only_one=True,
-    )
-    if len(w) > 1:
-        raise Pokemon.MultipleObjectsReturned
-    try:
-        return w[0]
-    except IndexError:
-        raise Pokemon.DoesNotExist
