@@ -28,13 +28,8 @@ if __name__ == "__main__":
     django.setup()
 
     # now you can import your ORM models
-    from nestlist.models import (
-        NstRotationDate,
-        NstLocation,
-        NstSpeciesListArchive,
-        NstAdminEmail,
-    )
-    from nestlist.utils import getdate, local_time_on_date
+    from nestlist.models import NstRotationDate, NstLocation, add_a_report
+    from nestlist.utils import getdate, local_time_on_date, append_utc
 
 
 def pacific1pm(dtin: datetime) -> datetime:
@@ -104,19 +99,17 @@ def main(date):
         Q(permanent_species__isnull=True) | Q(permanent_species__exact="")
     )
     for nst in perm_nst:
-        psp = str(nst.permanent_species).split("|")
-        # TODO: replace the below section with a shared NSLA log
-        new = NstSpeciesListArchive.objects.create(
-            rotation_num=new_rot,
-            species_txt=psp[0],
-            nestid=nst,
-            confirmation=True,
-            last_mod_by=NstAdminEmail.objects.get(pk=settings.SYSTEM_BOT_USER),
+        # split is to separate the number, + is to mark it confirmed
+        psp = nst.permanent_species.split("|")[0] + "|1"
+        add_a_report(
+            name="Otto",
+            nest=nst.pk,
+            timestamp=append_utc(datetime.utcnow()),
+            species=psp,
+            bot_id=settings.SYSTEM_BOT_USER,
+            server="localhost",
+            rotation=new_rot,
         )
-        # Add a species number to permanent nests
-        if len(psp) > 1:
-            new.species_no = int(str(nst.permanent_species).split("|")[-1])
-            new.save()
     print(f"Added rotation {new_rot}")
 
 

@@ -9,9 +9,7 @@ from dateutil.relativedelta import *
 from collections import defaultdict
 import readline
 import pytz
-from typing import Union, Optional, Any
-from django.db.models import QuerySet
-from django.core.exceptions import ObjectDoesNotExist
+from typing import Union, Optional
 
 """
 Module of miscellaneous static helper functions that are re-used between modules.
@@ -215,3 +213,8 @@ def local_time_on_date(
     if minute is not None:
         loctm = loctm.replace(minute=minute)
     return loctm
+
+
+def append_utc(naive: datetime) -> datetime:
+    """Appends TZ-awareness to UTC datetimes"""
+    return pytz.utc.localize(naive)
