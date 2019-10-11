@@ -28,12 +28,20 @@ class NstAdminEmail(models.Model):
     e_mail = models.CharField(db_column="e-mail", max_length=90, blank=True, null=True)
     is_bot = models.PositiveSmallIntegerField(null=True)
 
+    bot_types: Dict[int, str] = {0: "human", 1: "bot", 2: "SYSTEM"}
+
     class Meta:
         managed = False
         db_table = "nst_admin_email"
 
     def __str__(self):
         return f"{self.shortname} [{self.pk}] {self.e_mail}"
+
+    def restricted(self) -> bool:
+        return False if self.is_bot in [0, 2] else True
+
+    def user_type(self) -> str:
+        return self.bot_types.get(self.is_bot, "misconfiguration")
 
 
 class NstAltName(models.Model):
@@ -639,4 +647,40 @@ def get_local_nsla_for_rotation(
         return out_list.filter(nestid__neighborhood=location_pk)
     if location_type.lower() == "region":
         return out_list.filter(nestid__neighborhood__region=location_pk)
-    return None
+    return out_list.none()
+
+
+def collect_empty_nests(
+    rotation: Optional[NstRotationDate],
+    location_pk: Optional[int],
+    location_type: Optional[str],
+) -> "QuerySet[NstLocation]":
+    """
+    Collect empty nests
+    Params function just like get_local_nsla_for_rotation
+    What is described below is the behavior when they are None
+    :param rotation: returns nests that never have had a report
+    :param location_pk: returns from all nests in the system
+    :param location_type: returns from all nests in the system
+    :return: a list of nests that don't have a report for the specified location & rotation
+    """
+    nsla_exclude_list: "QuerySet[NstSpeciesListArchive]" = (
+        get_local_nsla_for_rotation(rotation, location_pk, location_type)
+        if rotation
+        else NstSpeciesListArchive.objects.none()
+    )
+    if location_type.lower() == "city":
+        nests: "QuerySet[NstLocation]" = NstLocation.objects.filter(
+            neighborhood__major_city=location_pk
+        )
+    elif location_type.lower() == "neighborhood":
+        nests: "QuerySet[NstLocation]" = NstLocation.objects.filter(
+            neighborhood=location_pk
+        )
+    elif location_type.lower() == "region":
+        nests: "QuerySet[NstLocation]" = NstLocation.objects.filter(
+            neighborhood__region=location_pk
+        )
+    else:
+        nests: "QuerySet[NstLocation]" = NstLocation.objects.all()
+    return nests.exclude(pk__in=nsla_exclude_list.nestid)
