@@ -2,7 +2,7 @@ from django.test import TestCase
 
 
 # Create your tests here.
-class YourTestClass(TestCase):
+class TestSpeciesFilter(TestCase):
     """Don't normally have these print statements in real tests"""
 
     @classmethod

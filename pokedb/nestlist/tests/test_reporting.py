@@ -5,31 +5,58 @@ from nestlist.models import (
     NstRawRpt,
     NstAdminEmail,
 )
+from typing import Optional, List, Dict, Union
+from datetime import datetime
 
 
 # Create your tests here.
-class YourTestClass(TestCase):
+class ReportingTests(TestCase):
     """Don't normally have these print statements in real tests"""
 
     @classmethod
     def setUpTestData(cls):
-        print(
-            "setUpTestData: Run once to set up non-modified data for all class methods."
-        )
+        # setUpTestData: Run once to set up non-modified data for all class methods.
+        # TODO: set up bot IDs, and test nests here
         pass
 
     def setUp(self):
-        print("setUp: Run once for every test method to setup clean data.")
+        # print("setUp: Run once for every test method to setup clean data.")
         pass
 
-    def test_false_is_false(self):
-        print("Method: test_false_is_false.")
-        self.assertFalse(False)
-
-    def test_false_is_true(self):
-        print("Method: test_false_is_true.")
-        self.assertTrue(False)
-
-    def test_one_plus_one_equals_two(self):
-        print("Method: test_one_plus_one_equals_two.")
-        self.assertEqual(1 + 1, 2)
+    def reportingTestSuite(self):
+        report_tests: List[Dict] = [
+            {
+                "name": "confirmed manual entry",
+                "nest": 1,
+                "species": "Bulbasaur|1",
+                "expected_status": 2,
+                "timestamp": "17 March 1592 17:03:23",
+                "user": 7,
+                "server": "localhost",
+                "rotation_id": None,
+            },
+            {
+                "name": "unconfirmed manual entry",
+                "nest": 1,
+                "species": "4",
+                "expected_status": 1,
+                "timestamp": "17 March 1592 17:03:23",
+                "user": 7,
+                "server": "localhost",
+                "rotation_id": None,
+            },
+        ]
+        for report in report_tests:
+            self.assertEqual(
+                add_a_report(
+                    name=report["name"],
+                    nest=report["nest"],
+                    timestamp=report["timestamp"],
+                    species=report["species"],
+                    bot_id=report["user"],
+                    server=report["server"],
+                    rotation=report["rotation_id"],
+                ).status,
+                report["expected_status"],
+            )
+        pass

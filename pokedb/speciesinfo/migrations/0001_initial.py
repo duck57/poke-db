@@ -7,113 +7,199 @@ class Migration(migrations.Migration):
 
     initial = True
 
-    dependencies = [
-    ]
+    dependencies = []
 
     operations = [
         migrations.CreateModel(
-            name='Ability',
+            name="Ability",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(db_column='Name', max_length=50)),
-                ('effect', models.CharField(db_column='Effect', max_length=333)),
-                ('note', models.CharField(blank=True, db_column='Note', max_length=99, null=True)),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("name", models.CharField(db_column="Name", max_length=50)),
+                ("effect", models.CharField(db_column="Effect", max_length=333)),
+                (
+                    "note",
+                    models.CharField(
+                        blank=True, db_column="Note", max_length=99, null=True
+                    ),
+                ),
             ],
-            options={
-                'db_table': 'Abilities',
-                'managed': False,
-            },
+            options={"db_table": "Abilities", "managed": False},
         ),
         migrations.CreateModel(
-            name='Biome',
+            name="Biome",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=30)),
-                ('pogo', models.PositiveIntegerField(blank=True, db_column='PoGo', null=True)),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("name", models.CharField(max_length=30)),
+                (
+                    "pogo",
+                    models.PositiveIntegerField(
+                        blank=True, db_column="PoGo", null=True
+                    ),
+                ),
             ],
-            options={
-                'db_table': 'Biomes',
-                'managed': False,
-            },
+            options={"db_table": "Biomes", "managed": False},
         ),
         migrations.CreateModel(
-            name='BodyPlan',
+            name="BodyPlan",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=50)),
-                ('description', models.CharField(blank=True, max_length=50, null=True)),
-                ('notes', models.CharField(blank=True, max_length=50, null=True)),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("name", models.CharField(max_length=50)),
+                ("description", models.CharField(blank=True, max_length=50, null=True)),
+                ("notes", models.CharField(blank=True, max_length=50, null=True)),
             ],
-            options={
-                'db_table': 'body_plans',
-                'managed': False,
-            },
+            options={"db_table": "body_plans", "managed": False},
         ),
         migrations.CreateModel(
-            name='EggGroup',
+            name="EggGroup",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=20)),
-                ('notes', models.CharField(blank=True, max_length=199, null=True)),
-                ('stadium2name', models.CharField(blank=True, db_column='Stadium2name', max_length=20, null=True)),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("name", models.CharField(max_length=20)),
+                ("notes", models.CharField(blank=True, max_length=199, null=True)),
+                (
+                    "stadium2name",
+                    models.CharField(
+                        blank=True, db_column="Stadium2name", max_length=20, null=True
+                    ),
+                ),
             ],
-            options={
-                'db_table': 'EggGroups',
-                'managed': False,
-            },
+            options={"db_table": "EggGroups", "managed": False},
         ),
         migrations.CreateModel(
-            name='Generation',
+            name="Generation",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('region', models.CharField(db_column='Region', max_length=12)),
-                ('games', models.CharField(blank=True, db_column='Games', max_length=111, null=True)),
-                ('note', models.CharField(blank=True, db_column='Note', max_length=111, null=True)),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("region", models.CharField(db_column="Region", max_length=12)),
+                (
+                    "games",
+                    models.CharField(
+                        blank=True, db_column="Games", max_length=111, null=True
+                    ),
+                ),
+                (
+                    "note",
+                    models.CharField(
+                        blank=True, db_column="Note", max_length=111, null=True
+                    ),
+                ),
             ],
-            options={
-                'db_table': 'generations',
-                'managed': False,
-            },
+            options={"db_table": "generations", "managed": False},
         ),
         migrations.CreateModel(
-            name='PokeCategory',
+            name="PokeCategory",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=22, unique=True)),
-                ('note', models.CharField(blank=True, max_length=111, null=True)),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("name", models.CharField(max_length=22, unique=True)),
+                ("note", models.CharField(blank=True, max_length=111, null=True)),
             ],
-            options={
-                'db_table': 'ZC_categories',
-                'managed': False,
-            },
+            options={"db_table": "ZC_categories", "managed": False},
         ),
         migrations.CreateModel(
-            name='Pokemon',
+            name="Pokemon",
             fields=[
-                ('form', models.CharField(max_length=11)),
-                ('dex_number', models.IntegerField(db_column='#')),
-                ('name', models.CharField(db_column='Name', max_length=255, primary_key=True, serialize=False)),
-                ('total', models.IntegerField(blank=True, db_column='Total', null=True)),
-                ('hp', models.IntegerField(db_column='HP')),
-                ('attack', models.IntegerField(db_column='Attack')),
-                ('defense', models.IntegerField(db_column='Defense')),
-                ('sp_atk', models.IntegerField(db_column='SpAtk')),
-                ('sp_def', models.IntegerField(db_column='SpDef')),
-                ('speed', models.IntegerField(db_column='Speed')),
-                ('pogonerf', models.BooleanField(blank=True, db_column='PoGoNerf', null=True)),
-                ('wt_kg', models.FloatField()),
-                ('ht_m', models.FloatField()),
-                ('official_color', models.CharField(blank=True, db_column='OfficialColor', max_length=11, null=True)),
-                ('description_category', models.CharField(blank=True, max_length=13, null=True)),
-                ('nicknames', models.CharField(blank=True, max_length=88, null=True)),
-                ('notes', models.CharField(blank=True, max_length=333, null=True)),
-                ('nia_cust_hp', models.IntegerField(blank=True, db_column='NIA_cust_HP', null=True)),
-                ('nia_cust_atk', models.IntegerField(blank=True, db_column='NIA_cust_ATK', null=True)),
-                ('nia_cust_def', models.IntegerField(blank=True, db_column='NIA_cust_DEF', null=True)),
+                ("form", models.CharField(max_length=11)),
+                ("dex_number", models.IntegerField(db_column="#")),
+                (
+                    "name",
+                    models.CharField(
+                        db_column="Name",
+                        max_length=255,
+                        primary_key=True,
+                        serialize=False,
+                    ),
+                ),
+                (
+                    "total",
+                    models.IntegerField(blank=True, db_column="Total", null=True),
+                ),
+                ("hp", models.IntegerField(db_column="HP")),
+                ("attack", models.IntegerField(db_column="Attack")),
+                ("defense", models.IntegerField(db_column="Defense")),
+                ("sp_atk", models.IntegerField(db_column="SpAtk")),
+                ("sp_def", models.IntegerField(db_column="SpDef")),
+                ("speed", models.IntegerField(db_column="Speed")),
+                (
+                    "pogo_nerf",
+                    models.BooleanField(blank=True, db_column="PoGoNerf", null=True),
+                ),
+                ("wt_kg", models.FloatField()),
+                ("ht_m", models.FloatField()),
+                (
+                    "official_color",
+                    models.CharField(
+                        blank=True, db_column="OfficialColor", max_length=11, null=True
+                    ),
+                ),
+                (
+                    "description_category",
+                    models.CharField(blank=True, max_length=13, null=True),
+                ),
+                ("nicknames", models.CharField(blank=True, max_length=88, null=True)),
+                ("notes", models.CharField(blank=True, max_length=333, null=True)),
+                (
+                    "nia_cust_hp",
+                    models.IntegerField(blank=True, db_column="NIA_cust_HP", null=True),
+                ),
+                (
+                    "nia_cust_atk",
+                    models.IntegerField(
+                        blank=True, db_column="NIA_cust_ATK", null=True
+                    ),
+                ),
+                (
+                    "nia_cust_def",
+                    models.IntegerField(
+                        blank=True, db_column="NIA_cust_DEF", null=True
+                    ),
+                ),
             ],
-            options={
-                'db_table': 'Pokémon',
-                'managed': False,
-            },
+            options={"db_table": "Pokémon", "managed": False},
         ),
     ]
