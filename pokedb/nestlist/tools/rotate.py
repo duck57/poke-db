@@ -12,8 +12,9 @@ Currently, rotations do not have an easy undo mechanism, so be careful.
 import os
 import sys
 from datetime import datetime
-import pytz
+
 import click
+import pytz
 
 if __name__ == "__main__":
     # Setup environ
@@ -22,14 +23,12 @@ if __name__ == "__main__":
 
     # Setup django
     import django
-    from django.db.models import Q
-    from django.conf import settings
 
     django.setup()
 
     # now you can import your ORM models
-    from nestlist.models import NstRotationDate, NstLocation, add_a_report
-    from nestlist.utils import getdate, local_time_on_date, append_utc
+    from nestlist.models import new_rotation
+    from nestlist.utils import getdate, local_time_on_date
 
 
 def pacific1pm(dtin: datetime) -> datetime:
@@ -80,37 +79,17 @@ def decide_rotation_time(rot8d8time: datetime) -> datetime:
     help="Date when the nest shift occurred, can be absolute (YYYY-MM-DD) or relative (w+2)",
 )
 # main method
-def main(date):
-    # date manipulation
-    rot8d8time = decide_rotation_time(
-        getdate(
-            f"What is the date of the nest rotation (blank for today, {datetime.today().date()})? ",
-            date.strip(),
-        )
-    )  # should always be in UTC
-    if len(NstRotationDate.objects.filter(date__contains=rot8d8time.date())) > 0:
-        print(f"Rotation already exists for {rot8d8time.date()}")
-        return  # don't go for multiple rotations on the same day
-
-    # generate date to save
-    prev_rot = NstRotationDate.objects.latest("num")
-    new_rot = NstRotationDate.objects.create(date=rot8d8time, num=prev_rot.num + 1)
-    perm_nst = NstLocation.objects.exclude(
-        Q(permanent_species__isnull=True) | Q(permanent_species__exact="")
+def main(date: str):
+    print(  # show status to the user
+        new_rotation(  # moved to models.py
+            decide_rotation_time(  # date manipulation
+                getdate(
+                    f"What is the date of the nest rotation (blank for today, {datetime.today().date()})? ",
+                    date.strip(),
+                )
+            )  # should always be in UTC
+        ).note
     )
-    for nst in perm_nst:
-        # split is to separate the number, + is to mark it confirmed
-        psp = nst.permanent_species.split("|")[0] + "|1"
-        add_a_report(
-            name="Otto",
-            nest=nst.pk,
-            timestamp=append_utc(datetime.utcnow()),
-            species=psp,
-            bot_id=settings.SYSTEM_BOT_USER,
-            server="localhost",
-            rotation=new_rot,
-        )
-    print(f"Added rotation {new_rot}")
 
 
 if __name__ == "__main__":

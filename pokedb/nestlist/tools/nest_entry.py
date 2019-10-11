@@ -90,13 +90,15 @@ def search_nest_query(search: Union[int, str]) -> Union[int, NstLocation]:
 
 
 def update_park(
-    rotnum: NstRotationDate, search: Optional[str] = None, species: Optional[str] = None
-):
+    rotnum: NstRotationDate,
+    search: Optional[str] = None,
+    species_force: Optional[str] = None,
+) -> int:
     """
     :param rotnum:
     :param search:
-    :param species:
-    :return:
+    :param species_force:
+    :return: int as to whether this is finished or not
     """
     if search is None:
         search = input("Which park do you want to search? ").strip().lower()
@@ -106,49 +108,46 @@ def update_park(
         return -5
     if search == "?":
         print(
-            "Search for parks here.  Leave blank or enter a lowercase q to exit.  ? to display this help again."
+            "Search for parks here.  Leave blank or enter Q to exit.  ? to display this help again."
         )
-        return False
+        return 0
 
     current_nest = search_nest_query(search)
     if current_nest == 0:
-        return False
+        return 0  # search again if none of the results matched what you wanted
 
     print(str(current_nest))
 
-    cur: Union[None, NstSpeciesListArchive] = None
-    current: str
-    confirm: bool = False
+    cur: Optional[NstSpeciesListArchive] = None
+    current: str = species_force if species_force else ""
 
-    try:
-        cur = NstSpeciesListArchive.objects.get(
-            nestid=current_nest, rotation_num=rotnum
-        )
-        current = cur.species_txt
-        confirm = cur.confirmation
-    except NstSpeciesListArchive.DoesNotExist:
-        current = "" if species is None else species
+    if not species_force:
+        try:
+            cur = NstSpeciesListArchive.objects.get(
+                nestid=current_nest, rotation_num=rotnum
+            )
+            current = cur.species_txt
+            if cur.confirmation:
+                current += "|1"
+        except NstSpeciesListArchive.DoesNotExist:
+            pass
 
-    if confirm:
-        current += "|1"
     species = input_with_prefill("Species|confirm? ", current).strip()
 
     if species == "":
         if cur is None:  # Nothing currently there, so nothing to delete
-            return False
-        cur.delete()  # TODO: add some magic to add deletions to the raw report log
-        return False
+            return 0
+        cur.delete()  # TODO: move deletions to models.py
+        return 0
 
     search_all: bool = True if "*" in species else False
-    confirm = True if "|" in species else False
-    species = species.split("|")[0].split("*")[0]
+    confirm: bool = True if "|" in species else False
+    species: str = species.split("|")[0].split("*")[0]  # remove magic
 
     species, fk = match_species_with_prompts(species, search_all)
     if fk is None:
         print(f"Using species as a string and not a species number")
-
-    species += "*" if search_all else ""
-    species += "|1" if confirm else ""
+        print(f"Append an asterisk to your query to search all species")
 
     add_a_report(
         name="Manuel",
@@ -158,10 +157,12 @@ def update_park(
         bot_id=settings.SYSTEM_BOT_USER,
         server="localhost",
         rotation=rotnum,
+        search_all=search_all,
+        confirmation=confirm,
     )
 
     print()  # spacing for CLI interface
-    return False
+    return 0
 
 
 @click.command()
@@ -185,14 +186,16 @@ def main(
         """
     if date.strip().lower() == "today" or date is None:
         date = "t"
-    rot_num = get_rotation(getdate("When were the nests reported? ", date))
+    rot_num: NstRotationDate = get_rotation(
+        getdate("When were the nests reported? ", date)
+    )
     print(f"Editing rotation {rot_num}")
-    stop = False
-    while stop is False:
+    stop: int = 0
+    while not stop:
         stop = update_park(rot_num, park, poke)
-        park, poke = None, None
-    print("Goodbye.")
-    sys.exit(0)
+        park, poke = None, None  # for a reset after quick testing
+    print("Goodbye.")  # be polite about things
+    sys.exit(0)  # graceful exit
 
 
 if __name__ == "__main__":

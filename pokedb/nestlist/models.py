@@ -5,10 +5,11 @@ After all the class-based models are the static methods for dealing with the mod
 which will prove useful all over the place.
 """
 
-from .utils import parse_date, str_int
+from .utils import parse_date, str_int, append_utc
 from django.db import models
 from django.db.models import Q
 from django.db.models.query import QuerySet
+from django.conf import settings
 from speciesinfo.models import (
     match_species_by_name_or_number,
     Pokemon,
@@ -420,6 +421,8 @@ def add_a_report(
     bot_id: int,
     server: Optional[str] = None,
     rotation: Optional[NstRotationDate] = None,
+    confirmation: Optional[bool] = None,
+    search_all: bool = False,
 ) -> ReportStatus:
     """
     Adds a raw report and updates the NSLA if applicable
@@ -428,6 +431,8 @@ def add_a_report(
     For "bots" with an is_bot != 1, reports always succeed at updating
     non-bot "bots" do not generate a NstRawReport entry if they do not modify anything
 
+    :param search_all: search for all species or just the currently nestable ones
+    :param confirmation: leave None to let the system decide how to handle this
     :param name: who submitted the report
     :param server: server identifier
     :param nest: ID of nest, assumed to be unique
@@ -467,7 +472,7 @@ def add_a_report(
 
     def update_nsla(status_code: int) -> ReportStatus:
         """Updates the NSLA and leaves"""
-        nsla_link.confirmation = force_confirmation
+        nsla_link.confirmation = confirmation
         nsla_link.species_name_fk = sp_lnk
         nsla_link.species_no = sp_lnk.dex_number if sp_lnk else None
         nsla_link.species_txt = sp_lnk.name if sp_lnk else species
@@ -480,36 +485,30 @@ def add_a_report(
     #
     error_list: Dict[str, Tuple[int, str, str]] = {}
     name = name.strip()
-    is_bot = 1
     if not name:
         error_list["user_name"] = (417, "No name given", "")
     if not timestamp:
         error_list["timestamp"] = (416, "Timestamp is emtpy", "")
     try:  # bot id
         bot: NstAdminEmail = NstAdminEmail.objects.get(pk=bot_id)
-        is_bot = bot.is_bot
-        # God-editor shortcuts: Pikachu|1 or Tyrogue* or Porygon-Z*|2
-        force_confirmation: bool = True if is_bot in [
-            0,
-            2,
-        ] and "|" in species else False
+        restricted: bool = bot.restricted()
     except NstAdminEmail.DoesNotExist:
         error_list["bot_id"] = (401, "Bad bot ID", f"{bot_id}")
-    search_all: bool = True if "*" in species else False
-    species = species.split("|")[0].split("*")[0]  # handle nest_entry.py God-mode input
     try:  # species link
         sp_lnk: Optional[Pokemon] = match_species_by_name_or_number(
             species,
             only_one=True,
-            input_set=Pokemon.objects.all() if search_all else nestable_species(),
+            input_set=Pokemon.objects.all()
+            if search_all  # update below code when new generations drop
+            else nestable_species().filter(generation__in=[0, 1, 2, 3, 4, 5]),
         ).get()
     except Pokemon.DoesNotExist:
-        if is_bot == 1:
+        if restricted:
             error_list["pokémon"] = (404, "not found", f"{species}")
         else:
             sp_lnk = None  # free-text pokémon entries
     except Pokemon.MultipleObjectsReturned:
-        if is_bot:
+        if restricted:
             error_list["pokémon"] = (412, "too many results", f"{species}")
         else:
             sp_lnk = None  # free-text it for human entries
@@ -539,7 +538,7 @@ def add_a_report(
         rotation_num=rotation,
         nestid=park_link,  # if this is None, it would have errored already
         defaults={
-            "confirmation": force_confirmation,
+            "confirmation": confirmation,
             "species_name_fk": sp_lnk,
             "species_no": sp_lnk.dex_number if sp_lnk else None,
             "species_txt": sp_lnk.name if sp_lnk else species,
@@ -547,7 +546,7 @@ def add_a_report(
         },
     )
     if fresh:  # we're done if it's a new report
-        return record_report(2 if force_confirmation else 1)
+        return record_report(2 if confirmation else 1)
     prior_reports: "QuerySet[NstRawRpt]" = NstRawRpt.objects.filter(
         Q(nsla_pk=nsla_link) | Q(nsla_pk_unlink=nsla_link.pk)
     ).order_by(
@@ -557,12 +556,12 @@ def add_a_report(
     # no change from manual edit
     if (
         nsla_link.species_name_fk == sp_lnk
-        and nsla_link.confirmation == force_confirmation
-        and bot.is_bot != 1
+        and bool(nsla_link.confirmation) == bool(confirmation)
+        and not restricted
     ):
         return ReportStatus(None, 0, None, None)
     # force change from manual edit
-    if bot.is_bot != 1:
+    if not restricted:
         return update_nsla(7)
     # it's only bot posting from here on
 
@@ -571,7 +570,7 @@ def add_a_report(
             return record_report(0)  # exact duplicates
         if nsla_link.confirmation:
             return record_report(2)  # previously-confirmed nests
-        force_confirmation = True  # freshly-confirmed reports
+        confirmation = True  # freshly-confirmed reports
         return update_nsla(2)
 
     #
@@ -587,7 +586,7 @@ def add_a_report(
         ).values()
         and nsla_link.last_mod_by.is_bot == 1
     ):
-        force_confirmation = False
+        confirmation = False
         return update_nsla(1)
     # human and bot confirmations need to go through the normal double agreement to overturn process
 
@@ -595,12 +594,12 @@ def add_a_report(
     # this assumes that the report being added is always the most recent one (so it may break on historic data import)
     if prior_reports.filter(attempted_dex_num=sp_lnk).count():
         # there was a prior report for this nest that agrees with the species given here
-        force_confirmation = True if nsla_link.last_mod_by.is_bot == 1 else False
+        confirmation = True if nsla_link.last_mod_by.is_bot == 1 else False
         return update_nsla(2)
 
     # update if the same user reports the nest again with better data
     if prior_reports.first() is not None and prior_reports.first().user_name == name:
-        force_confirmation = False
+        confirmation = False
         return update_nsla(1)
 
     # anything from here on is a conflict that can't get updated
@@ -684,3 +683,38 @@ def collect_empty_nests(
     else:
         nests: "QuerySet[NstLocation]" = NstLocation.objects.all()
     return nests.exclude(pk__in=nsla_exclude_list.nestid)
+
+
+class NewRotationStatus(NamedTuple):
+    rotation: Optional[NstRotationDate]
+    success: bool
+    note: str
+
+
+def new_rotation(rot8d8time: datetime) -> NewRotationStatus:
+    if len(NstRotationDate.objects.filter(date__contains=rot8d8time.date())) > 0:
+        # don't go for multiple rotations on the same day
+        return NewRotationStatus(
+            None, False, f"Rotation already exists for {rot8d8time.date()}"
+        )
+
+    # generate date to save
+    prev_rot = NstRotationDate.objects.latest("num")
+    new_rot = NstRotationDate.objects.create(date=rot8d8time, num=prev_rot.num + 1)
+    perm_nst = NstLocation.objects.exclude(
+        Q(permanent_species__isnull=True) | Q(permanent_species__exact="")
+    )
+    # insert permanent nests
+    for nst in perm_nst:
+        add_a_report(
+            name="Otto",
+            nest=nst.pk,
+            timestamp=append_utc(datetime.utcnow()),
+            species=nst.permanent_species.split("|")[0],
+            bot_id=settings.SYSTEM_BOT_USER,
+            server="localhost",
+            rotation=new_rot,
+            search_all=True,
+            confirmation=True,
+        )
+    return NewRotationStatus(new_rot, True, f"Added rotation {new_rot}")
