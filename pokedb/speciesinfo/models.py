@@ -2,7 +2,7 @@ from django.db import models
 from django.db.models import Q
 from nestlist.utils import str_int
 from django.db.models.query import QuerySet
-from typing import Union
+from typing import Union, Dict, Optional
 
 
 # Create your models here.
@@ -387,3 +387,14 @@ def match_species_by_type(
     return input_list.filter(
         Q(type1__name__icontains=target_type) | Q(type1__name__icontains=target_type)
     ).order_by("dex_number")
+
+
+def get_surrounding_species(
+    search: Pokemon,
+    input_list: "QuerySet[Pokemon]" = Pokemon.objects.all().order_by("dex_number"),
+) -> Dict[str, Optional[Pokemon]]:
+    """Assumes that the input_list is already ordered by pokédex number"""
+    return {
+        "previous": input_list.filter(dex_number__lt=search.dex_number).last(),
+        "next": input_list.filter(dex_number__gt=search.dex_number).first(),
+    }

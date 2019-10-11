@@ -13,6 +13,7 @@ from speciesinfo.models import (
     match_species_by_name_or_number,
     Pokemon,
     nestable_species,
+    get_surrounding_species,
 )
 from typing import Union, Optional, Tuple, NamedTuple, Dict
 from datetime import datetime
@@ -571,10 +572,13 @@ def add_a_report(
 
     # only take one report to update to the next species
     # unless it's confirmed by a human or system bot
-    nes: "QuerySet[Pokemon]" = nestable_species()
-    prev_sp: Pokemon = nes.filter(dex_number__lt=nsla_link.species_no).last()
-    next_sp: Pokemon = nes.filter(dex_number__gt=nsla_link.species_no).first()
-    if (sp_lnk == prev_sp or sp_lnk == next_sp) and nsla_link.last_mod_by.is_bot == 1:
+    if (
+        sp_lnk
+        in get_surrounding_species(
+            nsla_link.species_name_fk, nestable_species()
+        ).values()
+        and nsla_link.last_mod_by.is_bot == 1
+    ):
         force_confirmation = False
         return update_nsla(1)
     # human and bot confirmations need to go through the normal double agreement to overturn process
