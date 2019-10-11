@@ -8,6 +8,14 @@ which will prove useful all over the place.
 from .utils import parse_date, str_int
 from django.db import models
 from django.db.models import Q
+from django.db.models.query import QuerySet
+from speciesinfo.models import (
+    match_species_by_name_or_number,
+    Pokemon,
+    nestable_species,
+)
+from typing import Union, Optional, Tuple, NamedTuple, Dict
+from datetime import datetime
 
 
 class NstAdminEmail(models.Model):
@@ -24,7 +32,7 @@ class NstAdminEmail(models.Model):
         db_table = "nst_admin_email"
 
     def __str__(self):
-        return f"{self.short_name} [{self.id}] {self.e_mail}"
+        return f"{self.shortname} [{self.pk}] {self.e_mail}"
 
 
 class NstAltName(models.Model):
@@ -56,7 +64,7 @@ class NstCombinedRegion(models.Model):
         db_table = "nst_combined_region"
 
     def __str__(self):
-        return f"{self.name} [{self.id}]"
+        return f"{self.name} [{self.pk}]"
 
     def __lt__(self, other):
         return self.name < other.name
@@ -234,12 +242,6 @@ class NstSpeciesListArchive(models.Model):
     last_mod_by = models.ForeignKey(
         NstAdminEmail, models.SET_NULL, db_column="last_mod_by", null=True
     )
-    city = models.ForeignKey(
-        NstMetropolisMajor, models.SET_NULL, db_column="city", null=True
-    )
-    neighborhood = models.ForeignKey(
-        NstNeighborhood, models.SET_NULL, db_column="neighborhood", null=True
-    )
 
     class Meta:
         managed = False
@@ -271,38 +273,6 @@ on {self.rotation_num.date_priority_display()}"
         return False
 
 
-class NestSpecies(models.Model):
-    poke_fk = models.OneToOneField(
-        "speciesinfo.Pokemon", models.DO_NOTHING, primary_key=True, db_column="Name"
-    )
-    dex_number = models.IntegerField(db_column="dex_number", unique=True)
-    main_type = models.ForeignKey(
-        "typeedit.Type",
-        models.DO_NOTHING,
-        db_column="Type",
-        related_name="nst1type",
-        to_field="name",
-    )
-    subtype = models.ForeignKey(
-        "typeedit.Type",
-        models.DO_NOTHING,
-        to_field="name",
-        related_name="nst2type",
-        null=True,
-        db_column="Subtype",
-    )
-    generation = models.ForeignKey(
-        "speciesinfo.Generation", models.DO_NOTHING, db_column="Generation"
-    )
-
-    class Meta:
-        managed = False
-        db_table = "nest_species_list"
-
-    def __str__(self):
-        return str(self.poke_fk)
-
-
 class AirtableImportLog(models.Model):
     time = models.DateTimeField(null=True)
     city = models.CharField(null=True, max_length=25)
@@ -328,52 +298,67 @@ class NstRawRpt(models.Model):
     nsla_pk_unlink = models.IntegerField(default=0)
     timestamp = models.DateTimeField(null=True)
     foreign_db_row_num = models.IntegerField(null=True)
-    raw_species_num = models.IntegerField(null=True)
-    raw_species_txt = models.CharField(max_length=120, null=True)
-    attempted_dex_num = models.IntegerField(
-        null=True
+    raw_species_num = models.CharField(
+        max_length=120, null=True
+    )  # legacy naming scheme, as this is not an Int field anymore
+    attempted_dex_num = models.ForeignKey(
+        "speciesinfo.Pokemon", models.SET_NULL, null=True
     )  # Needs to be Int and not FK to play well with Django
     raw_park_info = models.CharField(max_length=120, null=True, blank=True)
     parklink = models.ForeignKey(NstLocation, models.SET_NULL, null=True)
     action = models.IntegerField(null=True)
-    dedupe_sig = models.CharField(null=True, blank=False, max_length=50)
     calculated_rotation = models.ForeignKey(NstRotationDate, models.SET_NULL, null=True)
 
     class Meta:
         db_table = "nst_raw_rpt"
 
     def __str__(self):
-        return f"{self.dedupe_sig} {self.raw_species_txt}{self.raw_species_num}"
+        return f"{self.user_name} reported {self.raw_species_num} at {self.raw_park_info} on {self.timestamp}"
+
+    def privacy_str(self) -> str:
+        return f"{self.raw_species_num} reported at {self.raw_park_info} on {self.timestamp}"
 
 
-def get_rotation(date):
+def get_rotation(date) -> NstRotationDate:
     """
     Returns a NstRotation object
     :param date: some form of date or rotation number (either int or str)
     :return: NstRotation object on or before the specified date
     """
-    date = str(date)  # handle both str and int input
+    date = str(date).strip()  # handle both str and int input
     if len(date) < 4 and str_int(date):
         try:  # using the input as a direct rotation number
             return NstRotationDate.objects.get(pk=int(date))
         except NstRotationDate.DoesNotExist:
-            get_rotation("t")  # default to today if it's junk
+            return get_rotation("t")  # default to today if it's junk
     date = parse_date(date)  # parse the date
     return NstRotationDate.objects.filter(date__lte=date).order_by("-date")[0]
 
 
-def query_nests(search, location_id=None, location_type="", only_one=False):
+def query_nests(
+    search: Union[str, int],
+    location_id: int = None,
+    location_type: str = "",
+    only_one: bool = False,
+) -> "QuerySet[NstLocation]":
     """
     Queries nests that match a given name
 
     To return all nests in an area, set search to ""
 
+    To enforce a single result, set only_one to True and then .get() on the result
+    Yosemite = query_nests("Yosemite", only_one=True).get()
+
     :param search: name to match on nest, set to "" to match all nests
-    :param location_id:
-    :param location_type:
-    :param only_one: 
-    :return:
+    :param location_id: id of the location to search
+    :param location_type: "city", "neighborhood", or "region"
+    :param only_one: throw an error if more than one result
+    :return: None if no results
     """
+    if only_one and str_int(search):
+        res = NstLocation.objects.filter(nestID=search)
+        if res:
+            return res
     out = (
         NstLocation.objects.filter(
             Q(official_name__icontains=search)
@@ -395,10 +380,259 @@ def query_nests(search, location_id=None, location_type="", only_one=False):
         elif location_type == "region":
             # TODO: update this once regions are improved
             out = out.filter(neighborhood__region=location_id)
-    if only_one:
-        if len(out) > 1:
-            raise 9 from RuntimeError("Too many results")
-        if len(out) == 0:
-            return None
-        return out[0]
     return out
+
+
+class ReportStatus(NamedTuple):
+    """
+    Status of the report
+        0 duplicate [no action]
+        1 first report
+        2 confirmation
+        4 conflict
+        6 deletion
+        7 non-bot overwrite (always successful)
+        9 error
+
+    Errors should always have something in the type & location fields.
+    """
+
+    row: Optional[NstRawRpt]
+    status: int
+    errors_by_code: Optional[Dict[int, Tuple[str, str, str]]]
+    errors_by_location: Optional[Dict[str, Tuple[int, str, str]]]
+
+
+def add_a_report(
+    name: str,
+    nest: Union[int, str],
+    timestamp: datetime,
+    species: Union[int, str],
+    bot_id: int,
+    server: Optional[str] = None,
+    rotation: Optional[NstRotationDate] = None,
+) -> ReportStatus:
+    """
+    Adds a raw report and updates the NSLA if applicable
+    This thing is **long** and full of ugly business logic
+
+    For "bots" with an is_bot != 1, reports always succeed at updating
+    non-bot "bots" do not generate a NstRawReport entry if they do not modify anything
+
+    :param name: who submitted the report
+    :param server: server identifier
+    :param nest: ID of nest, assumed to be unique
+    :param timestamp: timestamp of report
+    :param species: string or int of the species, assumed to be unique
+    :param bot_id: bot ID
+    :param rotation: pre-calculated rotation number
+    :return: (see ReportStatus docstring)
+    """
+
+    def handle_validation_errors() -> ReportStatus:
+        """Handles on reporting on multiple errors"""
+        by_code: dict = {}
+        for location in error_list.keys():
+            code, text, bad_value = error_list[location]
+            by_code[code] = (location, text, bad_value)
+
+        return ReportStatus(None, 9, by_code, error_list)
+
+    def record_report(status: int) -> ReportStatus:
+        """Shoves the report into NstRawRpt with appropriate links"""
+        rpt = NstRawRpt.objects.create(
+            action=status,
+            attempted_dex_num=sp_lnk,
+            bot=bot,
+            calculated_rotation=rotation,
+            nsla_pk=nsla_link,
+            nsla_pk_unlink=nsla_link.pk,
+            raw_park_info=nest,
+            raw_species_num=species,
+            timestamp=timestamp,
+            user_name=name,
+            server_name=server,
+            parklink=park_link,
+        )
+        return ReportStatus(rpt, status, None, None)
+
+    def update_nsla(status_code: int) -> ReportStatus:
+        """Updates the NSLA and leaves"""
+        nsla_link.confirmation = force_confirmation
+        nsla_link.species_name_fk = sp_lnk
+        nsla_link.species_no = sp_lnk.dex_number if sp_lnk else None
+        nsla_link.species_txt = sp_lnk.name if sp_lnk else species
+        nsla_link.last_mod_by = bot
+        nsla_link.save()
+        return record_report(status_code)
+
+    #
+    # setup & validate internal variables from input
+    #
+    error_list: Dict[str, Tuple[int, str, str]] = {}
+    name = name.strip()
+    is_bot = 1
+    if not name:
+        error_list["user_name"] = (417, "No name given", "")
+    if not timestamp:
+        error_list["timestamp"] = (416, "Timestamp is emtpy", "")
+    try:  # bot id
+        bot: NstAdminEmail = NstAdminEmail.objects.get(pk=bot_id)
+        is_bot = bot.is_bot
+        # God-editor shortcuts: Pikachu|1 or Tyrogue* or Porygon-Z*|2
+        force_confirmation: bool = True if is_bot in [
+            0,
+            2,
+        ] and "|" in species else False
+    except NstAdminEmail.DoesNotExist:
+        error_list["bot_id"] = (401, "Bad bot ID", f"{bot_id}")
+    search_all: bool = True if "*" in species else False
+    species = species.split("|")[0].split("*")[0]  # handle nest_entry.py God-mode input
+    try:  # species link
+        sp_lnk: Optional[Pokemon] = match_species_by_name_or_number(
+            species,
+            only_one=True,
+            input_set=Pokemon.objects.all() if search_all else nestable_species(),
+        ).get()
+    except Pokemon.DoesNotExist:
+        if is_bot == 1:
+            error_list["pokémon"] = (404, "not found", f"{species}")
+        else:
+            sp_lnk = None  # free-text pokémon entries
+    except Pokemon.MultipleObjectsReturned:
+        if is_bot:
+            error_list["pokémon"] = (412, "too many results", f"{species}")
+        else:
+            sp_lnk = None  # free-text it for human entries
+    try:  # park link
+        park_link: NstLocation = query_nests(
+            nest, location_type="city", location_id=bot.city, only_one=True
+        ).get()
+    except NstLocation.MultipleObjectsReturned:
+        error_list["nest"] = (412, "too many results", f"{nest}")
+    except NstLocation.DoesNotExist:
+        error_list["nest"] = (404, "not found", f"{nest}")
+    if rotation is None:  # rotation
+        try:
+            rotation = get_rotation(timestamp)
+        except ValueError:
+            error_list["timestamp"] = (417, "Invalid timestamp", f"{timestamp}")
+        except NstRotationDate.DoesNotExist:
+            error_list["timestamp"] = (404, "no rotation found", f"{timestamp}")
+    if error_list:
+        # this could be higher for marginal performance gain in a high-write environment
+        return handle_validation_errors()
+
+    #
+    # check for prior art and create NSLA row if none exists
+    #
+    nsla_link, fresh = NstSpeciesListArchive.objects.get_or_create(
+        rotation_num=rotation,
+        nestid=park_link,  # if this is None, it would have errored already
+        defaults={
+            "confirmation": force_confirmation,
+            "species_name_fk": sp_lnk,
+            "species_no": sp_lnk.dex_number if sp_lnk else None,
+            "species_txt": sp_lnk.name if sp_lnk else species,
+            "last_mod_by": bot,
+        },
+    )
+    if fresh:  # we're done if it's a new report
+        return record_report(2 if force_confirmation else 1)
+    prior_reports: "QuerySet[NstRawRpt]" = NstRawRpt.objects.filter(
+        Q(nsla_pk=nsla_link) | Q(nsla_pk_unlink=nsla_link.pk)
+    ).order_by(
+        "-timestamp"
+    )  # for duplicate-checking and conflict resolution later
+
+    # no change from manual edit
+    if (
+        nsla_link.species_name_fk == sp_lnk
+        and nsla_link.confirmation == force_confirmation
+        and bot.is_bot != 1
+    ):
+        return ReportStatus(None, 0, None, None)
+    # force change from manual edit
+    if bot.is_bot != 1:
+        return update_nsla(7)
+    # it's only bot posting from here on
+
+    if sp_lnk == nsla_link.species_name_fk:  # confirmations and duplicates
+        if prior_reports.filter(user_name=name, attempted_dex_num=sp_lnk).count():
+            return record_report(0)  # exact duplicates
+        if nsla_link.confirmation:
+            return record_report(2)  # previously-confirmed nests
+        force_confirmation = True  # freshly-confirmed reports
+        return update_nsla(2)
+
+    #
+    # conflicted nests should be all that's left by now
+    #
+
+    # only take one report to update to the next species
+    # unless it's confirmed by a human or system bot
+    nes: "QuerySet[Pokemon]" = nestable_species()
+    prev_sp: Pokemon = nes.filter(dex_number__lt=nsla_link.species_no).last()
+    next_sp: Pokemon = nes.filter(dex_number__gt=nsla_link.species_no).first()
+    if (sp_lnk == prev_sp or sp_lnk == next_sp) and nsla_link.last_mod_by.is_bot == 1:
+        force_confirmation = False
+        return update_nsla(1)
+    # human and bot confirmations need to go through the normal double agreement to overturn process
+
+    # count the nests from this rotation, then select the nest that most recently has two reports that agree
+    # this assumes that the report being added is always the most recent one (so it may break on historic data import)
+    if prior_reports.filter(attempted_dex_num=sp_lnk).count():
+        # there was a prior report for this nest that agrees with the species given here
+        force_confirmation = True if nsla_link.last_mod_by.is_bot == 1 else False
+        return update_nsla(2)
+
+    # update if the same user reports the nest again with better data
+    if prior_reports.first() is not None and prior_reports.first().user_name == name:
+        force_confirmation = False
+        return update_nsla(1)
+
+    # anything from here on is a conflict that can't get updated
+    if prior_reports.exclude(attempted_dex_num=sp_lnk).count():
+        return record_report(4)
+
+    # always return something, even if I screwed up the logic elsewhere
+    error_list["unknown"] = (
+        500,
+        "Something got missed",
+        "nestlist.models.add_a_report",
+    )
+    return handle_validation_errors()
+
+
+def get_local_nsla_for_rotation(
+    rotation: NstRotationDate,
+    location_pk: int,
+    location_type: str,
+    species: Optional[str] = None,
+) -> "QuerySet[NstSpeciesListArchive]":
+    """
+    :param rotation: NstRotationDate object
+    :param location_pk: numeric ID of location to filter
+    :param location_type: 'city', 'neighborhood', or 'region'
+    :param species: optional filter for species
+    :return: The filtered NSLA for the given location and date
+    """
+    out_list = NstSpeciesListArchive.objects.filter(rotation_num=rotation).order_by(
+        "nestid__official_name"
+    )
+    if species:
+        out_list = out_list.filter(
+            Q(
+                species_name_fk__in=match_species_by_name_or_number(
+                    sp_txt=species, previous_evolution_search=True
+                )
+            )
+            | Q(species_txt__icontains=species)  # for free-text row-matching
+        )
+    if location_type.lower() == "city":
+        return out_list.filter(nestid__neighborhood__major_city=location_pk)
+    if location_type.lower() == "neighborhood":
+        return out_list.filter(nestid__neighborhood=location_pk)
+    if location_type.lower() == "region":
+        return out_list.filter(nestid__neighborhood__region=location_pk)
+    return None

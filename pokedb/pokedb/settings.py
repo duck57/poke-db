@@ -11,34 +11,10 @@ https://docs.djangoproject.com/en/2.1/ref/settings/
 """
 
 import os
-import configparser
 
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-
-config = configparser.ConfigParser(inline_comment_prefixes=(";",))
-config.readfp(open("config.cfg"))
-
-# Load things from the config file
-kiskis = config.get("Secrets", "secret_key")
-uname = config.get("Secrets", "username")
-pwd = config.get("Secrets", "password")
-host = config.get("Host", "host")
-bug_mode = config.get("Mode", "debug")
-backend = config.get("Host", "engine")
-port = config.get("Host", "port")
-db = config.get("Host", "db_name")
-hostlist = config.get("Host", "allowed").split("\n")
-
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/2.1/howto/deployment/checklist/
-
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = kiskis
-
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
 
 ALLOWED_HOSTS = [
     "pokemongo.toouter.space",
@@ -104,22 +80,6 @@ TEMPLATES = [
 WSGI_APPLICATION = "pokedb.wsgi.application"
 
 
-# Database
-# https://docs.djangoproject.com/en/2.1/ref/settings/#databases
-
-DATABASES = {
-    "default": {
-        "ENGINE": backend,
-        "NAME": db,
-        "USER": uname,
-        "PASSWORD": pwd,
-        "HOST": host,
-        "PORT": port,
-        "OPTIONS": {"charset": "utf8mb4"},
-    }
-}
-
-
 # Password validation
 # https://docs.djangoproject.com/en/2.1/ref/settings/#auth-password-validators
 
@@ -162,15 +122,21 @@ STATIC_URL = "/static/"
 STATIC_ROOT = "/var/www/toouter.space/static/"
 
 CACHES = {
-   'default': {
-      'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache',
-      'LOCATION': 'unix:/tmp/memcached.sock',
-   }
+    "default": {
+        "BACKEND": "django.core.cache.backends.memcached.MemcachedCache",
+        "LOCATION": "unix:/tmp/memcached.sock",
+    }
 }
 
 MIDDLEWARE_CLASSES = (
-   'django.middleware.cache.UpdateCacheMiddleware',
-   'django.middleware.common.CommonMiddleware',
-   'django.middleware.cache.FetchFromCacheMiddleware',
+    "django.middleware.cache.UpdateCacheMiddleware",
+    "django.middleware.common.CommonMiddleware",
+    "django.middleware.cache.FetchFromCacheMiddleware",
 )
 
+
+try:
+    from .settings_local import *
+except ImportError:
+    print("Import error")
+    pass

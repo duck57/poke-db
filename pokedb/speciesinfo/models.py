@@ -1,6 +1,9 @@
 from django.db import models
 from django.db.models import Q
 from nestlist.utils import str_int
+from django.db.models.query import QuerySet
+from typing import Union
+
 
 # Create your models here.
 
@@ -27,7 +30,7 @@ class Generation(models.Model):
         db_table = "generations"
 
     def __str__(self):
-        return f"{self.id}: {self.region}"
+        return f"{self.pk}: {self.region}"
 
 
 class EggGroup(models.Model):
@@ -54,7 +57,7 @@ class PokeCategory(models.Model):
         db_table = "zc_pkmn_cat"
 
     def __str__(self):
-        return self.name
+        return f"{self.pk}: {self.name}"
 
 
 class BodyPlan(models.Model):
@@ -74,7 +77,7 @@ class Ability(models.Model):
     name = models.CharField(db_column="Name", max_length=50)
     effect = models.CharField(db_column="Effect", max_length=333)
     generation = models.ForeignKey(
-        "Generation", models.DO_NOTHING, db_column="Generation", blank=True, null=True
+        Generation, models.DO_NOTHING, db_column="Generation", blank=True, null=True
     )
     note = models.CharField(db_column="Note", max_length=99, blank=True, null=True)
 
@@ -98,12 +101,12 @@ class Pokemon(models.Model):
     sp_def = models.IntegerField(db_column="SpDef")
     speed = models.IntegerField(db_column="Speed")
     generation = models.ForeignKey(
-        "Generation", models.DO_NOTHING, db_column="Generation"
+        Generation, models.DO_NOTHING, db_column="Generation"
     )
     evolved_from = models.IntegerField(
         db_column="evolved_from"
     )  # integer field to fix Django assumptions
-    pogonerf = models.BooleanField(db_column="PoGoNerf", default=False)
+    pogo_nerf = models.BooleanField(db_column="PoGoNerf", default=False)
     type1 = models.ForeignKey(
         "typeedit.Type",
         models.DO_NOTHING,
@@ -119,7 +122,7 @@ class Pokemon(models.Model):
         related_name="alternate_type",
     )
     category = models.ForeignKey(
-        "PokeCategory", models.DO_NOTHING, db_column="catnum", blank=True, null=True
+        PokeCategory, models.DO_NOTHING, db_column="catnum", blank=True, null=True
     )
     wt_kg = models.FloatField()
     ht_m = models.FloatField()
@@ -141,7 +144,7 @@ class Pokemon(models.Model):
         db_column="OfficialColor", max_length=11, blank=True, null=True
     )
     body_plan = models.ForeignKey(
-        "BodyPlan", models.DO_NOTHING, db_column="Body_Plan", blank=True, null=True
+        BodyPlan, models.DO_NOTHING, db_column="Body_Plan", blank=True, null=True
     )
     description_category = models.CharField(max_length=13, blank=True, null=True)
     ability1 = models.ForeignKey(
@@ -189,7 +192,7 @@ class Pokemon(models.Model):
     def __str__(self):
         return f"#{self.dex_number:03} {self.name}"
 
-    def is_type(self, t1, t2=None):
+    def is_type(self, t1, t2=None) -> bool:
         """
         It is agnostic as to which order the match occurs
         (eg. checking for "Flying, Dragon" on a Dragon/Flying type returns True)
@@ -224,33 +227,163 @@ class Pokemon(models.Model):
         return 1
 
 
-def match_species_by_name_or_number(sp_txt, only_one=False):
+def match_species_by_name_or_number(
+    sp_txt: Union[str, int],
+    input_set: "QuerySet[Pokemon]" = Pokemon.objects.all(),
+    age_up: bool = False,
+    previous_evolution_search: bool = False,
+    only_one: bool = False,
+    loose_search: bool = False,
+) -> "QuerySet[Pokemon]":
     """
+    If you want only a single result, call this function with only_one = True and .get() after
+    Works best in a try/except block
+    charmander = match_species_by_name_or_number(4, only_one=True).get()
+
     :param sp_txt: pokémon name or number to search for
+                    if the "name" starts with "start" or is a type or region name, return those species
     :param only_one: set to True to enforce returning only a single pokémon
-    :return: a QuerySet of pokémon matching the input string if only_one is False
-    otherwise, return the pokémon that matches or raise an exception for multiple matches
-
-    Always returns None for empty lists
+    :param previous_evolution_search: set True to search for previous evolutions of matching species as well
+    :param age_up: set True to search for future evolutions of matching species
+    :param input_set: a QuerySet of Pokémon eligible to be results
+                    leave me null to search from all Pokémon
+    :param loose_search: for species like Abra & Mew, whose names are contained within the name of others
+                    set to true to return those; otherwise assumes you exact matches match
+    :return: a QuerySet of pokémon matching the input string
     """
 
-    # hardcoded Abra match so it does not match Crabwaler every time
-    if str(sp_txt).lower().strip() == "abra":
-        res_lst = [Pokemon.objects.get(pk="Abra")]
-    else:
-        res_lst = (
-            Pokemon.objects.filter(
-                Q(dex_number=sp_txt if str_int(sp_txt) else None)
-                | Q(name__icontains=sp_txt)
-            )
-            .order_by("dex_number")
-            .distinct()
+    def return_me(tentative_list: "QuerySet[Pokemon]") -> "QuerySet[Pokemon]":
+        """Inner function to clean up the result list"""
+        return tentative_list.order_by("dex_number").distinct()
+
+    def evo_searches(
+        orig_pkmn: "QuerySet[Pokemon]", look_for_pre: bool, look_for_next: bool
+    ) -> "QuerySet[Pokemon]":
+        """
+        :param orig_pkmn: QuerySet assumed to contain a single pokémon
+        :param look_for_pre: same as previous_evolution_search from above
+        :param look_for_next: same as age_up from above
+        :return: sends the resulting QuerySet to return_me
+        """
+
+        def find_previous_pokemon(
+            search_qset: "QuerySet[Pokemon]", doit: bool
+        ) -> "QuerySet[Pokemon]":
+            if not doit:
+                return search_qset
+            return (
+                Pokemon.objects.filter(pk__in=search_qset.values("previous_evolution"))
+                .exclude(pk="(Egg)")
+                .distinct()
+                | search_qset.distinct()
+            ).distinct()
+
+        p = find_previous_pokemon(
+            find_previous_pokemon(orig_pkmn, look_for_pre), look_for_pre
         )
-    num_res = len(res_lst)
-    if num_res == 0:
-        return None
-    if only_one:
-        if num_res == 1:
-            return res_lst[0]
-        raise 9 from RuntimeError("Too many results")
-    return res_lst
+        future = (
+            input_set.filter(
+                Q(previous_evolution__in=orig_pkmn)
+                | Q(previous_evolution__previous_evolution__in=orig_pkmn)
+            )
+            if look_for_next
+            else input_set.none()
+        ).distinct()
+        return input_set.filter(pk__in=(p | future))
+
+    sp_txt = str(sp_txt).strip().lower()
+    if not sp_txt:
+        # return nothing if nothing is searched for
+        return input_set.none()
+
+    # handle some edge case misspellings
+    sp_txt = sp_txt.replace("m2", "mewtwo")
+    sp_txt = sp_txt.replace("mew2", "mewtwo")
+    sp_txt = sp_txt.replace("mew 2", "mewtwo")
+    sp_txt = sp_txt.replace("porygon z", "porygon-z")
+    sp_txt = sp_txt.replace("porygonz", "porygon-z")
+    sp_txt = sp_txt.replace("porygon 2", "porygon2")
+    sp_txt = sp_txt.replace("porygon-2", "porygon2")
+
+    # Handle Abra, Mew, megas, etc…
+    exact_name_hit: "QuerySet[Pokemon]" = input_set.none() if loose_search else input_set.filter(
+        name__iexact=sp_txt
+    )
+    if exact_name_hit.count():
+        return return_me(exact_name_hit)
+
+    # return starters and their evolutions
+    if "start" in sp_txt:
+        return return_me(input_set.filter(category__in=[50, 52, 53]))
+
+    # handle numeric queries
+    # a search for "2" returns Ivysaur and not Porygon 2
+    if str_int(sp_txt):
+        me = input_set.filter(dex_number=sp_txt)
+        # if you enter a number when looking for a single species, stop here
+        # stop if nothing was found, too
+        if only_one or not me:
+            return return_me(me)
+        return return_me(evo_searches(me, previous_evolution_search, age_up))
+
+    # handle short queries
+    if len(sp_txt) < 3:
+        return return_me(input_set.filter(name__icontains=sp_txt))
+
+    # using this dict as a way to be extensible and comment why these functions get called
+    attribute_match: dict = {
+        "region": input_set.filter(generation__region__icontains=sp_txt),
+        "type": match_species_by_type(sp_txt, input_set),
+        "egg group": (
+            match_species_by_egg_group(sp_txt[4:], input_set)
+            if len(sp_txt) > 7 and sp_txt[:4] == "egg:"
+            else input_set.none()
+        ),
+    }
+    # Queries matching a Region, Type, or egg do not get the previous/next evolution searches
+    if not all(bool(value) is False for value in attribute_match.values()):
+        # There has to be a better way to do this
+        # this = join unknown multiple QuerySets from a list
+        out = input_set.none()
+        for attr in attribute_match.keys():
+            out = out | attribute_match[attr]
+        return return_me(out)
+
+    # search by name and respect future/past evolution searching
+    return return_me(
+        input_set.filter(
+            pk__in=evo_searches(
+                Pokemon.objects.filter(name__icontains=sp_txt),
+                previous_evolution_search,
+                age_up,
+            )
+        )
+    )
+
+
+def nestable_species() -> "QuerySet[Pokemon]":
+    """Compare to the NestSpecies model in nestlist.models"""
+    return (
+        Pokemon.objects.filter(previous_evolution__category=6, form="Normal")
+        .exclude(category__pk__in=[6, 1, 2, 3, 41, 404, 77, 9999])
+        .order_by("dex_number")
+    )
+
+
+def match_species_by_egg_group(
+    target_group: str, input_list: "QuerySet[Pokemon]" = Pokemon.objects.all()
+) -> "QuerySet[Pokemon]":
+    return input_list.filter(
+        Q(egg1__name__icontains=target_group)
+        | Q(egg1__stadium2name__icontains=target_group)
+        | Q(egg2__name__icontains=target_group)
+        | Q(egg2__stadium2name__icontains=target_group)
+    ).order_by("dex_number")
+
+
+def match_species_by_type(
+    target_type: str, input_list: "QuerySet[Pokemon]" = Pokemon.objects.all()
+) -> "QuerySet[Pokemon]":
+    return input_list.filter(
+        Q(type1__name__icontains=target_type) | Q(type1__name__icontains=target_type)
+    ).order_by("dex_number")
