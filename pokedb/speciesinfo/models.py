@@ -233,6 +233,7 @@ def match_species_by_name_or_number(
     age_up: bool = False,
     previous_evolution_search: bool = False,
     only_one: bool = False,
+    loose_search: bool = False,
 ) -> "QuerySet[Pokemon]":
     """
     If you want only a single result, call this function with only_one = True and .get() after
@@ -246,6 +247,8 @@ def match_species_by_name_or_number(
     :param age_up: set True to search for future evolutions of matching species
     :param input_set: a QuerySet of Pokémon eligible to be results
                     leave me null to search from all Pokémon
+    :param loose_search: for species like Abra & Mew, whose names are contained within the name of others
+                    set to true to return those; otherwise assumes you exact matches match
     :return: a QuerySet of pokémon matching the input string
     """
 
@@ -293,17 +296,30 @@ def match_species_by_name_or_number(
         # return nothing if nothing is searched for
         return input_set.none()
 
-    # hardcoded Abra match so it does not match® Crabwaler every time
-    if sp_txt == "abra":
-        return return_me(Pokemon.objects.filter(pk="Abra"))
+    # handle some edge case misspellings
+    sp_txt = sp_txt.replace("m2", "mewtwo")
+    sp_txt = sp_txt.replace("mew2", "mewtwo")
+    sp_txt = sp_txt.replace("mew 2", "mewtwo")
+    sp_txt = sp_txt.replace("porygon z", "porygon-z")
+    sp_txt = sp_txt.replace("porygonz", "porygon-z")
+    sp_txt = sp_txt.replace("porygon 2", "porygon2")
+    sp_txt = sp_txt.replace("porygon-2", "porygon2")
+
+    # Handle Abra, Mew, megas, etc…
+    exact_name_hit: "QuerySet[Pokemon]" = input_set.none() if loose_search else input_set.filter(
+        name__iexact=sp_txt
+    )
+    if exact_name_hit.count():
+        return return_me(exact_name_hit)
 
     # return starters and their evolutions
     if "start" in sp_txt:
         return return_me(input_set.filter(category__in=[50, 52, 53]))
 
     # handle numeric queries
+    # a search for "2" returns Ivysaur and not Porygon 2
     if str_int(sp_txt):
-        me = Pokemon.objects.filter(dex_number=sp_txt)
+        me = input_set.filter(dex_number=sp_txt)
         # if you enter a number when looking for a single species, stop here
         # stop if nothing was found, too
         if only_one or not me:

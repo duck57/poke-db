@@ -449,6 +449,16 @@ def add_a_report(
         )
         return ReportStatus(rpt, status, None, None)
 
+    def update_nsla(status_code: int) -> ReportStatus:
+        """Updates the NSLA and leaves"""
+        nsla_link.confirmation = force_confirmation
+        nsla_link.species_name_fk = sp_lnk
+        nsla_link.species_no = sp_lnk.dex_number if sp_lnk else None
+        nsla_link.species_txt = sp_lnk.name if sp_lnk else species
+        nsla_link.last_mod_by = bot
+        nsla_link.save()
+        return record_report(status_code)
+
     #
     # setup & validate internal variables from input
     #
@@ -524,7 +534,9 @@ def add_a_report(
         return record_report(2 if force_confirmation else 1)
     prior_reports: "QuerySet[NstRawRpt]" = NstRawRpt.objects.filter(
         Q(nsla_pk=nsla_link) | Q(nsla_pk_unlink=nsla_link.pk)
-    ).order_by("-timestamp")
+    ).order_by(
+        "-timestamp"
+    )  # for duplicate-checking and conflict resolution later
 
     # no change from manual edit
     if (
@@ -535,49 +547,54 @@ def add_a_report(
         return ReportStatus(None, 0, None, None)
     # force change from manual edit
     if bot.is_bot != 1:
-        nsla_link.confirmation = force_confirmation
-        nsla_link.species_name_fk = sp_lnk
-        nsla_link.species_no = sp_lnk.dex_number if sp_lnk else None
-        nsla_link.species_txt = sp_lnk.name if sp_lnk else species
-        nsla_link.last_mod_by = bot
-        nsla_link.save()
-        return record_report(7)
+        return update_nsla(7)
     # it's only bot posting from here on
 
     if sp_lnk == nsla_link.species_name_fk:  # confirmations and duplicates
-        if prior_reports.filter(user_name=name, attempted_dex_num=sp_lnk):
+        if prior_reports.filter(user_name=name, attempted_dex_num=sp_lnk).count():
             return record_report(0)  # exact duplicates
         if nsla_link.confirmation:
             return record_report(2)  # previously-confirmed nests
-        nsla_link.update(confirmation=True)
-        return record_report(2)
+        force_confirmation = True  # freshly-confirmed reports
+        return update_nsla(2)
 
     #
     # conflicted nests should be all that's left by now
     #
 
-    # if it was edited by a God-mode user, just skip it and move on
-    # similarly for humans and the system
-    # it's just conflicted nests left by a bot now
+    # only take one report to update to the next species
+    # unless it's confirmed by a human or system bot
+    nes: "QuerySet[Pokemon]" = nestable_species()
+    prev_sp: Pokemon = nes.filter(dex_number__lt=nsla_link.species_no).last()
+    next_sp: Pokemon = nes.filter(dex_number__gt=nsla_link.species_no).first()
+    if (sp_lnk == prev_sp or sp_lnk == next_sp) and nsla_link.last_mod_by.is_bot == 1:
+        force_confirmation = False
+        return update_nsla(1)
+    # human and bot confirmations need to go through the normal double agreement to overturn process
 
     # count the nests from this rotation, then select the nest that most recently has two reports that agree
     # this assumes that the report being added is always the most recent one (so it may break on historic data import)
-    conf_check = NstRawRpt.objects.filter(
-        calculated_rotation=rotation, parklink=park_link, attempted_dex_num=sp_lnk
-    ).order_by("-timestamp")
+    if prior_reports.filter(attempted_dex_num=sp_lnk).count():
+        # there was a prior report for this nest that agrees with the species given here
+        force_confirmation = True if nsla_link.last_mod_by.is_bot == 1 else False
+        return update_nsla(2)
 
-    # if it's conflicted single reports, the first one wins
+    # update if the same user reports the nest again with better data
+    if prior_reports.first() is not None and prior_reports.first().user_name == name:
+        force_confirmation = False
+        return update_nsla(1)
 
-    # unless they're both by the same user
-    namelist = set()
-    namelist.add(name)
-    for raw in NstRawRpt.objects.filter(rotation=rotation, parklink=park_link).order_by(
-        "-timestamp"
-    ):
-        namelist.add(raw.name)
-    if len(namelist) == 1:
-        # then update their initial report
-        pass
+    # anything from here on is a conflict that can't get updated
+    if prior_reports.exclude(attempted_dex_num=sp_lnk).count():
+        return record_report(4)
+
+    # always return something, even if I screwed up the logic elsewhere
+    error_list["unknown"] = (
+        500,
+        "Something got missed",
+        "nestlist.models.add_a_report",
+    )
+    return handle_validation_errors()
 
 
 def get_local_nsla_for_rotation(
