@@ -8,11 +8,13 @@ from nestlist.models import (
     NstNeighborhood,
     NstLocation,
     NstRotationDate,
+    new_rotation,
 )
 from typing import Optional, List, Dict, Union
 from datetime import datetime
 from nestlist.utils import append_utc
 import time
+from speciesinfo.models import nestable_species
 
 
 # Create your tests here.
@@ -27,32 +29,64 @@ class ReportingTests(TestCase):
             name="Our Town", active=True
         )
         somewhere_else: NstMetropolisMajor = NstMetropolisMajor.objects.create(
-            name="Somewhere Else"
+            name="Somewhere Else", active=True
         )
-        ffa: NstNeighborhood = NstNeighborhood.objects.create(
-            name="Far Far Away", major_city=somewhere_else
-        )
-        here: NstNeighborhood = NstNeighborhood.objects.create(
-            name="Right Here", major_city=our_town
-        )
-        next_door: NstNeighborhood = NstNeighborhood.objects.create(
-            name="Next Door", major_city=our_town
-        )
-        park1: NstLocation = NstLocation.objects.create(
-            pk=1, permanent_species="Wailmer", neighborhood=here
-        )
-        system: NstAdminEmail = NstAdminEmail.objects.create(pk=1, is_bot=2)
-        human: NstAdminEmail = NstAdminEmail.objects.create(pk=2, is_bot=0)
-        input_bot: NstAdminEmail = NstAdminEmail.objects.create(pk=3, is_bot=1)
-        cls.assertTrue(input_bot.restricted)
+        neighborhoods: List[NstNeighborhood] = [
+            NstNeighborhood.objects.create(
+                name="Far Far Away", major_city=somewhere_else
+            ),
+            NstNeighborhood.objects.create(name="Right Here", major_city=our_town),
+            NstNeighborhood.objects.create(name="Next Door", major_city=our_town),
+        ]
+        nest_dex_index: int = 0
+        nest_objs: List = []
+        for _ in range(5):
+            for place in neighborhoods:
+                nest_objs.append(
+                    NstLocation(
+                        permanent_species=nestable_species()[nest_dex_index],
+                        neighborhood=place,
+                    )
+                )
+        for place in neighborhoods:
+            for _ in range(10):
+                nest_objs.append(NstLocation(neighborhood=place))
+        NstLocation.objects.bulk_create(nest_objs)
+
+        NstAdminEmail.objects.create(pk=1, is_bot=2)  # system
+        NstAdminEmail.objects.create(pk=2, is_bot=0, city=our_town)  # human
+        NstAdminEmail.objects.create(pk=3, is_bot=1, city=our_town)  # bot
         pass
 
     def setUp(self):
         # print("setUp: Run once for every test method to setup clean data.")
-        # TODO: new rotation here
+        self.assertTrue(
+            new_rotation(append_utc(datetime.utcnow()), 1).success,
+            "Can't create new rotation.",
+        )
+        pass
+
+    def linkageTest(self):
+        """Test that everything is linked up properly"""
+        self.assertTrue(NstAdminEmail.objects.get(3).restricted, f"Bot is unrestricted")
+        self.assertFalse(
+            NstAdminEmail.objects.get(1).restricted, f"System is restricted"
+        )
+        self.assertFalse(
+            NstAdminEmail.objects.get(2).restricted, f"Human is restricted"
+        )
+        nest_count: int = NstLocation.objects.all().count()
+        self.assertEqual(
+            nest_count, 45, f"{nest_count} nests were returned.  Expected 45."
+        )
+        print(
+            NstLocation.objects.all()[:10]
+        )  # remove me once I have a feel of how the IDs are assigned
         pass
 
     def reportingTestSuite(self):
+        # TODO: flesh out this dict once I know which IDs to use
+        # also, document said IDs
         report_tests: List[Dict] = [
             {
                 "name": "junk sample entry",

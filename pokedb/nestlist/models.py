@@ -18,6 +18,7 @@ from speciesinfo.models import (
 )
 from typing import Union, Optional, Tuple, NamedTuple, Dict
 from datetime import datetime
+from django.urls import reverse
 
 
 class NstAdminEmail(models.Model):
@@ -89,6 +90,9 @@ class NstCombinedRegion(models.Model):
     def short_name(self):
         return self.name
 
+    def web_url(self):
+        return reverse("region", kwargs={"city_id": 0, "region_id": self.pk})
+
 
 class NstLocation(models.Model):
     nestID = models.AutoField(primary_key=True, db_column="nest_id")
@@ -149,6 +153,11 @@ class NstLocation(models.Model):
     def ct(self):
         return self.neighborhood.major_city
 
+    def web_url(self):
+        return reverse(
+            "nest_history", kwargs={"city_id": self.ct(), "nest_id": self.pk}
+        )
+
 
 class NstMetropolisMajor(models.Model):
     name = models.CharField(db_column="Name", max_length=123)
@@ -169,6 +178,9 @@ class NstMetropolisMajor(models.Model):
 
     def __str__(self):
         return self.name
+
+    def web_url(self):
+        return reverse("city", kwargs={"city_id": self.pk})
 
 
 class NstNeighborhood(models.Model):
@@ -193,6 +205,11 @@ class NstNeighborhood(models.Model):
     def __str__(self):
         return self.name
 
+    def web_url(self):
+        return reverse(
+            "neighborhood", kwargs={"city_id": self.major_city.pk, "region_id": self.pk}
+        )
+
 
 class NstParkSystem(models.Model):
     name = models.CharField(max_length=123)
@@ -204,6 +221,9 @@ class NstParkSystem(models.Model):
 
     def __str__(self):
         return self.name
+
+    def web_url(self):
+        return reverse("park_system", kwargs={"city_id": 0, "park_system_id": self.pk})
 
 
 class NstRotationDate(models.Model):
@@ -282,6 +302,12 @@ on {self.rotation_num.date_priority_display()}"
             return True
         return False
 
+    def web_url(self):
+        return reverse(
+            "nest_history",
+            kwargs={"city_id": self.nestid.ct(), "nest_id": self.nestid.pk},
+        )
+
 
 class AirtableImportLog(models.Model):
     time = models.DateTimeField(null=True)
@@ -327,6 +353,15 @@ class NstRawRpt(models.Model):
 
     def privacy_str(self) -> str:
         return f"{self.raw_species_num} reported at {self.raw_park_info} on {self.timestamp}"
+
+    def web_url(self):
+        return reverse(
+            "nest_history",
+            kwargs={
+                "city_id": self.nsla_pk.nestid.ct(),
+                "nest_id": self.nsla_pk.nestid.pk,
+            },
+        )
 
 
 def get_rotation(date) -> NstRotationDate:
@@ -691,7 +726,15 @@ class NewRotationStatus(NamedTuple):
     note: str
 
 
-def new_rotation(rot8d8time: datetime) -> NewRotationStatus:
+def new_rotation(
+    rot8d8time: datetime, rotation_user: int = settings.SYSTEM_BOT_USER
+) -> NewRotationStatus:
+    """
+    Rotates the nests.
+    :param rot8d8time: datetime object (with timezone) indicating the new rotation date
+    :param rotation_user: user to store in the NstRawRpt log and NSLA
+    :return: the NstRotationDate object, a True/False success indicator, and any notes
+    """
     if len(NstRotationDate.objects.filter(date__contains=rot8d8time.date())) > 0:
         # don't go for multiple rotations on the same day
         return NewRotationStatus(
@@ -699,8 +742,11 @@ def new_rotation(rot8d8time: datetime) -> NewRotationStatus:
         )
 
     # generate date to save
-    prev_rot = NstRotationDate.objects.latest("num")
-    new_rot = NstRotationDate.objects.create(date=rot8d8time, num=prev_rot.num + 1)
+    try:
+        prev_rot: int = NstRotationDate.objects.latest("num").num
+    except NstRotationDate.DoesNotExist:
+        prev_rot: int = 0  # allow for initial rotations on blank databases
+    new_rot = NstRotationDate.objects.create(date=rot8d8time, num=prev_rot + 1)
     perm_nst = NstLocation.objects.exclude(
         Q(permanent_species__isnull=True) | Q(permanent_species__exact="")
     )
@@ -711,7 +757,7 @@ def new_rotation(rot8d8time: datetime) -> NewRotationStatus:
             nest=nst.pk,
             timestamp=append_utc(datetime.utcnow()),
             species=nst.permanent_species.split("|")[0],
-            bot_id=settings.SYSTEM_BOT_USER,
+            bot_id=rotation_user,
             server="localhost",
             rotation=new_rot,
             search_all=True,
