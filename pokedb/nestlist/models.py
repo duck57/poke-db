@@ -5,7 +5,7 @@ After all the class-based models are the static methods for dealing with the mod
 which will prove useful all over the place.
 """
 
-from .utils import parse_date, str_int, append_utc
+from .utils import parse_date, str_int, append_utc, true_if_y
 from django.db import models
 from django.db.models import Q
 from django.db.models.query import QuerySet
@@ -764,3 +764,76 @@ def new_rotation(
             confirmation=True,
         )
     return NewRotationStatus(new_rot, True, f"Added rotation {new_rot}")
+
+
+def delete_rotation(
+    rotation_to_delete: NstRotationDate,
+    deletion_user: int = settings.SYSTEM_BOT_USER,
+    accept_consequences: bool = true_if_y(
+        input(
+            f"Deleting a rotation also removes all NSLA entries associated with it. Do you wish to continue?"
+        )
+        if __name__ == "__main__"
+        else f"no.",
+        spell_it=True,
+    ),
+) -> Optional[NstRawRpt]:
+    """
+    Deletes an erroneously-entered rotation.
+    This is not meant to be used on live production systems,
+    but there are some protections given to make sure what you're doing if you've made mistakes.
+    It's a p. useful function for testing.
+    :returns: the NstRawRpt containing the deletion if it happened or None if it was cancelled
+    """
+
+    def deletion_dance() -> NstRawRpt:
+        """Deletes the rotation and inserts the audit log"""
+        # called here because the DB is set up to forbid the deletion of a rotation with any NSLA rows
+        NstSpeciesListArchive.objects.filter(rotation_num=rotation_to_delete).delete()
+        info = str(rotation_to_delete)
+        rotation_to_delete.delete()
+        return NstRawRpt.objects.create(
+            action=6,  # deletion
+            bot=du,
+            user_name="Thanos💯",
+            raw_species_num=f"Deleted former rotation #{info}",
+            raw_park_info=summary,
+            timestamp=append_utc(datetime.utcnow()),
+        )
+
+    if not accept_consequences:
+        accept_consequences: bool = true_if_y(
+            input(
+                f"Deleting a rotation also removes all NSLA entries associated with it. Do you wish to continue?"
+            )
+        )  # catch it here for imports
+    if not accept_consequences:
+        return None
+    try:
+        du: NstAdminEmail = NstAdminEmail.objects.get(id=deletion_user)
+    except NstAdminEmail.DoesNotExist:
+        print(
+            f"Just who is trying to delete this, anyway?  {deletion_user} is not a real user ID."
+        )
+        return None
+    if du.restricted:
+        print(f"User {du} is a restricted bot.  No can do: 401.")
+        return None
+    auto_upd8_count: int = NstLocation.objects.filter(
+        permanent_species__isnull=False
+    ).count()
+    deletion_size: int = NstSpeciesListArchive.objects.filter(
+        rotation_num=rotation_to_delete
+    ).count()
+    if deletion_size <= auto_upd8_count:
+        summary = f"Only {deletion_size} auto-created entries deleted [out of {auto_upd8_count}]"
+        return deletion_dance()
+    confirmation_prompt: str = f"{deletion_size-auto_upd8_count} user-recorded nests will be deleted "
+    confirmation_prompt += (
+        f"in addition to the {auto_upd8_count} automatically-rotating nests."
+    )
+    confirmation_prompt += f"\nType YES if you wish to continue.\t "
+    accept_consequences: bool = true_if_y(
+        input(confirmation_prompt), insist_case="UPPER", spell_it=True
+    )
+    return deletion_dance() if accept_consequences else None

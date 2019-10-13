@@ -9,6 +9,7 @@ from nestlist.models import (
     NstLocation,
     NstRotationDate,
     new_rotation,
+    delete_rotation,
 )
 from typing import Optional, List, Dict, Union
 from datetime import datetime
@@ -115,16 +116,45 @@ class ReportingTests(TestCase):
         ]
         for report in report_tests:
             time.sleep(0.007)  # for the timestamps to be chronological
+            report_status: int = add_a_report(
+                name=report["name"],
+                nest=report["nest"],
+                timestamp=append_utc(datetime.utcnow()),
+                species=report["species"],
+                bot_id=report["user"],
+                server=report["server"],
+                rotation=report.get("rotation_id", None),
+            ).status
             self.assertEqual(
-                add_a_report(
-                    name=report["name"],
-                    nest=report["nest"],
-                    timestamp=append_utc(datetime.utcnow()),
-                    species=report["species"],
-                    bot_id=report["user"],
-                    server=report["server"],
-                    rotation=report.get("rotation_id", None),
-                ).status,
+                report_status,
                 report["expected_status"],
+                msg=f"Report {report['name']} returned status {report_status} instead of {report['expected_status']}",
             )
+        pass
+
+    def rotationDeletionTest(self):
+        time.sleep(2)  # for chronological timestamps
+        new_rotation_1: NstRotationDate = new_rotation(
+            append_utc(datetime.utcnow()), 1
+        ).rotation
+        time.sleep(2)  # for chronological timestamps
+        new_rotation_2: NstRotationDate = new_rotation(
+            append_utc(datetime.utcnow()), 2
+        ).rotation
+        NstSpeciesListArchive.objects.create(
+            nestid=1, rotation_num=new_rotation_2
+        )  # rotation 2 should not auto-delete
+        self.assertIsNone(
+            delete_rotation(new_rotation_2, deletion_user=3, accept_consequences=True),
+            f"Restricted user deleted a rotation",
+        )
+        self.assertIsNone(
+            delete_rotation(new_rotation_1, deletion_user=3, accept_consequences=True),
+            f"Restricted user deleted a rotation",
+        )
+        self.assertIsNotNone(
+            delete_rotation(new_rotation_1, deletion_user=2, accept_consequences=True)
+        )
+        # https://stackoverflow.com/questions/58359598/assert-function-asked-for-user-input-during-python-testing
+        # needs to be answered before I can test this last method (rotation2 with user 1)
         pass

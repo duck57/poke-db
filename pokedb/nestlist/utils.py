@@ -9,7 +9,7 @@ from dateutil.relativedelta import *
 from collections import defaultdict
 import readline
 import pytz
-from typing import Union, Optional
+from typing import Union, Optional, Collection
 
 """
 Module of miscellaneous static helper functions that are re-used between modules.
@@ -24,19 +24,20 @@ tl;dr: readline causes newlines not to happen when accepting a default value by 
 
 # change from a lambda to make PEP8 shut up
 def nested_dict() -> defaultdict:
+    """a[b][c][d][e] = 23"""
     return defaultdict(nested_dict)
 
 
-def str_int(strin: Union[str, int]) -> bool:
+def str_int(string: Union[str, int]) -> bool:
     """
     checks if a string will convert to an int
     why isn't this in the standard library?
-    :param strin: string to check
+    :param string: string to check
     :return: whether the string can convert to an integer
     """
-
+    # this could be part of a function that returns an int if it is a string and None otherwise?
     try:
-        int(strin)
+        int(string)
     except ValueError:
         return False
     return True
@@ -58,6 +59,7 @@ def parse_relative_date(date: str) -> datetime:
 
 
 def parse_date(date: str = "") -> datetime:
+    """Fancy wrapper for dateutil.parse that accepts m-6 formats as well"""
     date = date.strip().lower()
     if not date:
         return parse_date("t")  # return today as a default
@@ -106,42 +108,66 @@ def decorate_text(text: str, decor: str) -> str:
     return decor[:stl] + text + decor[stl:]
 
 
-def true_if_y(st: str) -> bool:
+def true_if_y(
+    st: str,
+    spell_it: bool = False,
+    insist_case: Optional[str] = None,
+    only_yes: bool = False,
+) -> bool:
     """
-    :param st: string to check
-    :return: True if the first character of the string is a Y (case-insensitive)
+    :param st: string to check if it should be true or not
+    :param spell_it: force the user to spell out yes instead of just Y
+    :param insist_case: insist on a specific case
+    :param only_yes: only accept the yes if nothing else is said
+    :return: True if the first character of the string is a Y
     """
-    if st.strip() == "":
+    st = st.strip()
+    if not st:
         return False
-    if st[0].upper() == "Y":
+    match_string: str = {
+        "lower": "yes",
+        "UPPER": "YES",
+        None: "YES",
+        False: "YES",  # in case of bad calling code
+    }.get(insist_case)
+    assert match_string is not None, f"Invalid value of insist_case: {insist_case}"
+    if (insist_case == "lower" and st != st.lower()) or (
+        insist_case == "UPPER" and st != st.upper()
+    ):
+        return False
+    if not insist_case:
+        st = st.upper()
+    if spell_it:
+        if (st if only_yes else st[:3]) in match_string:
+            return True
+        return False
+    if (st if only_yes else st[0]) in match_string[0]:
         return True
     return False
 
 
-def disp_qs_select(qs, none_option: Union[bool, str] = True) -> int:
+def disp_qs_select(qs: Collection, none_option: Union[bool, str] = True) -> int:
     """
+    Displays a QuerySet as
     :param qs: A previously-sorted QuerySet
     :param none_option: display an option 0 for 'none of the above'
-    :return: the length of the query set
+    :return: the length of the options displayed (including any zeroth option)
     """
-
-    many = len(qs)
+    many: int = len(qs)
+    if none_option:
+        many += 1
     if many < 2:
         assert (
             "Programming Error: This should be used if there are at least two options."
         )
-
-    count = 1
-
+    count: int = 1
     if str(none_option) == "True":
         none_option = "None of these"
-
     if none_option:
         print(f"0. {none_option}")
     for thing in qs:
         print(f"{count}. {thing}")
         count += 1
-
     return many
 
 
@@ -166,24 +192,27 @@ def select_from_list(prompt: str, size: int, start: int) -> int:
             continue
 
 
-def pick_from_qs(prompt: str, qs, allow_none: Union[bool, str] = True) -> int:
+def pick_from_qs(
+    prompt: str, qs: Collection, allow_none: Union[bool, str] = True
+) -> int:
     """
     Pick an option from a QuerySet
     :param prompt: prompt for the user
     :param qs: query set from which the user should choose
     :param allow_none: allow the user to select a "none of these option" and return 0
-    :return:
+    :return: the object's position number
     """
-    maxi = disp_qs_select(qs, allow_none)
-    return select_from_list(prompt, maxi, 0 if allow_none else 1)
+    return select_from_list(
+        prompt, disp_qs_select(qs, allow_none), 0 if allow_none else 1
+    )
 
 
 def input_with_prefill(prompt: str, text: str) -> str:
     """
-
-    :param prompt:
-    :param text:
-    :return:
+    prefills input and places your cursor at the end
+    :param prompt: the prompt
+    :param text: the prefill
+    :return: any modifications you made to the input
     """
 
     def hook():
