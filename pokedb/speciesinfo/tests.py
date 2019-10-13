@@ -4,6 +4,7 @@ from .models import (
     match_species_by_name_or_number,
     match_species_by_type,
     nestable_species,
+    enabled_in_PoGO,
 )
 
 
@@ -22,12 +23,23 @@ class TestSpeciesFilter(TestCase):
         pass
 
     def test_generational_filter(self):
-        self.assertEqual(len(kanto), 151)
+        self.assertEqual(kanto.count(), 151)
+        pass
 
-    def test_false_is_true(self):
-        print("Method: test_false_is_true.")
-        self.assertTrue(False)
+    def test_meltan_enabled(self):
+        self.assertIn(Pokemon.objects.get(name="Meltan"), enabled_in_PoGO())
+        pass
 
-    def test_one_plus_one_equals_two(self):
-        print("Method: test_one_plus_one_equals_two.")
-        self.assertEqual(1 + 1, 2)
+    def test_meltan_nestable(self):
+        self.assertNotIn(
+            Pokemon.objects.get(name="Meltan"), enabled_in_PoGO(nestable_species())
+        )
+
+    def test_alola_available(self):
+        self.assertIn(Pokemon.objects.get(name="Alolan Vulpix"), enabled_in_PoGO())
+
+    def test_alola_nestable(self):
+        self.assertNotIn(
+            Pokemon.objects.get(name="Alolan Vulpix"),
+            enabled_in_PoGO(nestable_species()),
+        )

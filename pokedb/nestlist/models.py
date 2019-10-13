@@ -15,6 +15,7 @@ from speciesinfo.models import (
     Pokemon,
     nestable_species,
     get_surrounding_species,
+    enabled_in_PoGO,
 )
 from typing import Union, Optional, Tuple, NamedTuple, Dict
 from datetime import datetime
@@ -535,7 +536,7 @@ def add_a_report(
             only_one=True,
             input_set=Pokemon.objects.all()
             if search_all  # update below code when new generations drop
-            else nestable_species().filter(generation__in=[0, 1, 2, 3, 4, 5]),
+            else enabled_in_PoGO(nestable_species()),
         ).get()
     except Pokemon.DoesNotExist:
         if restricted:

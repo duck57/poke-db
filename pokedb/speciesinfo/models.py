@@ -370,6 +370,34 @@ def nestable_species() -> "QuerySet[Pokemon]":
     )
 
 
+def enabled_in_PoGO(
+    input_list: "QuerySet[Pokemon]" = Pokemon.objects.all()
+) -> "QuerySet[Pokemon]":
+    """
+    This does not attempt to be fully up-to-date with Niantic's phased species rollouts
+    Instead, it's a general overview of the species released that errs inclusive
+    """
+    return input_list.filter(
+        Q(
+            generation__in=[
+                0,  # Utility species like Commons & Water Biomes
+                1,  # Kanto
+                2,  # Jhoto
+                3,  # Hoenn
+                4,  # Sinnoh
+                5,  # Unova
+                # 6,  # Kalos
+                # 7,  # Alola
+                8,  # Galar may need special casing for cross-promotions once S&S drop
+            ]
+        )
+        | Q(form="Alola")  # Will become unnecessary once Gen 7 is released
+        | Q(dex_number__in=[808, 809])  # Nutto (Meltan) & Melmetal special casing
+    ).exclude(
+        form__icontains="Mega"
+    )  # delete me if megas are ever released
+
+
 def match_species_by_egg_group(
     target_group: str, input_list: "QuerySet[Pokemon]" = Pokemon.objects.all()
 ) -> "QuerySet[Pokemon]":

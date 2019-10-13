@@ -10,6 +10,7 @@ import sys
 import time
 from datetime import datetime
 from typing import Union, Dict, List
+from collections import defaultdict
 
 import airtable
 
@@ -49,7 +50,6 @@ def get_submission_data_at(city_id: str, start_num: Union[str, int]) -> List[Dic
 
 def transform_submission_data(at_obj: List[Dict]) -> Dict:
     """
-
     :param at_obj: Airtable object
     :return: nesteddict of the most important attributes for a report to be added to nst_raw_rpt:
         num: serial number from Airtable db; becomes foreign_db_row_num
@@ -61,9 +61,9 @@ def transform_submission_data(at_obj: List[Dict]) -> Dict:
         rotation: rotation number, calculated from the timestamp
     """
 
-    at_tmp = nested_dict()
+    at_tmp: Dict = nested_dict()
     for line in at_obj:
-        num = line["fields"]["serial"]
+        num: int = line["fields"]["serial"]
         try:
             at_tmp[num]["time"] = parse_date(
                 line["createdTime"].split("Z")[0]
@@ -76,27 +76,25 @@ def transform_submission_data(at_obj: List[Dict]) -> Dict:
             at_tmp[num]["species"] = line["fields"]["summary"].split(" ")[0][1:]
         except ValueError:
             at_tmp[num]["species"] = 69420  # give somethig that will never match
-            # this one below is nasty to deal with standard human-readable Airtable stuff
         try:
             at_tmp[num]["park"] = (
                 line["fields"]["summary"].split(" at ")[1].split(".")[0].split('"')[-1]
-            )
+            )  # this is nasty to deal with human-readable Airtable stuff & avoid joins
         except ValueError:
             at_tmp[num]["park"] = 0  # should never match
         at_tmp[num]["num"] = num
-
     return at_tmp
 
 
 def add_air_rpt(report: Dict, bot: int):
-    output: ReportStatus = add_a_report(  # we don't care about the error list details here, at least for now
+    output: ReportStatus = add_a_report(
         name=report["whodidit"],
         nest=report["park"],
         timestamp=report["time"],
         species=report["species"],
         bot_id=bot,
         server=f"AirTable#{bot}",
-    )
+    )  # we don't care about the error list details here, at least for now
     line_num: NstRawRpt = output.row
     status: int = output.status
 
@@ -111,6 +109,9 @@ def add_air_rpt(report: Dict, bot: int):
 
 
 def import_city(base: str, bot_id: int) -> Dict[int, int]:
+    """
+    Imports from an Airtable base
+    """
     try:  # find the most recent record imported to the system
         rpt_start: int = AirtableImportLog.objects.filter(
             city=base, time__isnull=False
@@ -118,21 +119,24 @@ def import_city(base: str, bot_id: int) -> Dict[int, int]:
     except AirtableImportLog.DoesNotExist:
         rpt_start: int = 0
     tsd_nnl: Dict = transform_submission_data(get_submission_data_at(base, rpt_start))
-    stats: dict = {
-        0: 0,
-        1: 0,
-        2: 0,
-        4: 0,
-        9: 0,
-    }  # blank stats list, TODO: update to named dict
+    stats = defaultdict(lambda: 0)  # empty stats list
+
+    def return_status() -> Dict[int, int]:
+        """Magic numbers from nestlist.models.ReportStatus"""
+        return {
+            0: stats[0],  # duplicates
+            1: stats[1],  # new reports
+            2: stats[2],  # confirmations
+            4: stats[4],  # conflicts
+            9: stats[9],  # errors
+        }
 
     if not tsd_nnl:
-        return stats
+        return return_status()
     for rpt in tsd_nnl.keys():
         stats[
             add_air_rpt(tsd_nnl[rpt], bot_id)
         ] += 1  # add/handle the report, then increment the stats counter
-
     AirtableImportLog.objects.create(
         city=base,
         end_num=rpt_start + len(tsd_nnl),
@@ -142,15 +146,14 @@ def import_city(base: str, bot_id: int) -> Dict[int, int]:
         errors=stats[9],
         conflicts=stats[4],
         duplicates=stats[0],
-    )
-    return stats
+    )  # only create a new log when successful
+    return return_status()
 
 
 def __main__() -> None:
-    for city in NstMetropolisMajor.objects.all():
-        # skip improperly configured cities
-        if city.airtable_base_id is None or city.airtable_bot_id is None:
-            continue
+    for city in NstMetropolisMajor.objects.filter(
+        airtable_base_id__isnull=False, airtable_bot_id__isnull=False
+    ):
         print(
             city.name,
             datetime.now().isoformat(),
