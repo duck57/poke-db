@@ -16,6 +16,7 @@ from datetime import datetime
 from nestlist.utils import append_utc
 import time
 from speciesinfo.models import nestable_species
+import unittest.mock
 
 
 # Create your tests here.
@@ -155,6 +156,30 @@ class ReportingTests(TestCase):
         self.assertIsNotNone(
             delete_rotation(new_rotation_1, deletion_user=2, accept_consequences=True)
         )
-        # https://stackoverflow.com/questions/58359598/assert-function-asked-for-user-input-during-python-testing
-        # needs to be answered before I can test this last method (rotation2 with user 1)
+        # test various inputs in response to being told there is real data to delete
+        with unittest.mock.patch("builtins.input", return_value="no."):
+            self.assertIsNone(
+                delete_rotation(
+                    new_rotation_1, deletion_user=2, accept_consequences=True
+                )
+            )
+        with unittest.mock.patch("builtins.input", return_value="yes."):
+            self.assertIsNone(
+                delete_rotation(
+                    new_rotation_1, deletion_user=2, accept_consequences=True
+                )
+            )
+        with unittest.mock.patch("builtins.input", return_value=""):
+            self.assertIsNone(
+                delete_rotation(
+                    new_rotation_1, deletion_user=2, accept_consequences=True
+                )
+            )
+        # final test: deletion
+        with unittest.mock.patch("builtins.input", return_value="YES I do."):
+            self.assertIsNotNone(
+                delete_rotation(
+                    new_rotation_1, deletion_user=2, accept_consequences=True
+                )
+            )
         pass
