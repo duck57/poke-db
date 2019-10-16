@@ -7,93 +7,186 @@ class Migration(migrations.Migration):
 
     initial = True
 
-    dependencies = [
-    ]
+    dependencies = []
 
     operations = [
         migrations.CreateModel(
-            name='GoIvFloor',
+            name="GoIvFloor",
             fields=[
-                ('min', models.AutoField(primary_key=True, serialize=False)),
-                ('comment', models.CharField(blank=True, max_length=50, null=True)),
+                ("min", models.AutoField(primary_key=True, serialize=False)),
+                ("comment", models.CharField(blank=True, max_length=50, null=True)),
             ],
-            options={
-                'db_table': 'GO_IV_floors',
-                'managed': False,
-            },
+            options={"db_table": "GO_IV_floors", "managed": False},
         ),
         migrations.CreateModel(
-            name='GoPowerupLevel',
+            name="GoPowerupLevel",
             fields=[
-                ('level', models.DecimalField(db_column='Level', decimal_places=1, max_digits=3, primary_key=True, serialize=False)),
-                ('cp_multiplier', models.DecimalField(db_column='CP_Multiplier', decimal_places=10, max_digits=11)),
-                ('wild', models.CharField(db_column='Wild', max_length=1)),
-                ('total_candy', models.IntegerField()),
-                ('total_dust', models.IntegerField()),
-                ('next_level_candy', models.IntegerField(blank=True, null=True)),
-                ('next_level_dust', models.IntegerField(blank=True, null=True)),
+                (
+                    "level",
+                    models.DecimalField(
+                        db_column="Level",
+                        decimal_places=1,
+                        max_digits=3,
+                        primary_key=True,
+                        serialize=False,
+                    ),
+                ),
+                (
+                    "cp_multiplier",
+                    models.DecimalField(
+                        db_column="CP_Multiplier", decimal_places=10, max_digits=11
+                    ),
+                ),
+                ("wild", models.CharField(db_column="Wild", max_length=1)),
+                ("total_candy", models.IntegerField()),
+                ("total_dust", models.IntegerField()),
+                ("next_level_candy", models.IntegerField(blank=True, null=True)),
+                ("next_level_dust", models.IntegerField(blank=True, null=True)),
             ],
-            options={
-                'db_table': 'GO_powerup_level',
-                'managed': False,
-            },
+            options={"db_table": "GO_powerup_level", "managed": False},
         ),
         migrations.CreateModel(
-            name='GoRaidHp',
+            name="GoRaidHp",
             fields=[
-                ('level', models.AutoField(primary_key=True, serialize=False)),
-                ('hp', models.PositiveIntegerField(db_column='HP')),
-                ('time', models.PositiveIntegerField()),
-                ('notes', models.CharField(blank=True, max_length=222, null=True)),
-                ('min_dps_theory', models.FloatField(blank=True, null=True)),
-                ('min_dps_realistic', models.FloatField(blank=True, null=True)),
-                ('min_dps_rejoins', models.FloatField(blank=True, null=True)),
+                ("level", models.AutoField(primary_key=True, serialize=False)),
+                ("hp", models.PositiveIntegerField(db_column="HP")),
+                ("time", models.PositiveIntegerField()),
+                ("notes", models.CharField(blank=True, max_length=222, null=True)),
+                ("min_dps_theory", models.FloatField(blank=True, null=True)),
+                ("min_dps_realistic", models.FloatField(blank=True, null=True)),
+                ("min_dps_rejoins", models.FloatField(blank=True, null=True)),
             ],
-            options={
-                'db_table': 'go_raid_hp',
-                'managed': False,
-            },
+            options={"db_table": "go_raid_hp", "managed": False},
         ),
         migrations.CreateModel(
-            name='GoTrainerLevel',
+            name="GoTrainerLevel",
             fields=[
-                ('level', models.IntegerField(db_column='Level', primary_key=True, serialize=False)),
-                ('xp_required', models.IntegerField(db_column='XP_required')),
-                ('total_xp', models.IntegerField(db_column='Total_XP', unique=True)),
-                ('unlocked_items', models.CharField(blank=True, db_column='Unlocked_items', max_length=22, null=True)),
-                ('ball', models.CharField(blank=True, db_column='Ball', max_length=5, null=True)),
-                ('balls', models.IntegerField(blank=True, db_column='Balls', null=True)),
-                ('potion', models.CharField(blank=True, db_column='Potion', max_length=6, null=True)),
-                ('potions', models.IntegerField(blank=True, db_column='Potions', null=True)),
-                ('max', models.BooleanField(blank=True, db_column='Max', max_length=2, null=True)),
-                ('revives', models.IntegerField(blank=True, db_column='Revives', null=True)),
-                ('razz_berries', models.IntegerField(blank=True, db_column='Razz_Berries', null=True)),
-                ('incense', models.IntegerField(blank=True, db_column='Incense', null=True)),
-                ('lucky_eggs', models.IntegerField(blank=True, db_column='Lucky_Eggs', null=True)),
-                ('incubators', models.IntegerField(blank=True, db_column='Incubators', null=True)),
-                ('lure_modules', models.IntegerField(blank=True, db_column='Lure_Modules', null=True)),
-                ('log_xp', models.DecimalField(blank=True, db_column='log_XP', decimal_places=3, max_digits=4, null=True)),
-                ('log_total_xp', models.DecimalField(blank=True, db_column='log_total_XP', decimal_places=3, max_digits=4, null=True)),
-                ('max_xp', models.IntegerField(blank=True, db_column='max_XP', null=True)),
-                ('nanab_berries', models.IntegerField(blank=True, db_column='Nanab_Berries', null=True)),
-                ('pinap_berries', models.IntegerField(blank=True, db_column='Pinap_Berries', null=True)),
+                (
+                    "level",
+                    models.IntegerField(
+                        db_column="Level", primary_key=True, serialize=False
+                    ),
+                ),
+                ("xp_required", models.IntegerField(db_column="XP_required")),
+                ("total_xp", models.IntegerField(db_column="Total_XP", unique=True)),
+                (
+                    "unlocked_items",
+                    models.CharField(
+                        blank=True, db_column="Unlocked_items", max_length=22, null=True
+                    ),
+                ),
+                (
+                    "ball",
+                    models.CharField(
+                        blank=True, db_column="Ball", max_length=5, null=True
+                    ),
+                ),
+                (
+                    "balls",
+                    models.IntegerField(blank=True, db_column="Balls", null=True),
+                ),
+                (
+                    "potion",
+                    models.CharField(
+                        blank=True, db_column="Potion", max_length=6, null=True
+                    ),
+                ),
+                (
+                    "potions",
+                    models.IntegerField(blank=True, db_column="Potions", null=True),
+                ),
+                (
+                    "max",
+                    models.BooleanField(
+                        blank=True, db_column="Max", max_length=2, null=True
+                    ),
+                ),
+                (
+                    "revives",
+                    models.IntegerField(blank=True, db_column="Revives", null=True),
+                ),
+                (
+                    "razz_berries",
+                    models.IntegerField(
+                        blank=True, db_column="Razz_Berries", null=True
+                    ),
+                ),
+                (
+                    "incense",
+                    models.IntegerField(blank=True, db_column="Incense", null=True),
+                ),
+                (
+                    "lucky_eggs",
+                    models.IntegerField(blank=True, db_column="Lucky_Eggs", null=True),
+                ),
+                (
+                    "incubators",
+                    models.IntegerField(blank=True, db_column="Incubators", null=True),
+                ),
+                (
+                    "lure_modules",
+                    models.IntegerField(
+                        blank=True, db_column="Lure_Modules", null=True
+                    ),
+                ),
+                (
+                    "log_xp",
+                    models.DecimalField(
+                        blank=True,
+                        db_column="log_XP",
+                        decimal_places=3,
+                        max_digits=4,
+                        null=True,
+                    ),
+                ),
+                (
+                    "log_total_xp",
+                    models.DecimalField(
+                        blank=True,
+                        db_column="log_total_XP",
+                        decimal_places=3,
+                        max_digits=4,
+                        null=True,
+                    ),
+                ),
+                (
+                    "max_xp",
+                    models.IntegerField(blank=True, db_column="max_XP", null=True),
+                ),
+                (
+                    "nanab_berries",
+                    models.IntegerField(
+                        blank=True, db_column="Nanab_Berries", null=True
+                    ),
+                ),
+                (
+                    "pinap_berries",
+                    models.IntegerField(
+                        blank=True, db_column="Pinap_Berries", null=True
+                    ),
+                ),
             ],
-            options={
-                'db_table': 'GO_trainer_level',
-                'managed': False,
-            },
+            options={"db_table": "GO_trainer_level", "managed": False},
         ),
         migrations.CreateModel(
-            name='PogoTeam',
+            name="PogoTeam",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(blank=True, max_length=11, null=True, unique=True)),
-                ('color', models.CharField(blank=True, max_length=11, null=True)),
-                ('color_id', models.IntegerField(blank=True, null=True)),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "name",
+                    models.CharField(blank=True, max_length=11, null=True, unique=True),
+                ),
+                ("color", models.CharField(blank=True, max_length=11, null=True)),
+                ("color_id", models.IntegerField(blank=True, null=True)),
             ],
-            options={
-                'db_table': 'GO_teams',
-                'managed': False,
-            },
+            options={"db_table": "GO_teams", "managed": False},
         ),
     ]

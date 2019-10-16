@@ -5,252 +5,313 @@ from django.db import migrations, models
 
 class Migration(migrations.Migration):
 
-    dependencies = [
-        ('nestlist', '0001_initial'),
-    ]
+    dependencies = [("nestlist", "0001_initial")]
 
     operations = [
         migrations.CreateModel(
-            name='Ability',
+            name="Ability",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(db_column='Name', max_length=50)),
-                ('effect', models.CharField(db_column='Effect', max_length=333)),
-                ('note', models.CharField(blank=True, db_column='Note', max_length=99, null=True)),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("name", models.CharField(db_column="Name", max_length=50)),
+                ("effect", models.CharField(db_column="Effect", max_length=333)),
+                (
+                    "note",
+                    models.CharField(
+                        blank=True, db_column="Note", max_length=99, null=True
+                    ),
+                ),
             ],
-            options={
-                'db_table': 'Abilities',
-                'managed': False,
-            },
+            options={"db_table": "Abilities", "managed": False},
         ),
         migrations.CreateModel(
-            name='Biome',
+            name="Biome",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=30)),
-                ('pogo', models.PositiveIntegerField(blank=True, db_column='PoGo', null=True)),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("name", models.CharField(max_length=30)),
+                (
+                    "pogo",
+                    models.PositiveIntegerField(
+                        blank=True, db_column="PoGo", null=True
+                    ),
+                ),
             ],
-            options={
-                'db_table': 'Biomes',
-                'managed': False,
-            },
+            options={"db_table": "Biomes", "managed": False},
         ),
         migrations.CreateModel(
-            name='BodyPlan',
+            name="BodyPlan",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=50)),
-                ('description', models.CharField(blank=True, max_length=50, null=True)),
-                ('notes', models.CharField(blank=True, max_length=50, null=True)),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("name", models.CharField(max_length=50)),
+                ("description", models.CharField(blank=True, max_length=50, null=True)),
+                ("notes", models.CharField(blank=True, max_length=50, null=True)),
             ],
-            options={
-                'db_table': 'body_plans',
-                'managed': False,
-            },
+            options={"db_table": "body_plans", "managed": False},
         ),
         migrations.CreateModel(
-            name='EggGroup',
+            name="EggGroup",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=20)),
-                ('notes', models.CharField(blank=True, max_length=199, null=True)),
-                ('stadium2name', models.CharField(blank=True, db_column='Stadium2name', max_length=20, null=True)),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("name", models.CharField(max_length=20)),
+                ("notes", models.CharField(blank=True, max_length=199, null=True)),
+                (
+                    "stadium2name",
+                    models.CharField(
+                        blank=True, db_column="Stadium2name", max_length=20, null=True
+                    ),
+                ),
             ],
-            options={
-                'db_table': 'EggGroups',
-                'managed': False,
-            },
+            options={"db_table": "EggGroups", "managed": False},
         ),
         migrations.CreateModel(
-            name='Generation',
+            name="Generation",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('region', models.CharField(db_column='Region', max_length=12)),
-                ('games', models.CharField(blank=True, db_column='Games', max_length=111, null=True)),
-                ('note', models.CharField(blank=True, db_column='Note', max_length=111, null=True)),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("region", models.CharField(db_column="Region", max_length=12)),
+                (
+                    "games",
+                    models.CharField(
+                        blank=True, db_column="Games", max_length=111, null=True
+                    ),
+                ),
+                (
+                    "note",
+                    models.CharField(
+                        blank=True, db_column="Note", max_length=111, null=True
+                    ),
+                ),
             ],
-            options={
-                'db_table': 'generations',
-                'managed': False,
-            },
+            options={"db_table": "generations", "managed": False},
         ),
         migrations.CreateModel(
-            name='GoIvFloor',
+            name="GoIvFloor",
             fields=[
-                ('min', models.AutoField(primary_key=True, serialize=False)),
-                ('comment', models.CharField(blank=True, max_length=50, null=True)),
+                ("min", models.AutoField(primary_key=True, serialize=False)),
+                ("comment", models.CharField(blank=True, max_length=50, null=True)),
             ],
-            options={
-                'db_table': 'GO_IV_floors',
-                'managed': False,
-            },
+            options={"db_table": "GO_IV_floors", "managed": False},
         ),
         migrations.CreateModel(
-            name='NstAltName',
+            name="NstAltName",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=222)),
-                ('hideme', models.PositiveIntegerField(blank=True, null=True)),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("name", models.CharField(max_length=222)),
+                ("hideme", models.PositiveIntegerField(blank=True, null=True)),
             ],
-            options={
-                'db_table': 'NST_alt_names',
-                'managed': False,
-            },
+            options={"db_table": "NST_alt_names", "managed": False},
         ),
         migrations.CreateModel(
-            name='NstCombinedRegion',
+            name="NstCombinedRegion",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=222)),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("name", models.CharField(max_length=222)),
             ],
-            options={
-                'db_table': 'NST_combined_regions',
-                'managed': False,
-            },
+            options={"db_table": "NST_combined_regions", "managed": False},
         ),
         migrations.CreateModel(
-            name='NstLocation',
+            name="NstLocation",
             fields=[
-                ('nestid', models.AutoField(db_column='nest_id', primary_key=True, serialize=False)),
-                ('official_name', models.CharField(max_length=222)),
-                ('short_name', models.CharField(blank=True, max_length=222, null=True)),
-                ('address', models.CharField(blank=True, max_length=234, null=True)),
-                ('notes', models.CharField(blank=True, max_length=234, null=True)),
-                ('private', models.PositiveIntegerField(blank=True, null=True)),
-                ('permanent_species', models.CharField(blank=True, max_length=111, null=True)),
-                ('lat', models.FloatField(blank=True, null=True)),
-                ('lon', models.FloatField(blank=True, null=True)),
-                ('size', models.IntegerField(blank=True, null=True)),
-                ('density', models.IntegerField(blank=True, null=True)),
-                ('primary_silph_id', models.IntegerField(blank=True, null=True)),
-                ('osm_id', models.IntegerField(blank=True, db_column='OSM_id', null=True)),
+                (
+                    "nestid",
+                    models.AutoField(
+                        db_column="nest_id", primary_key=True, serialize=False
+                    ),
+                ),
+                ("official_name", models.CharField(max_length=222)),
+                ("short_name", models.CharField(blank=True, max_length=222, null=True)),
+                ("address", models.CharField(blank=True, max_length=234, null=True)),
+                ("notes", models.CharField(blank=True, max_length=234, null=True)),
+                ("private", models.PositiveIntegerField(blank=True, null=True)),
+                (
+                    "permanent_species",
+                    models.CharField(blank=True, max_length=111, null=True),
+                ),
+                ("lat", models.FloatField(blank=True, null=True)),
+                ("lon", models.FloatField(blank=True, null=True)),
+                ("size", models.IntegerField(blank=True, null=True)),
+                ("density", models.IntegerField(blank=True, null=True)),
+                ("primary_silph_id", models.IntegerField(blank=True, null=True)),
+                (
+                    "osm_id",
+                    models.IntegerField(blank=True, db_column="OSM_id", null=True),
+                ),
             ],
-            options={
-                'db_table': 'NST_locations',
-                'managed': False,
-            },
+            options={"db_table": "NST_locations", "managed": False},
         ),
         migrations.CreateModel(
-            name='NstNeighborhood',
+            name="NstNeighborhood",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=222)),
-                ('lat', models.FloatField(blank=True, null=True)),
-                ('lon', models.FloatField(blank=True, null=True)),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("name", models.CharField(max_length=222)),
+                ("lat", models.FloatField(blank=True, null=True)),
+                ("lon", models.FloatField(blank=True, null=True)),
             ],
-            options={
-                'db_table': 'NST_neighborhoods',
-                'managed': False,
-            },
+            options={"db_table": "NST_neighborhoods", "managed": False},
         ),
         migrations.CreateModel(
-            name='NstRotationDate',
+            name="NstRotationDate",
             fields=[
-                ('num', models.AutoField(primary_key=True, serialize=False)),
-                ('date', models.CharField(max_length=11)),
-                ('special_note', models.CharField(blank=True, max_length=123, null=True)),
+                ("num", models.AutoField(primary_key=True, serialize=False)),
+                ("date", models.CharField(max_length=11)),
+                (
+                    "special_note",
+                    models.CharField(blank=True, max_length=123, null=True),
+                ),
             ],
-            options={
-                'db_table': 'NST_rotation_dates',
-                'managed': False,
-            },
+            options={"db_table": "NST_rotation_dates", "managed": False},
         ),
         migrations.CreateModel(
-            name='PogoTeam',
+            name="PogoTeam",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(blank=True, max_length=11, null=True, unique=True)),
-                ('color', models.CharField(blank=True, max_length=11, null=True)),
-                ('color_id', models.IntegerField(blank=True, null=True)),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "name",
+                    models.CharField(blank=True, max_length=11, null=True, unique=True),
+                ),
+                ("color", models.CharField(blank=True, max_length=11, null=True)),
+                ("color_id", models.IntegerField(blank=True, null=True)),
             ],
-            options={
-                'db_table': 'GO_teams',
-                'managed': False,
-            },
+            options={"db_table": "GO_teams", "managed": False},
         ),
         migrations.CreateModel(
-            name='PokeCategory',
+            name="PokeCategory",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=22, unique=True)),
-                ('note', models.CharField(blank=True, max_length=111, null=True)),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("name", models.CharField(max_length=22, unique=True)),
+                ("note", models.CharField(blank=True, max_length=111, null=True)),
             ],
-            options={
-                'db_table': 'ZC_categories',
-                'managed': False,
-            },
+            options={"db_table": "ZC_categories", "managed": False},
         ),
         migrations.CreateModel(
-            name='Type',
+            name="Type",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=55, unique=True)),
-                ('glitch', models.IntegerField(blank=True, null=True)),
-                ('note', models.CharField(blank=True, max_length=111, null=True)),
-                ('emoji', models.CharField(blank=True, max_length=8, null=True)),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("name", models.CharField(max_length=55, unique=True)),
+                ("glitch", models.IntegerField(blank=True, null=True)),
+                ("note", models.CharField(blank=True, max_length=111, null=True)),
+                ("emoji", models.CharField(blank=True, max_length=8, null=True)),
             ],
-            options={
-                'db_table': 'type_list',
-                'managed': False,
-            },
+            options={"db_table": "type_list", "managed": False},
         ),
         migrations.CreateModel(
-            name='TypeEffectivenessRating',
+            name="TypeEffectivenessRating",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('description', models.CharField(max_length=23)),
-                ('dmg_multiplier', models.FloatField()),
-                ('pogodamage', models.FloatField(db_column='PoGoDamage')),
-                ('oldpogodamage', models.FloatField(db_column='oldPoGoDamage')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("description", models.CharField(max_length=23)),
+                ("dmg_multiplier", models.FloatField()),
+                ("pogodamage", models.FloatField(db_column="PoGoDamage")),
+                ("oldpogodamage", models.FloatField(db_column="oldPoGoDamage")),
             ],
-            options={
-                'db_table': 'type_effectiveness_ratings',
-                'managed': False,
-            },
+            options={"db_table": "type_effectiveness_ratings", "managed": False},
         ),
-        migrations.DeleteModel(
-            name='Abilities',
-        ),
-        migrations.DeleteModel(
-            name='Biomes',
-        ),
-        migrations.DeleteModel(
-            name='BodyPlans',
-        ),
-        migrations.DeleteModel(
-            name='Egggroups',
-        ),
-        migrations.DeleteModel(
-            name='Generations',
-        ),
-        migrations.DeleteModel(
-            name='GoIvFloors',
-        ),
-        migrations.DeleteModel(
-            name='GoTeams',
-        ),
-        migrations.DeleteModel(
-            name='NstAltNames',
-        ),
-        migrations.DeleteModel(
-            name='NstCombinedRegions',
-        ),
-        migrations.DeleteModel(
-            name='NstLocations',
-        ),
-        migrations.DeleteModel(
-            name='NstNeighborhoods',
-        ),
-        migrations.DeleteModel(
-            name='NstRotationDates',
-        ),
-        migrations.DeleteModel(
-            name='TypeEffectivenessRatings',
-        ),
-        migrations.DeleteModel(
-            name='TypeList',
-        ),
-        migrations.DeleteModel(
-            name='ZcCategories',
-        ),
+        migrations.DeleteModel(name="Abilities"),
+        migrations.DeleteModel(name="Biomes"),
+        migrations.DeleteModel(name="BodyPlans"),
+        migrations.DeleteModel(name="Egggroups"),
+        migrations.DeleteModel(name="Generations"),
+        migrations.DeleteModel(name="GoIvFloors"),
+        migrations.DeleteModel(name="GoTeams"),
+        migrations.DeleteModel(name="NstAltNames"),
+        migrations.DeleteModel(name="NstCombinedRegions"),
+        migrations.DeleteModel(name="NstLocations"),
+        migrations.DeleteModel(name="NstNeighborhoods"),
+        migrations.DeleteModel(name="NstRotationDates"),
+        migrations.DeleteModel(name="TypeEffectivenessRatings"),
+        migrations.DeleteModel(name="TypeList"),
+        migrations.DeleteModel(name="ZcCategories"),
     ]

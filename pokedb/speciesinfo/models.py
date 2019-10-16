@@ -47,6 +47,16 @@ class EggGroup(models.Model):
     def __str__(self):
         return self.name
 
+    def can_breed_with(self, eg2: "Optional[EggGroup]") -> bool:
+        if eg2 is None:  # clean data here
+            return False
+        if self.id in [0, 15] or eg2.id in [0, 15]:
+            return False  # Glitch groups or Undiscovered
+        if self.id == 0 or eg2.id == 0:
+            return True  # Dittos
+        #  TODO: add filter for Delta ditto during project phase Data Completion
+        return True if self.id == eg2.id else False
+
 
 class PokeCategory(models.Model):
     name = models.CharField(unique=True, max_length=22)
@@ -370,7 +380,7 @@ def nestable_species() -> "QuerySet[Pokemon]":
     )
 
 
-def enabled_in_PoGO(
+def enabled_in_pogo(
     input_list: "QuerySet[Pokemon]" = Pokemon.objects.all()
 ) -> "QuerySet[Pokemon]":
     """
@@ -388,14 +398,22 @@ def enabled_in_PoGO(
                 5,  # Unova
                 # 6,  # Kalos
                 # 7,  # Alola
-                8,  # Galar may need special casing for cross-promotions once S&S drop
+                # 8,  # Galar may need special casing for cross-promotion once S&S drop
             ]
         )
         | Q(form="Alola")  # Will become unnecessary once Gen 7 is released
         | Q(dex_number__in=[808, 809])  # Nutto (Meltan) & Melmetal special casing
     ).exclude(
-        form__icontains="Mega"
-    )  # delete me if megas are ever released
+        Q(form__icontains="Mega")  # delete me if megas are ever released
+        | Q(
+            category__in=[
+                7,  # Mega
+                # 9,  # Alternate (leave this off for Altered Giratina)
+                77,  # Ultra Beast (remove me once Gen 7 drops)
+                9999,  # Glitched Pokémon
+            ]
+        )
+    )
 
 
 def match_species_by_egg_group(
@@ -426,3 +444,18 @@ def get_surrounding_species(
         "previous": input_list.filter(dex_number__lt=search.dex_number).last(),
         "next": input_list.filter(dex_number__gt=search.dex_number).first(),
     }
+
+
+def can_breed_together(
+    pk: Pokemon, input_list: "QuerySet[Pokemon]" = Pokemon.objects.all()
+) -> "QuerySet[Pokemon]":
+    if pk.egg1 is None or pk.egg1.pk in [0, 15] or pk.egg2.pk in [0, 15]:
+        return input_list.none()  # Undiscovered and glitch groups
+    if pk.egg1.pk == 13:  # pk1 is a ditto
+        return input_list.exclude(
+            egg1__in=[0, 15]
+        )  # I'm pretty sure dittos can't breed with legendary pokémon
+    eggs: "QuerySet[EggGroup]" = EggGroup.objects.filter(
+        pk__in=[pk.egg1.pk] if pk.egg2 is None else [pk.egg1.pk, pk.egg2.pk]
+    ).distinct()
+    return input_list.filter(Q(egg1=13) | Q(egg1__in=eggs) | Q(egg2__in=eggs))

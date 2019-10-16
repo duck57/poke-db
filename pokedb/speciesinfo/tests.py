@@ -4,7 +4,7 @@ from .models import (
     match_species_by_name_or_number,
     match_species_by_type,
     nestable_species,
-    enabled_in_PoGO,
+    enabled_in_pogo,
 )
 
 
@@ -27,19 +27,19 @@ class TestSpeciesFilter(TestCase):
         pass
 
     def test_meltan_enabled(self):
-        self.assertIn(Pokemon.objects.get(name="Meltan"), enabled_in_PoGO())
+        self.assertIn(Pokemon.objects.get(name="Meltan"), enabled_in_pogo())
         pass
 
     def test_meltan_nestable(self):
         self.assertNotIn(
-            Pokemon.objects.get(name="Meltan"), enabled_in_PoGO(nestable_species())
+            Pokemon.objects.get(name="Meltan"), enabled_in_pogo(nestable_species())
         )
 
     def test_alola_available(self):
-        self.assertIn(Pokemon.objects.get(name="Alolan Vulpix"), enabled_in_PoGO())
+        self.assertIn(Pokemon.objects.get(name="Alolan Vulpix"), enabled_in_pogo())
 
     def test_alola_nestable(self):
         self.assertNotIn(
             Pokemon.objects.get(name="Alolan Vulpix"),
-            enabled_in_PoGO(nestable_species()),
+            enabled_in_pogo(nestable_species()),
         )

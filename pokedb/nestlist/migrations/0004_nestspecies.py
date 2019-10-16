@@ -5,19 +5,19 @@ from django.db import migrations, models
 
 class Migration(migrations.Migration):
 
-    dependencies = [
-        ('nestlist', '0003_auto_20190128_2333'),
-    ]
+    dependencies = [("nestlist", "0003_auto_20190128_2333")]
 
     operations = [
         migrations.CreateModel(
-            name='NestSpecies',
+            name="NestSpecies",
             fields=[
-                ('dex_number', models.IntegerField(db_column='#', primary_key=True, serialize=False)),
+                (
+                    "dex_number",
+                    models.IntegerField(
+                        db_column="#", primary_key=True, serialize=False
+                    ),
+                )
             ],
-            options={
-                'db_table': 'nest_species_list',
-                'managed': False,
-            },
-        ),
+            options={"db_table": "nest_species_list", "managed": False},
+        )
     ]

@@ -7,58 +7,79 @@ class Migration(migrations.Migration):
 
     initial = True
 
-    dependencies = [
-    ]
+    dependencies = []
 
     operations = [
         migrations.CreateModel(
-            name='GoWeather',
+            name="GoWeather",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(db_column='Name', max_length=20)),
-                ('emoji', models.CharField(blank=True, db_column='Emoji', max_length=8, null=True)),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("name", models.CharField(db_column="Name", max_length=20)),
+                (
+                    "emoji",
+                    models.CharField(
+                        blank=True, db_column="Emoji", max_length=8, null=True
+                    ),
+                ),
             ],
-            options={
-                'db_table': 'GO_weather',
-                'managed': False,
-            },
+            options={"db_table": "GO_weather", "managed": False},
         ),
         migrations.CreateModel(
-            name='Type',
+            name="Type",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=55, unique=True)),
-                ('glitch', models.BooleanField(blank=True, null=True)),
-                ('note', models.CharField(blank=True, max_length=111, null=True)),
-                ('emoji', models.CharField(blank=True, max_length=8, null=True)),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("name", models.CharField(max_length=55, unique=True)),
+                ("glitch", models.BooleanField(blank=True, null=True)),
+                ("note", models.CharField(blank=True, max_length=111, null=True)),
+                ("emoji", models.CharField(blank=True, max_length=8, null=True)),
             ],
-            options={
-                'db_table': 'type_list',
-                'managed': False,
-            },
+            options={"db_table": "type_list", "managed": False},
         ),
         migrations.CreateModel(
-            name='TypeEffectiveness',
+            name="TypeEffectiveness",
             fields=[
-                ('id', models.AutoField(db_column='django_id', primary_key=True, serialize=False)),
+                (
+                    "id",
+                    models.AutoField(
+                        db_column="django_id", primary_key=True, serialize=False
+                    ),
+                )
             ],
-            options={
-                'db_table': 'type_effectiveness',
-                'managed': False,
-            },
+            options={"db_table": "type_effectiveness", "managed": False},
         ),
         migrations.CreateModel(
-            name='TypeEffectivenessRating',
+            name="TypeEffectivenessRating",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('description', models.CharField(max_length=23)),
-                ('dmg_multiplier', models.FloatField()),
-                ('pogodamage', models.FloatField(db_column='PoGoDamage')),
-                ('oldpogodamage', models.FloatField(db_column='oldPoGoDamage')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("description", models.CharField(max_length=23)),
+                ("dmg_multiplier", models.FloatField()),
+                ("pogodamage", models.FloatField(db_column="PoGoDamage")),
+                ("oldpogodamage", models.FloatField(db_column="oldPoGoDamage")),
             ],
-            options={
-                'db_table': 'type_effectiveness_ratings',
-                'managed': False,
-            },
+            options={"db_table": "type_effectiveness_ratings", "managed": False},
         ),
     ]

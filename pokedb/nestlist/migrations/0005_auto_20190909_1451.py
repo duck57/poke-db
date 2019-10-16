@@ -6,87 +6,111 @@ import django.db.models.deletion
 
 class Migration(migrations.Migration):
 
-    dependencies = [
-        ('nestlist', '0004_nestspecies'),
-    ]
+    dependencies = [("nestlist", "0004_nestspecies")]
 
     operations = [
         migrations.CreateModel(
-            name='AirtableImportLog',
+            name="AirtableImportLog",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('time', models.DateTimeField(null=True)),
-                ('city', models.CharField(max_length=25, null=True)),
-                ('end_num', models.IntegerField(null=True)),
-                ('first_reports', models.IntegerField(null=True)),
-                ('confirmations', models.IntegerField(null=True)),
-                ('conflicts', models.IntegerField(null=True)),
-                ('errors', models.IntegerField(null=True)),
-                ('duplicates', models.IntegerField(null=True)),
-                ('total_import_count', models.IntegerField(null=True)),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("time", models.DateTimeField(null=True)),
+                ("city", models.CharField(max_length=25, null=True)),
+                ("end_num", models.IntegerField(null=True)),
+                ("first_reports", models.IntegerField(null=True)),
+                ("confirmations", models.IntegerField(null=True)),
+                ("conflicts", models.IntegerField(null=True)),
+                ("errors", models.IntegerField(null=True)),
+                ("duplicates", models.IntegerField(null=True)),
+                ("total_import_count", models.IntegerField(null=True)),
             ],
-            options={
-                'db_table': 'airtable_import_log',
-            },
+            options={"db_table": "airtable_import_log"},
         ),
+        migrations.AlterModelTable(name="nstadminemail", table="nst_admin_email"),
+        migrations.AlterModelTable(name="nstaltname", table="nst_alt_name"),
         migrations.AlterModelTable(
-            name='nstadminemail',
-            table='nst_admin_email',
+            name="nstcombinedregion", table="nst_combined_region"
         ),
+        migrations.AlterModelTable(name="nstlocation", table="nst_location"),
         migrations.AlterModelTable(
-            name='nstaltname',
-            table='nst_alt_name',
+            name="nstmetropolismajor", table="nst_metropolis_major"
         ),
+        migrations.AlterModelTable(name="nstneighborhood", table="nst_neighborhood"),
+        migrations.AlterModelTable(name="nstparksystem", table="nst_park_system"),
+        migrations.AlterModelTable(name="nstrotationdate", table="nst_rotation_dates"),
         migrations.AlterModelTable(
-            name='nstcombinedregion',
-            table='nst_combined_region',
-        ),
-        migrations.AlterModelTable(
-            name='nstlocation',
-            table='nst_location',
-        ),
-        migrations.AlterModelTable(
-            name='nstmetropolismajor',
-            table='nst_metropolis_major',
-        ),
-        migrations.AlterModelTable(
-            name='nstneighborhood',
-            table='nst_neighborhood',
-        ),
-        migrations.AlterModelTable(
-            name='nstparksystem',
-            table='nst_park_system',
-        ),
-        migrations.AlterModelTable(
-            name='nstrotationdate',
-            table='nst_rotation_dates',
-        ),
-        migrations.AlterModelTable(
-            name='nstspecieslistarchive',
-            table='nst_species_list_archive',
+            name="nstspecieslistarchive", table="nst_species_list_archive"
         ),
         migrations.CreateModel(
-            name='NstRawRpt',
+            name="NstRawRpt",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('user_name', models.CharField(max_length=120, null=True)),
-                ('server_name', models.CharField(blank=True, max_length=120, null=True)),
-                ('nsla_pk_unlink', models.IntegerField(default=0)),
-                ('timestamp', models.DateTimeField(null=True)),
-                ('foreign_db_row_num', models.IntegerField(null=True)),
-                ('raw_species_num', models.IntegerField(null=True)),
-                ('raw_species_txt', models.CharField(max_length=120, null=True)),
-                ('attempted_dex_num', models.IntegerField(null=True)),
-                ('raw_park_info', models.CharField(blank=True, max_length=120, null=True)),
-                ('action', models.IntegerField(null=True)),
-                ('dedupe_sig', models.CharField(max_length=50, null=True)),
-                ('bot', models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, to='nestlist.NstAdminEmail')),
-                ('calculated_rotation', models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, to='nestlist.NstRotationDate')),
-                ('nsla_pk', models.ForeignKey(db_column='nsla_pk', null=True, on_delete=django.db.models.deletion.SET_NULL, to='nestlist.NstSpeciesListArchive')),
-                ('parklink', models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, to='nestlist.NstLocation')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("user_name", models.CharField(max_length=120, null=True)),
+                (
+                    "server_name",
+                    models.CharField(blank=True, max_length=120, null=True),
+                ),
+                ("nsla_pk_unlink", models.IntegerField(default=0)),
+                ("timestamp", models.DateTimeField(null=True)),
+                ("foreign_db_row_num", models.IntegerField(null=True)),
+                ("raw_species_num", models.IntegerField(null=True)),
+                ("raw_species_txt", models.CharField(max_length=120, null=True)),
+                ("attempted_dex_num", models.IntegerField(null=True)),
+                (
+                    "raw_park_info",
+                    models.CharField(blank=True, max_length=120, null=True),
+                ),
+                ("action", models.IntegerField(null=True)),
+                ("dedupe_sig", models.CharField(max_length=50, null=True)),
+                (
+                    "bot",
+                    models.ForeignKey(
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        to="nestlist.NstAdminEmail",
+                    ),
+                ),
+                (
+                    "calculated_rotation",
+                    models.ForeignKey(
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        to="nestlist.NstRotationDate",
+                    ),
+                ),
+                (
+                    "nsla_pk",
+                    models.ForeignKey(
+                        db_column="nsla_pk",
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        to="nestlist.NstSpeciesListArchive",
+                    ),
+                ),
+                (
+                    "parklink",
+                    models.ForeignKey(
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        to="nestlist.NstLocation",
+                    ),
+                ),
             ],
-            options={
-                'db_table': 'nst_raw_rpt',
-            },
+            options={"db_table": "nst_raw_rpt"},
         ),
     ]
