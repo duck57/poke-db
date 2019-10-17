@@ -6,7 +6,7 @@
 """
 Script for adding a new rotation.
 
-Currently, rotations do not have an easy undo mechanism, so be careful.
+Method to undo a rotation is in nestlist.models
 """
 
 import os

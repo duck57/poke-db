@@ -92,7 +92,7 @@ class NstCombinedRegion(models.Model):
         return self.name
 
     def web_url(self):
-        return reverse("region", kwargs={"city_id": 0, "region_id": self.pk})
+        return reverse("nestlist:region", kwargs={"city_id": 0, "region_id": self.pk})
 
 
 class NstLocation(models.Model):
@@ -117,14 +117,13 @@ class NstLocation(models.Model):
     primary_silph_id = models.IntegerField(blank=True, null=True)
     osm_id = models.IntegerField(db_column="OSM_id", blank=True, null=True)
     park_system = models.ForeignKey(
-        "NstParkSystem",
-        models.DO_NOTHING,
-        db_column="park_system",
-        blank=True,
-        null=True,
+        "NstParkSystem", models.DO_NOTHING, db_column="park_system", null=True
     )
     resident_history = models.ManyToManyField(
         "NstRotationDate", through="NstSpeciesListArchive", symmetrical=True
+    )
+    duplicate_of = models.ForeignKey(
+        "NstLocation", models.SET_NULL, db_column="duplicate_of", null=True
     )
 
     class Meta:
@@ -151,12 +150,16 @@ class NstLocation(models.Model):
     def __lt__(self, other):
         return self.official_name < other.official_name
 
+    def get_self(self):
+        """For duplicate nest handling"""
+        return self.duplicate_of if self.duplicate_of else self
+
     def ct(self):
         return self.neighborhood.major_city
 
     def web_url(self):
         return reverse(
-            "nest_history", kwargs={"city_id": self.ct(), "nest_id": self.pk}
+            "nestlist:nest_history", kwargs={"city_id": self.ct(), "nest_id": self.pk}
         )
 
 
@@ -181,14 +184,12 @@ class NstMetropolisMajor(models.Model):
         return self.name
 
     def web_url(self):
-        return reverse("city", kwargs={"city_id": self.pk})
+        return reverse("nestlist:city", kwargs={"city_id": self.pk})
 
 
 class NstNeighborhood(models.Model):
     name = models.CharField(max_length=222)
-    region = models.ForeignKey(
-        NstCombinedRegion, models.DO_NOTHING, db_column="region", blank=True, null=True
-    )
+    region = models.ManyToManyField(to="NstCombinedRegion", blank=True)
     lat = models.FloatField(blank=True, null=True)
     lon = models.FloatField(blank=True, null=True)
     major_city = models.ForeignKey(
@@ -208,7 +209,8 @@ class NstNeighborhood(models.Model):
 
     def web_url(self):
         return reverse(
-            "neighborhood", kwargs={"city_id": self.major_city.pk, "region_id": self.pk}
+            "nestlist:neighborhood",
+            kwargs={"city_id": self.major_city.pk, "neighborhood_id": self.pk},
         )
 
 
@@ -224,7 +226,9 @@ class NstParkSystem(models.Model):
         return self.name
 
     def web_url(self):
-        return reverse("park_system", kwargs={"city_id": 0, "park_system_id": self.pk})
+        return reverse(
+            "nestlist:park_system", kwargs={"city_id": 0, "park_system_id": self.pk}
+        )
 
 
 class NstRotationDate(models.Model):
@@ -305,7 +309,7 @@ on {self.rotation_num.date_priority_display()}"
 
     def web_url(self):
         return reverse(
-            "nest_history",
+            "nestlist:nest_history",
             kwargs={"city_id": self.nestid.ct(), "nest_id": self.nestid.pk},
         )
 
@@ -357,7 +361,7 @@ class NstRawRpt(models.Model):
 
     def web_url(self):
         return reverse(
-            "nest_history",
+            "nestlist:nest_history",
             kwargs={
                 "city_id": self.nsla_pk.nestid.ct(),
                 "nest_id": self.nsla_pk.nestid.pk,
@@ -412,7 +416,7 @@ def query_nests(
                 nestID=search if str_int(search) else None
             )  # handle 18th street library
             | Q(short_name__icontains=search)
-            | Q(nstaltname__name__icontains=search)
+            | Q(alternate_name__name__icontains=search)
         )
         .distinct()
         .order_by("official_name")
@@ -549,9 +553,11 @@ def add_a_report(
         else:
             sp_lnk = None  # free-text it for human entries
     try:  # park link
-        park_link: NstLocation = query_nests(
-            nest, location_type="city", location_id=bot.city, only_one=True
-        ).get()
+        park_link: NstLocation = get_true_self(
+            query_nests(
+                nest, location_type="city", location_id=bot.city, only_one=True
+            ).get()
+        )
     except NstLocation.MultipleObjectsReturned:
         error_list["nest"] = (412, "too many results", f"{nest}")
     except NstLocation.DoesNotExist:
@@ -651,6 +657,20 @@ def add_a_report(
     return handle_validation_errors()
 
 
+def nsla_sp_filter(
+    species: Union[str, int],
+    nsla: "QuerySet[NstSpeciesListArchive]" = NstSpeciesListArchive.objects.all(),
+) -> "QuerySet[NstSpeciesListArchive]":
+    return nsla.filter(
+        Q(
+            species_name_fk__in=match_species_by_name_or_number(
+                sp_txt=species, previous_evolution_search=True
+            )
+        )
+        | Q(species_txt__icontains=species)  # for free-text row-matching
+    )
+
+
 def get_local_nsla_for_rotation(
     rotation: NstRotationDate,
     location_pk: int,
@@ -664,18 +684,11 @@ def get_local_nsla_for_rotation(
     :param species: optional filter for species
     :return: The filtered NSLA for the given location and date
     """
-    out_list = NstSpeciesListArchive.objects.filter(rotation_num=rotation).order_by(
-        "nestid__official_name"
-    )
+    out_list: "QuerySet[NstSpeciesListArchive]" = NstSpeciesListArchive.objects.filter(
+        rotation_num=rotation
+    ).order_by("nestid__official_name")
     if species:
-        out_list = out_list.filter(
-            Q(
-                species_name_fk__in=match_species_by_name_or_number(
-                    sp_txt=species, previous_evolution_search=True
-                )
-            )
-            | Q(species_txt__icontains=species)  # for free-text row-matching
-        )
+        out_list = nsla_sp_filter(species, out_list)
     if location_type.lower() == "city":
         return out_list.filter(nestid__neighborhood__major_city=location_pk)
     if location_type.lower() == "neighborhood":
@@ -686,9 +699,9 @@ def get_local_nsla_for_rotation(
 
 
 def collect_empty_nests(
-    rotation: Optional[NstRotationDate],
-    location_pk: Optional[int],
-    location_type: Optional[str],
+    rotation: Optional[NstRotationDate] = None,
+    location_pk: Optional[int] = None,
+    location_type: str = "",
 ) -> "QuerySet[NstLocation]":
     """
     Collect empty nests
@@ -702,7 +715,7 @@ def collect_empty_nests(
     nsla_exclude_list: "QuerySet[NstSpeciesListArchive]" = (
         get_local_nsla_for_rotation(rotation, location_pk, location_type)
         if rotation
-        else NstSpeciesListArchive.objects.none()
+        else NstSpeciesListArchive.objects.all()
     )
     if location_type.lower() == "city":
         nests: "QuerySet[NstLocation]" = NstLocation.objects.filter(
@@ -718,7 +731,32 @@ def collect_empty_nests(
         )
     else:
         nests: "QuerySet[NstLocation]" = NstLocation.objects.all()
-    return nests.exclude(pk__in=nsla_exclude_list.nestid)
+    return nests.exclude(
+        Q(pk__in=nsla_exclude_list.values("nestid")) | Q(duplicate_of__isnull=False)
+    )
+
+
+def rotations_without_report(
+    nest: NstLocation, species: str = ""
+) -> "QuerySet[NstRotationDate]":
+    """
+    Finds rotations without any report for a given nest
+
+    If this is a species-specific search on a nest page, return nothing to avoid giving misleading results
+    """
+    return (
+        NstRotationDate.objects.exclude(nstlocation=nest)
+        if not species
+        else NstRotationDate.objects.none()
+    )
+
+
+def park_nesting_history(nest: NstLocation, species: Optional[str] = None):
+    return (
+        nsla_sp_filter(species, NstSpeciesListArchive.objects.filter(nestid=nest))
+        if species
+        else NstSpeciesListArchive.objects.filter(nestid=nest).order_by("rotation_num")
+    )
 
 
 class NewRotationStatus(NamedTuple):
@@ -755,7 +793,7 @@ def new_rotation(
     for nst in perm_nst:
         add_a_report(
             name="Otto",
-            nest=nst.pk,
+            nest=nst.pk,  # no call to get_true_self because the duplicate may indicate an overlapping WB & nest
             timestamp=append_utc(datetime.utcnow()),
             species=nst.permanent_species.split("|")[0],
             bot_id=rotation_user,
@@ -838,3 +876,8 @@ def delete_rotation(
         input(confirmation_prompt), insist_case="UPPER", spell_it=True
     )
     return deletion_dance() if accept_consequences else None
+
+
+def get_true_self(nest: NstLocation) -> NstLocation:
+    """Follows a nest.duplicate_of trail to reveal the canonical current nest"""
+    return get_true_self(nest.duplicate_of) if nest.duplicate_of else nest

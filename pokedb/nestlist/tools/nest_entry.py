@@ -30,6 +30,7 @@ if __name__ == "__main__":
         NstRotationDate,
         NstLocation,
         add_a_report,
+        get_true_self,
     )
     from speciesinfo.models import (
         match_species_by_name_or_number,
@@ -95,9 +96,9 @@ def update_park(
     species_force: Optional[str] = None,
 ) -> int:
     """
-    :param rotnum:
-    :param search:
-    :param species_force:
+    :param rotnum: rotation number
+    :param search: string of the nest to look for
+    :param species_force: for CLI testing use
     :return: int as to whether this is finished or not
     """
     if search is None:
@@ -113,8 +114,9 @@ def update_park(
         return 0
 
     current_nest = search_nest_query(search)
-    if current_nest == 0:
+    if not current_nest:
         return 0  # search again if none of the results matched what you wanted
+    current_nest: NstLocation = get_true_self(current_nest)  # handle duplicate merging
 
     print(str(current_nest))
 

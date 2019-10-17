@@ -22,7 +22,7 @@ urlpatterns = [
     ),
     path(
         "<int:city_id>/neighborhood/<int:neighborhood_id>/",
-        views.CityView.as_view(),
+        views.NeighborhoodView.as_view(),
         name="neighborhood",
     ),
     # path("<int:city_id>/neighborhoods/"),

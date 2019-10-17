@@ -27,13 +27,22 @@
     </style>
 
     <script type="text/javascript" src="{% static 'nestlist/js/sort_t.js' %}"></script>
-    <title>{{ location.short_name }} Nests!</title>
+    <title>
+		{% if location.short_name %}
+			{{ location.short_name }}
+		{% else %}
+			{{ location.name }}
+		{% endif %}
+		Nests!
+	</title>
 </head>
 <body ontouchstart="" onclick="">
 <center>
-	<header>{% block top-nav %}
-		<p><a href="{% url 'nestlist:report_nest' location.id %}">Report a nest!</a></p>
-	{% endblock %}</header>
+	<header>
+		{% block top-nav %}
+			<p><a href="{% url 'nestlist:report_nest' location.id %}">Report a nest!</a></p>
+		{% endblock %}
+	</header>
 <table id="nestList">
 	<caption>{% block information %} {{ location }}<br>#{{ rotation }} {% endblock %}</caption>
 	<tr>
@@ -49,21 +58,21 @@
 			<td class="rotation">{{ nest.rotation }}</td>
 			<td class="neighborhood" itemprop="containedInPlace"
 			id="{{ nest.nestid.neighborhood.pk }}"
-			ondrag="alert('{{ nest.nestid.neighborhood.pk }}')">
+			ondblclick="alert('{{ nest.nestid.neighborhood.pk }}')">
 				{{ nest.nestid.neighborhood }}
 			</td>
 			<td class="nest-name tooltip" itemprop="name">
 				{{ nest.nestid.get_name }}
-				<span class="tooltiptext" itemprop="address">
+				<address class="tooltiptext" itemprop="address">
 					{% if nest.nestid.address %}
 					{{ nest.nestid.address }}
 					{% else %}
-					<div class="address-error">No address on file</div>
+					<span class="address-error">No address on file</span>
 					{% endif %}
 					{% if nest.nestid.private %}
 					<div class="privacy-notice">Private property, please be respectful</div>
 					{% endif %}
-				</span>
+				</address>
 			</td>
 			<td class="number">{{ nest.species_no }}</td>
 			<td class="species">{{ nest.species_txt }}</td>
@@ -81,4 +90,5 @@
 		{% endblock %}
 	</footer>
 </center>
+{% block empty-zone %}{% endblock %}
 </body></html>

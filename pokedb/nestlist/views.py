@@ -4,8 +4,10 @@ from django.http import (
     HttpResponseBadRequest,
     Http404,
     HttpResponseNotFound,
+    QueryDict,
 )
 from django.urls import reverse
+from urllib.parse import urlencode
 from django.views import generic
 from rest_framework import viewsets
 from rest_framework.generics import ListAPIView, CreateAPIView, RetrieveAPIView
@@ -18,9 +20,15 @@ from .models import (
     NstCombinedRegion,
     get_local_nsla_for_rotation,
     NstNeighborhood,
+    collect_empty_nests,
     get_rotation,
 )
 from .serializers import ParkSerializer
+
+
+def append_search_terms(url_base: str, terms: QueryDict):
+    """This might be redundant with some core Django functionality"""
+    return url_base + "?" + urlencode(terms)
 
 
 def report_nest(request, **kwargs):
@@ -58,7 +66,8 @@ class CityView(generic.ListView):
             return HttpResponseBadRequest(f"Try again with a valid date.")
         except Http404:
             srg = self.request.GET
-            errstring = f"No nests found for city #{self.kwargs['city_id']} on {srg.get('date', srg.get('rotation', 'today'))}"
+            errstring = f"No nests found for city #{self.kwargs['city_id']} "
+            errstring += f"on {srg.get('date', srg.get('rotation', 'today'))}"
             ss = srg.get("pokemon", srg.get("species", srg.get("pokémon", None)))
             if ss:
                 errstring += f" matching a search for {ss}"
@@ -69,7 +78,7 @@ class CityView(generic.ListView):
         context = super().get_context_data(**kwargs)
         context["location"] = NstMetropolisMajor.objects.get(pk=self.kwargs["city_id"])
         context["rotation"] = get_rotation(self.kwargs.get("date", "t"))
-        context["title"] = "List of Nest Databases"
+        # context["title"] = "List of Nest Databases"
         return context
 
 
@@ -137,6 +146,58 @@ class CityIndex(generic.ListView):
 class NestView(generic.DetailView):
     model = NstLocation
     template_name = "nestlist/nest.html"
+
+
+class NeighborhoodView(generic.ListView):
+    model = NstSpeciesListArchive
+    template_name = "nestlist/neighborhood.html"
+    context_object_name = "current_nest_list"
+    pk_url_kwarg = "neighborhood_id"
+    allow_empty = False
+
+    def get_queryset(self):
+        srg = self.request.GET
+        return get_local_nsla_for_rotation(
+            get_rotation(srg.get("date", "t")),
+            self.kwargs["neighborhood_id"],
+            "neighborhood",
+            species=srg.get("pokemon", srg.get("species", srg.get("pokémon", None))),
+        )
+
+    def get(self, request, *args, **kwargs):
+        nid: int = self.kwargs["neighborhood_id"]
+        try:
+            nbd: NstNeighborhood = NstNeighborhood.objects.get(pk=nid)
+        except NstNeighborhood.DoesNotExist:
+            return HttpResponseNotFound(f"No neighborhood or suburb with id {nid}")
+        if nbd.major_city.pk != self.kwargs["city_id"]:
+            return HttpResponseRedirect(
+                append_search_terms(nbd.web_url(), self.request.GET)
+            )
+        try:
+            return super(NeighborhoodView, self).get(request, *args, **kwargs)
+        except ValueError:
+            return HttpResponseBadRequest(f"Try again with a valid date.")
+        except Http404:
+            srg = self.request.GET
+            errstring = f"No nests found for Neighborhood or Suburb #{nid}"
+            errstring += f"on {srg.get('date', srg.get('rotation', 'today'))}"
+            ss = srg.get("pokemon", srg.get("species", srg.get("pokémon", None)))
+            if ss:
+                errstring += f" matching a search for {ss}"
+            errstring += f"."
+            return HttpResponseNotFound(errstring)
+
+    def get_context_data(self, **kwargs):
+        nid = self.kwargs["neighborhood_id"]
+        context = super().get_context_data(**kwargs)
+        context["location"] = NstNeighborhood.objects.get(pk=nid)
+        context["rotation"] = get_rotation(self.request.GET.get("date", "t"))
+        context["neighbor_view"] = True
+        context["empties"] = collect_empty_nests(
+            context["rotation"], location_type="neighborhood", location_pk=nid
+        )
+        return context
 
 
 class ParkViewSet(ListAPIView):
