@@ -6,7 +6,9 @@
     <meta property="og:type" content="list">
     <meta property="og:locale" content="en_US">
     <meta property="og:title" content="{{ location }} nests as of {{ rotation.date_priority_display }}">
-    <meta property="og:url" content="{% url 'nestlist:city_historic_date' location.id rotation.pk %}">
+	{% block self-url %}
+    	<meta property="og:url" content="{% url 'nestlist:city_historic_date' location.id rotation.pk %}">
+	{% endblock %}
     {% load static %}
     <link rel="stylesheet" type="text/css" href="{% static 'nestlist/css/style.css' %}">
     <!-- TODO: update icon later -->
@@ -16,11 +18,12 @@
 	{% if history %}
 	tr.confirmed { background-color: #d9e8d9; }
 	tr.unconfirmed { background-color: #e8d9d9; }
+	td.nest-name,th.nest-name { display: none; }
 	{% else %}
 	td.rotation,th.rotation {
 		display: none;
 	}{% endif %}
-	{% if neighbor_view %}
+	{% if neighbor_view or history %}
 	td.neighborhood,th.neighborhood {
 		display: none;
 	}{% endif %}
@@ -30,8 +33,10 @@
     <title>
 		{% if location.short_name %}
 			{{ location.short_name }}
-		{% else %}
+		{% elif location.name %}
 			{{ location.name }}
+		{% else %}
+			{{ location.get_name }}
 		{% endif %}
 		Nests!
 	</title>
@@ -40,7 +45,7 @@
 <center>
 	<header>
 		{% block top-nav %}
-			<p><a href="{% url 'nestlist:report_nest' location.id %}">Report a nest!</a></p>
+			<p><a href="{% url 'nestlist:report_nest' location.pk %}">Report a nest!</a></p>
 		{% endblock %}
 	</header>
 <table id="nestList">
@@ -55,7 +60,7 @@
 	{% for nest in current_nest_list %}
 		<tr id="{{ nest.id }}" itemscope itemtype="https://schema.org/Place"
 		class="nest {% if nest.confirmation %}confirmed{% else %}unconfirmed{% endif %}" >
-			<td class="rotation">{{ nest.rotation }}</td>
+			<td class="rotation">{{ nest.rotation_num }}</td>
 			<td class="neighborhood" itemprop="containedInPlace"
 			id="{{ nest.nestid.neighborhood.pk }}"
 			ondblclick="alert('{{ nest.nestid.neighborhood.pk }}')">
@@ -86,7 +91,7 @@
 			Species with a <span class="species">bold name</span> and an <span class="number">italic pokédex number</span> have multiple confirming reports.
 		</p>
 		<p>Mid-rotation events may throw off the accuracy of the list.</p>
-		<a href="{% url 'nestlist:report_nest' location.id %}">Report a nest!</a>
+		<a href="{% url 'nestlist:report_nest' location.pk %}">Report a nest!</a>
 		{% endblock %}
 	</footer>
 </center>

@@ -159,7 +159,8 @@ class NstLocation(models.Model):
 
     def web_url(self):
         return reverse(
-            "nestlist:nest_history", kwargs={"city_id": self.ct(), "nest_id": self.pk}
+            "nestlist:nest_history",
+            kwargs={"city_id": self.ct().pk, "nest_id": self.pk},
         )
 
 

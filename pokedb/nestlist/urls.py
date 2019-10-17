@@ -11,9 +11,6 @@ urlpatterns = [
         name="nest_history",
     ),
     path("<int:city_id>/nests/", views.ParkViewSet.as_view(), name="city_park_list"),
-    # path("<int:city_id>/nests/empties/"),
-    # path("<int:city_id>/nests/confirmed/"),
-    # path("<int:city_id>/nests/unconfirmed/"),
     # path("<int:city_id>/nests/<int:nest_id>/", views."),
     path(
         "<int:city_id>/neighborhood/",

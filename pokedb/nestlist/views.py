@@ -21,14 +21,16 @@ from .models import (
     get_local_nsla_for_rotation,
     NstNeighborhood,
     collect_empty_nests,
+    rotations_without_report,
     get_rotation,
+    park_nesting_history,
 )
 from .serializers import ParkSerializer
 
 
 def append_search_terms(url_base: str, terms: QueryDict):
     """This might be redundant with some core Django functionality"""
-    return url_base + "?" + urlencode(terms)
+    return url_base + "?" + urlencode(terms) if terms else url_base
 
 
 def report_nest(request, **kwargs):
@@ -143,9 +145,51 @@ class CityIndex(generic.ListView):
         return context
 
 
-class NestView(generic.DetailView):
-    model = NstLocation
+class NestView(generic.ListView):
+    model = NstSpeciesListArchive
     template_name = "nestlist/nest.html"
+    context_object_name = "current_nest_list"
+    allow_empty = False
+    pk_url_kwarg = "nest_id"
+
+    def get_queryset(self):
+        srg = self.request.GET
+        return park_nesting_history(
+            NstLocation.objects.get(pk=self.kwargs["nest_id"]),
+            srg.get("pokemon", srg.get("species", srg.get("pokémon", None))),
+        ).order_by("-rotation_num")
+
+    def get(self, request, *args, **kwargs):
+        nid: int = self.kwargs["nest_id"]
+        try:
+            nst: NstLocation = NstLocation.objects.get(pk=nid)
+        except NstLocation.DoesNotExist:
+            return HttpResponseNotFound(f"No nest with id {nid}")
+        if nst.ct().pk != self.kwargs["city_id"]:
+            return HttpResponseRedirect(
+                append_search_terms(nst.web_url(), self.request.GET)
+            )
+        try:
+            return super(NestView, self).get(request, *args, **kwargs)
+        except Http404:
+            srg = self.request.GET
+            errstring = f"Nest #{nid} has never had any reports"
+            ss = srg.get("pokemon", srg.get("species", srg.get("pokémon", None)))
+            if ss:
+                errstring += f" matching a search for {ss}"
+            errstring += f"."
+            return HttpResponseNotFound(errstring)
+
+    def get_context_data(self, **kwargs):
+        nst = NstLocation.objects.get(pk=self.kwargs["nest_id"])
+        srg = self.request.GET
+        context = super().get_context_data(**kwargs)
+        context["location"] = nst
+        context["history"] = True
+        # context["empties"] = rotations_without_report(
+        #     nst, srg.get("pokemon", srg.get("species", srg.get("pokémon", None)))
+        # )
+        return context
 
 
 class NeighborhoodView(generic.ListView):
@@ -180,7 +224,7 @@ class NeighborhoodView(generic.ListView):
             return HttpResponseBadRequest(f"Try again with a valid date.")
         except Http404:
             srg = self.request.GET
-            errstring = f"No nests found for Neighborhood or Suburb #{nid}"
+            errstring = f"No nests found for Neighborhood or Suburb #{nid} "
             errstring += f"on {srg.get('date', srg.get('rotation', 'today'))}"
             ss = srg.get("pokemon", srg.get("species", srg.get("pokémon", None)))
             if ss:
