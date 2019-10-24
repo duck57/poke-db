@@ -16,8 +16,6 @@
 
     <style>
 	{% if history %}
-	tr.confirmed { background-color: #d9e8d9; }
-	tr.unconfirmed { background-color: #e8d9d9; }
 	td.nest-name,th.nest-name { display: none; }
 	{% else %}
 	td.rotation,th.rotation {
@@ -36,7 +34,7 @@
 		{% elif location.name %}
 			{{ location.name }}
 		{% else %}
-			{{ location.get_name }}
+			{{ location.get_name }}  <!-- TODO: give get_name to all location-type items -->
 		{% endif %}
 		Nests!
 	</title>
