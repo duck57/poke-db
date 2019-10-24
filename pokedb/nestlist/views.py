@@ -52,10 +52,16 @@ class CityView(generic.ListView):
     pk_url_kwarg = "city_id"
     allow_empty = False
 
+    def get_rot8(self):
+        srg = self.request.GET
+        return get_rotation(
+            self.kwargs.get("date", srg.get("date", srg.get("rotation", "t")))
+        )
+
     def get_queryset(self):
         srg = self.request.GET
         return get_local_nsla_for_rotation(
-            get_rotation(srg.get("date", "t")),
+            self.get_rot8(),
             self.kwargs["city_id"],
             "city",
             species=srg.get("pokemon", srg.get("species", srg.get("pokémon", None))),
@@ -69,7 +75,7 @@ class CityView(generic.ListView):
         except Http404:
             srg = self.request.GET
             errstring = f"No nests found for city #{self.kwargs['city_id']} "
-            errstring += f"on {srg.get('date', srg.get('rotation', 'today'))}"
+            errstring += f"on {srg.get('date', srg.get('rotation', self.kwargs.get('date', 'today')))}"
             ss = srg.get("pokemon", srg.get("species", srg.get("pokémon", None)))
             if ss:
                 errstring += f" matching a search for {ss}"
@@ -79,7 +85,7 @@ class CityView(generic.ListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["location"] = NstMetropolisMajor.objects.get(pk=self.kwargs["city_id"])
-        context["rotation"] = get_rotation(self.kwargs.get("date", "t"))
+        context["rotation"] = self.get_rot8()
         # context["title"] = "List of Nest Databases"
         return context
 
