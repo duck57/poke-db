@@ -175,4 +175,4 @@ Network Trash Folder
 Temporary Items
 .apdisk
 
-settings_local.py
+settings_local*.py

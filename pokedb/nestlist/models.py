@@ -3,7 +3,34 @@ Models for the nest list
 
 After all the class-based models are the static methods for dealing with the models
 which will prove useful all over the place.
+
+Models that should have web_url and api_url methods:
+NstLocation
+NSLA
+NstRawRpt
+NstMetropolisMajor
+NstCombinedRegion
+NstNeighborhood
+NstParkSystem
+
+Models that should have get_name, full_name, and shortname:
+NstLocation
+NstMetropolisMajor
+NstParkSystem
+NstCombinedRegion
+NstNeighborhood
+
+Models that need a ct() method:
+NstLocation
+NSLA
+NstNeighborhood
+NstMetropolisMajor
+
+Models with a which_regions:
+NstMetropolisMajor
+NSLA
 """
+
 
 from .utils import parse_date, str_int, append_utc, true_if_y
 from django.db import models
@@ -22,19 +49,31 @@ from datetime import datetime
 from django.urls import reverse
 
 
+APP_PREFIX: str = "nestlist"  # is there some way to import this dynamically?
+
+
+def make_url_name(name: str) -> str:
+    """For Django reverse URL lookup"""
+    return APP_PREFIX + ":" + name
+
+
 class NstAdminEmail(models.Model):
     name = models.CharField(max_length=90, blank=True, null=True)
     city = models.ForeignKey(
-        "NstMetropolisMajor", models.DO_NOTHING, db_column="city", blank=True, null=True
+        "NstMetropolisMajor",
+        on_delete=models.SET_NULL,
+        db_column="city",
+        blank=True,
+        null=True,
     )
     shortname = models.CharField(max_length=20, blank=True, null=True)
+    # TODO: remove this once 1-1 w/ auth.models.user
     e_mail = models.CharField(db_column="e-mail", max_length=90, blank=True, null=True)
     is_bot = models.PositiveSmallIntegerField(null=True)
-
+    # char field (choices=…) field
     bot_types: Dict[int, str] = {0: "human", 1: "bot", 2: "SYSTEM"}
 
     class Meta:
-        managed = False
         db_table = "nst_admin_email"
 
     def __str__(self):
@@ -59,7 +98,6 @@ class NstAltName(models.Model):
     id = models.AutoField(primary_key=True, db_column="dj_key")
 
     class Meta:
-        managed = False
         db_table = "nst_alt_name"
 
     def __str__(self):
@@ -72,7 +110,6 @@ class NstCombinedRegion(models.Model):
     name = models.CharField(max_length=222)
 
     class Meta:
-        managed = False
         db_table = "nst_combined_region"
 
     def __str__(self):
@@ -91,8 +128,8 @@ class NstCombinedRegion(models.Model):
     def short_name(self):
         return self.name
 
-    def web_url(self):
-        return reverse("nestlist:region", kwargs={"city_id": 0, "region_id": self.pk})
+    def web_url(self):  # not currently implemented
+        return reverse(APP_PREFIX + "region", kwargs={"region_id": self.pk})
 
 
 class NstLocation(models.Model):
@@ -126,8 +163,9 @@ class NstLocation(models.Model):
         "NstLocation", models.SET_NULL, db_column="duplicate_of", null=True
     )
 
+    search_fields = ["nestID", "official_name", "short_name", "alternate_name"]
+
     class Meta:
-        managed = False
         db_table = "nst_location"
 
     def __str__(self):
@@ -178,7 +216,6 @@ class NstMetropolisMajor(models.Model):
     active = models.BooleanField(default=False)
 
     class Meta:
-        managed = False
         db_table = "nst_metropolis_major"
 
     def __str__(self):
@@ -202,7 +239,6 @@ class NstNeighborhood(models.Model):
     )
 
     class Meta:
-        managed = False
         db_table = "nst_neighborhood"
 
     def __str__(self):
@@ -220,7 +256,6 @@ class NstParkSystem(models.Model):
     website = models.CharField(max_length=234, blank=True, null=True)
 
     class Meta:
-        managed = False
         db_table = "nst_park_system"
 
     def __str__(self):
@@ -241,7 +276,6 @@ class NstRotationDate(models.Model):
     )
 
     class Meta:
-        managed = False
         db_table = "nst_rotation_dates"
 
     def __str__(self):
@@ -280,7 +314,6 @@ class NstSpeciesListArchive(models.Model):
     )
 
     class Meta:
-        managed = False
         db_table = "nst_species_list_archive"
         unique_together = (("rotation_num", "nestid"),)
 

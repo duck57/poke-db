@@ -36,7 +36,6 @@ APPEND_SLASH = True
 # Application definition
 
 INSTALLED_APPS = [
-    "typeedit.apps.TypeeditConfig",
     "speciesinfo.apps.SpeciesinfoConfig",
     "nestlist.apps.NestlistConfig",
     "pokeperfect.apps.PokeperfectConfig",

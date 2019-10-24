@@ -1,4 +1,4 @@
-from django.urls import path, re_path
+from django.urls import path
 from . import views
 
 app_name = "nestlist"
@@ -35,11 +35,18 @@ urlpatterns = [
     #     name="city_historic_date",
     # ),
     path("<int:city_id>/region/", views.RegionalIndex.as_view(), name="region_index"),
-    path(
-        "<int:city_id>/region/<int:region_id>/", views.CityView.as_view(), name="region"
-    ),
-    # path("<int:city_id>/regions/"),
-    # path("<int:city_id>/regions/<int:region_id>/"),
+    # path(  # region HTML views
+    #     "region/<int:region_id>/", views.RegionView.as_view(), name="region"
+    # ),  # TODO: region views
+    # path("<int:city_id>/regions/"),  # region API index
+    # path("regions/<int:region_id>/"),  # region API detail
+    # TODO: park systems
+    # path("<int:city_id>/park_sys/", views.ParkSysIndex.as_view(), name="ps_idx"),
+    # path(
+    #     "region/<int:ps_id>/", views.ParkSystemView.as_view(), name="park_sys"
+    # ),
+    # path("<int:city_id>/park_systems/"),
+    # path("park_system/<int:region_id>/"),
     # path("<int:city_id>/species-history/<str:poke>/"),
     # path("<int:city_id>/species/<str:poke>/"),
     # TODO: rewrite this to use the local reporting form

@@ -1,17 +1,14 @@
 from django.db import models
 
-# from speciesinfo.models import Pokemon, PokeCategory
-# from typeedit.models import Type
 
 # Create your models here.
 
 
 class GoIvFloor(models.Model):
-    min = models.AutoField(primary_key=True)
+    min = models.IntegerField(primary_key=True)
     comment = models.CharField(max_length=50, blank=True, null=True)
 
     class Meta:
-        managed = False
         db_table = "GO_IV_floors"
 
 
@@ -29,7 +26,6 @@ class GoPowerupLevel(models.Model):
     next_level_dust = models.IntegerField(blank=True, null=True)
 
     class Meta:
-        managed = False
         db_table = "GO_powerup_level"
 
 
@@ -66,7 +62,6 @@ class GoTrainerLevel(models.Model):
     )
 
     class Meta:
-        managed = False
         db_table = "GO_trainer_level"
 
 
@@ -83,8 +78,7 @@ class PogoTeam(models.Model):
     )
 
     class Meta:
-        managed = False
-        db_table = "GO_teams"
+        db_table = "go_teams"
 
 
 class GoRaidHp(models.Model):
@@ -97,7 +91,6 @@ class GoRaidHp(models.Model):
     min_dps_rejoins = models.FloatField(blank=True, null=True)
 
     class Meta:
-        managed = False
         db_table = "go_raid_hp"
 
     def __str__(self):

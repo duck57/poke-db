@@ -13,7 +13,6 @@ class Biome(models.Model):
     pogo = models.PositiveIntegerField(db_column="PoGo", blank=True, null=True)
 
     class Meta:
-        managed = False
         db_table = "biome"
 
     def __str__(self):
@@ -26,7 +25,6 @@ class Generation(models.Model):
     note = models.CharField(db_column="Note", max_length=111, blank=True, null=True)
 
     class Meta:
-        managed = False
         db_table = "generations"
 
     def __str__(self):
@@ -41,21 +39,20 @@ class EggGroup(models.Model):
     )
 
     class Meta:
-        managed = False
         db_table = "egg_group"
 
     def __str__(self):
         return self.name
 
-    def can_breed_with(self, eg2: "Optional[EggGroup]") -> bool:
+    def can_breed_with(self, eg2) -> bool:
         if eg2 is None:  # clean data here
             return False
-        if self.id in [0, 15] or eg2.id in [0, 15]:
+        if self.pk in [0, 15] or eg2.id in [0, 15]:
             return False  # Glitch groups or Undiscovered
-        if self.id == 0 or eg2.id == 0:
+        if self.pk == 0 or eg2.id == 0:
             return True  # Dittos
         #  TODO: add filter for Delta ditto during project phase Data Completion
-        return True if self.id == eg2.id else False
+        return True if self.pk == eg2.pk else False
 
 
 class PokeCategory(models.Model):
@@ -63,7 +60,6 @@ class PokeCategory(models.Model):
     note = models.CharField(max_length=111, blank=True, null=True)
 
     class Meta:
-        managed = False
         db_table = "zc_pkmn_cat"
 
     def __str__(self):
@@ -76,7 +72,6 @@ class BodyPlan(models.Model):
     notes = models.CharField(max_length=50, blank=True, null=True)
 
     class Meta:
-        managed = False
         db_table = "body_plan"
 
     def __str__(self):
@@ -92,11 +87,101 @@ class Ability(models.Model):
     note = models.CharField(db_column="Note", max_length=99, blank=True, null=True)
 
     class Meta:
-        managed = False
         db_table = "ability"
 
     def __str__(self):
         return self.name
+
+
+class TypeEffectiveness(models.Model):
+    otype = models.ForeignKey(
+        "Type", models.DO_NOTHING, db_column="otype", related_name="offensive_type"
+    )
+    relation = models.ForeignKey(
+        "TypeEffectivenessRating",
+        models.DO_NOTHING,
+        db_column="relation",
+        blank=True,
+        null=True,
+    )
+    dtype = models.ForeignKey(
+        "Type", models.DO_NOTHING, db_column="dtype", related_name="defensive_type"
+    )
+    id = models.AutoField(db_column="django_id", primary_key=True)
+
+    class Meta:
+        db_table = "type_effectiveness"
+        unique_together = (("otype", "dtype"),)
+
+    def __str__(self):
+        return (
+            f"{self.otype.name} {self.relation.description} against {self.dtype.name}"
+        )
+
+    search_fields = ["otype", "relation", "dtype"]
+
+
+class TypeEffectivenessRating(models.Model):
+    description = models.CharField(max_length=23)
+    dmg_multiplier = models.FloatField()
+    pogodamage = models.FloatField(db_column="PoGoDamage")
+    oldpogodamage = models.FloatField(db_column="oldPoGoDamage")
+    defense_desc = models.CharField(max_length=23, blank=True)
+
+    class Meta:
+        db_table = "type_effectiveness_ratings"
+
+    def __str__(self):
+        return self.description
+
+    def __cmp__(self, other):
+        if self.dmg_multiplier == other.dmg_multiplier:
+            return 0
+        if self.dmg_multiplier > other.dmg_multiplier:
+            return 1
+        return -1
+
+
+class Type(models.Model):
+    name = models.CharField(unique=True, max_length=55)
+    glitch = models.BooleanField(default=True)
+    note = models.CharField(max_length=111, blank=True, null=True)
+    weather_boost = models.ForeignKey(
+        "GoWeather", models.DO_NOTHING, db_column="weather_boost", blank=True, null=True
+    )
+    emoji = models.CharField(max_length=8, blank=True, null=True)
+    id = models.IntegerField(primary_key=True, db_column="id")
+    AtkEffectiveness = models.ManyToManyField(
+        "Type",
+        symmetrical=False,
+        through="TypeEffectiveness",
+        through_fields=("otype", "dtype"),
+        related_name="attack_effects",
+    )
+
+    class Meta:
+        db_table = "type_list"
+
+    def __str__(self):
+        return self.name
+
+    def matches(self, q) -> bool:
+        """
+        :param q: query to search
+        :return: if q matches either the type's ID or name
+        """
+        return self.id == q or self.name.lower() == str(q).lower().strip()
+
+
+class GoWeather(models.Model):
+    name = models.CharField(db_column="Name", max_length=20)
+    emoji = models.CharField(db_column="Emoji", max_length=8, blank=True, null=True)
+
+    class Meta:
+        db_table = "GO_weather"
+
+    def __str__(self):
+        return self.emoji
 
 
 class Pokemon(models.Model):
@@ -111,20 +196,21 @@ class Pokemon(models.Model):
     sp_def = models.IntegerField(db_column="SpDef")
     speed = models.IntegerField(db_column="Speed")
     generation = models.ForeignKey(
-        Generation, models.DO_NOTHING, db_column="Generation"
+        "Generation", models.DO_NOTHING, db_column="Generation", blank=True
     )
     evolved_from = models.IntegerField(
-        db_column="evolved_from"
+        db_column="evolved_from", default=0
     )  # integer field to fix Django assumptions
     pogo_nerf = models.BooleanField(db_column="PoGoNerf", default=False)
     type1 = models.ForeignKey(
-        "typeedit.Type",
+        "Type",
         models.DO_NOTHING,
         db_column="Type1num",
         related_name="primary_type",
+        blank=True,
     )
     type2 = models.ForeignKey(
-        "typeedit.Type",
+        "Type",
         models.DO_NOTHING,
         db_column="Type2num",
         blank=True,
@@ -137,7 +223,11 @@ class Pokemon(models.Model):
     wt_kg = models.FloatField()
     ht_m = models.FloatField()
     egg1 = models.ForeignKey(
-        EggGroup, models.DO_NOTHING, db_column="EG1", related_name="egg_group_1"
+        EggGroup,
+        models.DO_NOTHING,
+        db_column="EG1",
+        related_name="egg_group_1",
+        blank=True,
     )
     egg2 = models.ForeignKey(
         EggGroup,
@@ -158,7 +248,7 @@ class Pokemon(models.Model):
     )
     description_category = models.CharField(max_length=13, blank=True, null=True)
     ability1 = models.ForeignKey(
-        Ability,
+        "Ability",
         models.DO_NOTHING,
         db_column="Ability1",
         blank=True,
@@ -166,7 +256,7 @@ class Pokemon(models.Model):
         related_name="main_ability",
     )
     ability2 = models.ForeignKey(
-        Ability,
+        "Ability",
         models.DO_NOTHING,
         db_column="Ability2",
         blank=True,
@@ -174,7 +264,7 @@ class Pokemon(models.Model):
         related_name="alternate_ability",
     )
     hidden_ability = models.ForeignKey(
-        Ability,
+        "Ability",
         models.DO_NOTHING,
         db_column="HiddenAbility",
         blank=True,
@@ -195,7 +285,6 @@ class Pokemon(models.Model):
     )
 
     class Meta:
-        managed = False
         db_table = "pokémon"
         unique_together = (("dex_number", "form"),)
 
@@ -235,6 +324,12 @@ class Pokemon(models.Model):
         if self.form < other.form:
             return -1
         return 1
+
+    def can_breed_to(self, input_list: "QuerySet[Pokemon]") -> "QuerySet[Pokemon]":
+        if self.egg1 in [0, 15]:  # Undiscovered egg group has no second type
+            return input_list.none()
+        if self.egg1 == 13:
+            return input_list.all()
 
 
 def match_species_by_name_or_number(
@@ -444,18 +539,3 @@ def get_surrounding_species(
         "previous": input_list.filter(dex_number__lt=search.dex_number).last(),
         "next": input_list.filter(dex_number__gt=search.dex_number).first(),
     }
-
-
-def can_breed_together(
-    pk: Pokemon, input_list: "QuerySet[Pokemon]" = Pokemon.objects.all()
-) -> "QuerySet[Pokemon]":
-    if pk.egg1 is None or pk.egg1.pk in [0, 15] or pk.egg2.pk in [0, 15]:
-        return input_list.none()  # Undiscovered and glitch groups
-    if pk.egg1.pk == 13:  # pk1 is a ditto
-        return input_list.exclude(
-            egg1__in=[0, 15]
-        )  # I'm pretty sure dittos can't breed with legendary pokémon
-    eggs: "QuerySet[EggGroup]" = EggGroup.objects.filter(
-        pk__in=[pk.egg1.pk] if pk.egg2 is None else [pk.egg1.pk, pk.egg2.pk]
-    ).distinct()
-    return input_list.filter(Q(egg1=13) | Q(egg1__in=eggs) | Q(egg2__in=eggs))
