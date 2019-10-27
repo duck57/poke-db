@@ -256,3 +256,7 @@ class ParkViewSet(ListAPIView):
 
     def get_queryset(self):
         return NstLocation.objects.filter(neighborhood=self.kwargs["city_id"])
+
+
+class NestDetail(RetrieveAPIView):
+    pass

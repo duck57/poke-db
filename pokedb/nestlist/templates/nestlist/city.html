@@ -43,7 +43,7 @@
 <center>
 	<header>
 		{% block top-nav %}
-			<p><a href="{% url 'nestlist:report_nest' location.pk %}">Report a nest!</a></p>
+			<p><a href="{% url 'nestlist:report_nest' location.ct.pk %}">Report a nest!</a></p>
 		{% endblock %}
 	</header>
 <table id="nestList">
@@ -54,18 +54,18 @@
 		<th onclick="sortTable('nestList', 2)" tabindex="2" class="heading nest-name">Park</th>
 		<th onclick="sortTable('nestList', 3)" tabindex="3" class="heading number">#</th>
 		<th onclick="sortTable('nestList', 4)" tabindex="4" class="heading species">Species</th>
+		<th onclick="sortTable('nestlist', 5)" >Verified?</th>
 	</tr>
 	{% for nest in current_nest_list %}
 		<tr id="{{ nest.id }}" itemscope itemtype="https://schema.org/Place"
 		class="nest {% if nest.confirmation %}confirmed{% else %}unconfirmed{% endif %}" >
 			<td class="rotation">{{ nest.rotation_num }}</td>
 			<td class="neighborhood" itemprop="containedInPlace"
-			id="{{ nest.nestid.neighborhood.pk }}"
-			ondblclick="alert('{{ nest.nestid.neighborhood.pk }}')">
-				{{ nest.nestid.neighborhood }}
+			id="{{ nest.nestid.neighborhood.pk }}">
+				<a href="{{ nest.nestid.neighborhood.web_url }}">{{ nest.nestid.neighborhood }}</a>
 			</td>
 			<td class="nest-name tooltip" itemprop="name">
-				{{ nest.nestid.get_name }}
+				<a href="{{ nest.nestid.web_url }}">{{ nest.nestid.get_name }}</a>
 				<address class="tooltiptext" itemprop="address">
 					{% if nest.nestid.address %}
 					{{ nest.nestid.address }}
@@ -77,8 +77,10 @@
 					{% endif %}
 				</address>
 			</td>
+			<a href="">
 			<td class="number">{{ nest.species_no }}</td>
-			<td class="species">{{ nest.species_txt }}</td>
+				<td class="species">{{ nest.species_txt }}</td></a>
+			<td class="conf-text">{% if nest.confirmation %}Yes{% else %}No{% endif %}</td>
 		</tr>
 	{% endfor %}
 </table>

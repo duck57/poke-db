@@ -11,7 +11,11 @@ urlpatterns = [
         name="nest_history",
     ),
     path("<int:city_id>/nests/", views.ParkViewSet.as_view(), name="city_park_list"),
-    # path("<int:city_id>/nests/<int:nest_id>/", views."),
+    path(
+        "<int:city_id>/nests/<int:nest_id>/",
+        views.NestDetail.as_view(),
+        name="nest_detail_view",
+    ),
     path(
         "<int:city_id>/neighborhood/",
         views.NeighborhoodIndex.as_view(),

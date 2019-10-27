@@ -3,32 +3,6 @@ Models for the nest list
 
 After all the class-based models are the static methods for dealing with the models
 which will prove useful all over the place.
-
-Models that should have web_url and api_url methods:
-NstLocation
-NSLA
-NstRawRpt
-NstMetropolisMajor
-NstCombinedRegion
-NstNeighborhood
-NstParkSystem
-
-Models that should have get_name, full_name, and shortname:
-NstLocation
-NstMetropolisMajor
-NstParkSystem
-NstCombinedRegion
-NstNeighborhood
-
-Models that need a ct() method:
-NstLocation
-NSLA
-NstNeighborhood
-NstMetropolisMajor
-
-Models with a which_regions:
-NstMetropolisMajor
-NSLA
 """
 
 
@@ -47,6 +21,7 @@ from speciesinfo.models import (
 from typing import Union, Optional, Tuple, NamedTuple, Dict
 from datetime import datetime
 from django.urls import reverse
+from abc import ABC, abstractmethod
 
 
 APP_PREFIX: str = "nestlist"  # is there some way to import this dynamically?
@@ -55,6 +30,94 @@ APP_PREFIX: str = "nestlist"  # is there some way to import this dynamically?
 def make_url_name(name: str) -> str:
     """For Django reverse URL lookup"""
     return APP_PREFIX + ":" + name
+
+
+def url_reverser(rev_name: str, params: Dict):
+    return reverse(make_url_name(rev_name), kwargs=params)
+
+
+class HasURL(ABC):
+    """
+    Models that should have web_url and api_url methods:
+    NstLocation
+    NSLA
+    NstRawRpt
+    NstMetropolisMajor
+    NstCombinedRegion
+    NstNeighborhood
+    NstParkSystem
+    """
+
+    @abstractmethod
+    def web_url(self):
+        pass
+
+    @abstractmethod
+    def api_url(self):
+        pass
+
+
+class HasCity(ABC):
+    """
+    Models that need a ct() method:
+    NstLocation
+    NSLA
+    NstNeighborhood
+    NstMetropolisMajor
+    """
+
+    @abstractmethod
+    def ct(self):
+        pass
+
+
+class HasComplicatedName(ABC):
+    """
+    Models that should have get_name, full_name, and short_name:
+    NstLocation
+    NstMetropolisMajor
+    NstParkSystem
+    NstCombinedRegion
+    NstNeighborhood
+    """
+
+    @abstractmethod
+    def get_name(self):
+        pass
+
+    @abstractmethod
+    def full_name(self):
+        pass
+
+    @abstractmethod
+    def short_name(self):
+        pass
+
+
+class HasRegions(ABC):
+    """
+    Models with a which_regions:
+    NstMetropolisMajor
+    NstNeighborhood
+    NSLA
+    NstLocation
+    """
+
+    @abstractmethod
+    def which_regions(self):
+        pass
+
+
+class HasParkSys(ABC):
+    """
+    Models with a park_system()
+    NSLA
+    NstLocation
+    """
+
+    @abstractmethod
+    def park_system(self):
+        pass
 
 
 class NstAdminEmail(models.Model):
@@ -128,8 +191,20 @@ class NstCombinedRegion(models.Model):
     def short_name(self):
         return self.name
 
-    def web_url(self):  # not currently implemented
-        return reverse(APP_PREFIX + "region", kwargs={"region_id": self.pk})
+    def get_name(self):
+        return self.name
+
+    def full_name(self):
+        return self.name
+
+    def web_url(self):
+        return url_reverser("region", {"region_id": self.pk})
+
+    def api_url(self):
+        return url_reverser("regions", {"region_id": self.pk})
+
+    def which_regions(self):
+        return [self]
 
 
 class NstLocation(models.Model):
@@ -178,6 +253,9 @@ class NstLocation(models.Model):
             else self.official_name
         )
 
+    def full_name(self):
+        return self.official_name
+
     def __cmp__(self, other):
         if self.official_name < other.official_name:
             return -1
@@ -196,10 +274,17 @@ class NstLocation(models.Model):
         return self.neighborhood.major_city
 
     def web_url(self):
-        return reverse(
-            "nestlist:nest_history",
-            kwargs={"city_id": self.ct().pk, "nest_id": self.pk},
+        return url_reverser(
+            "nest_history", {"city_id": self.ct().pk, "nest_id": self.pk}
         )
+
+    def api_url(self):
+        return url_reverser(
+            "nest_detail_view", {"city_id": self.ct().pk, "nest_id": self.pk}
+        )
+
+    def which_regions(self):
+        return self.neighborhood.which_regions()
 
 
 class NstMetropolisMajor(models.Model):
@@ -222,7 +307,22 @@ class NstMetropolisMajor(models.Model):
         return self.name
 
     def web_url(self):
-        return reverse("nestlist:city", kwargs={"city_id": self.pk})
+        return url_reverser("city", {"city": self.pk})
+
+    def api_url(self):
+        return None
+
+    def full_name(self):
+        return self.name
+
+    def get_name(self):
+        return self.name
+
+    def which_regions(self):
+        return None  # NstCombinedRegion.objects.filter(neighborhoods.filter)
+
+    def ct(self):
+        return self
 
 
 class NstNeighborhood(models.Model):
@@ -245,9 +345,8 @@ class NstNeighborhood(models.Model):
         return self.name
 
     def web_url(self):
-        return reverse(
-            "nestlist:neighborhood",
-            kwargs={"city_id": self.major_city.pk, "neighborhood_id": self.pk},
+        return url_reverser(
+            "neighborhood", {"city_id": self.major_city.pk, "neighborhood_id": self.pk}
         )
 
 
