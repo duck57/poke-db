@@ -353,6 +353,9 @@ class NstNeighborhood(models.Model):
     def ct(self):
         return self.major_city
 
+    def get_name(self):
+        return self.name
+
 
 class NstParkSystem(models.Model):
     name = models.CharField(max_length=123)

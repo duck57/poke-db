@@ -14,5 +14,25 @@
 {% endblock %}
 
 {% block information %}
-<h3>{{ location.official_name }}</h3>
+<h3 itemprop="name">{{ location.official_name }}</h3>
+{% if other_names %}
+<span style="font-variant: small-caps;">a.k.a.</span>
+    {{ other_names|join(", ") }}
+{% endif %}
+<address>
+    {% if location.address %}
+        {{ location.address }}
+    {% else %}
+        No street address on file
+    {% endif %}
+</address>
+{% if location.lat is not none and location.lon is not none %}
+<div class="coord">{{ location.lat }},{{ location.lon }}</div>
+{% endif %}
+{% if location.private %}
+    <div class="privacy-notice">Private property, please be respectful</div>
+{% endif %}
+{% if location.notes %}
+<div style="font-size: small;">{{ location.notes }}</div>
+{% endif %}
 {% endblock %}

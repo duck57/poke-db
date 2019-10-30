@@ -1,4 +1,4 @@
-from typing import Dict
+from typing import Dict, List, Union
 
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import QuerySet
@@ -32,6 +32,7 @@ from .models import (
     park_nesting_history,
     NstParkSystem,
     species_nesting_history,
+    NstRotationDate,
 )
 from .serializers import ParkSerializer
 
@@ -94,8 +95,8 @@ class NestListView(generic.ListView):
             return NstSpeciesListArchive.objects.none()
 
     def get(self, request, *args, **kwargs):
-        scope = self.kwargs["scope"]
-        pk = self.kwargs[self.kwargs["pk_name"]]
+        scope: str = self.kwargs["scope"]
+        pk: Union[str, int] = self.kwargs[self.kwargs["pk_name"]]
         try:
             location = self.model_list[scope].objects.get(pk=pk)
         except ObjectDoesNotExist:
@@ -112,10 +113,10 @@ class NestListView(generic.ListView):
         except ValueError:
             return HttpResponseBadRequest(f"Try again with a valid date.")
         except Http404:
-            errstring = f"No nests found for {scope} #{pk}"
+            errstring: str = f"No nests found for {scope} #{pk}"
             if scope != "nest":
                 errstring += f" on {self.get_rot8()}"
-            ss = self.get_sp()
+            ss: str = self.get_sp()
             if ss:
                 errstring += f" matching a search for {ss}"
             errstring += f"."
@@ -123,30 +124,36 @@ class NestListView(generic.ListView):
 
     def get_context_data(self, **kwargs) -> Dict:
         context = super().get_context_data(**kwargs)
-        scope = self.kwargs["scope"]
-        pk = self.kwargs[self.kwargs["pk_name"]]
+        scope: str = self.kwargs["scope"]
+        pk: Union[str, int] = self.kwargs[self.kwargs["pk_name"]]
         context["location"] = self.model_list[scope].objects.get(pk=pk)
-        context["rotation"] = self.get_rot8()
+        context["rotation"]: NstRotationDate = self.get_rot8()
         if scope == "neighborhood":
-            context["neighbor_view"] = True
-            context["empties"] = collect_empty_nests(
+            context["neighbor_view"]: bool = True
+            context["empties"]: "QuerySet[NstLocation]" = collect_empty_nests(
                 rotation=context["rotation"],
                 location_type="neighborhood",
                 location_pk=pk,
             )
         elif scope == "nest":
-            context["nest_view"] = True
+            nest: NstLocation = context["location"]
+            context["nest_view"]: bool = True
+            context["other_names"]: List[str] = [
+                nest.short_name
+            ] if nest.short_name else []
+            for name in nest.alternate_name.exclude(hide_me=True):
+                context["other_names"].append(name.name)
         if self.kwargs.get("history"):
-            context["history"] = True
+            context["history"]: bool = True
             if self.kwargs.get("species_detail"):
-                sp = self.kwargs["poke"]
-                context["species_count"] = (
+                sp: str = self.kwargs["poke"]
+                context["species_count"]: int = (
                     species_nesting_history(sp=sp, city=pk)
                     .values("species_name_fk")
                     .distinct()
                     .count()
                 )
-                context["species_name"] = (
+                context["species_name"]: str = (
                     match_species_by_name_or_number(
                         sp_txt=sp,
                         age_up=True,
