@@ -4,10 +4,16 @@ from . import views
 app_name = "nestlist"
 urlpatterns = [
     path("", views.CityIndex.as_view(), name="list_of_cities"),
-    path("<int:city_id>/", views.CityView.as_view(), name="city"),
+    path(
+        "<int:city_id>/",
+        views.NestListView.as_view(template_name="nestlist/city.html"),
+        {"scope": "city", "pk_name": "city_id"},
+        name="city",
+    ),
     path(
         "<int:city_id>/nest/<int:nest_id>/",
-        views.NestView.as_view(),
+        views.NestListView.as_view(template_name="nestlist/nest.html"),
+        {"scope": "nest", "pk_name": "nest_id", "history": True},
         name="nest_history",
     ),
     path("<int:city_id>/nests/", views.ParkViewSet.as_view(), name="city_park_list"),
@@ -23,14 +29,16 @@ urlpatterns = [
     ),
     path(
         "<int:city_id>/neighborhood/<int:neighborhood_id>/",
-        views.NeighborhoodView.as_view(),
+        views.NestListView.as_view(template_name="nestlist/neighborhood.html"),
+        {"scope": "neighborhood", "pk_name": "neighborhood_id"},
         name="neighborhood",
     ),
     # path("<int:city_id>/neighborhoods/"),
     # path("<int:city_id>/neighborhoods/<int:neighborhood_id>/"),
     path(
         "<int:city_id>/rotation/<int:date>/",
-        views.CityView.as_view(),
+        views.NestListView.as_view(template_name="nestlist/city.html"),
+        {"scope": "city", "pk_name": "city_id"},
         name="city_historic_date",
     ),
     # path(
@@ -50,8 +58,18 @@ urlpatterns = [
     #     "region/<int:ps_id>/", views.ParkSystemView.as_view(), name="park_sys"
     # ),
     # path("<int:city_id>/park_systems/"),
-    # path("park_system/<int:region_id>/"),
-    # path("<int:city_id>/species-history/<str:poke>/"),
+    # path("park_system/<int:ps_id>/"),
+    path(
+        "<int:city_id>/species-history/<str:poke>/",
+        views.NestListView.as_view(template_name="nestlist/species-history.html"),
+        {
+            "scope": "city",
+            "pk_name": "city_id",
+            "history": True,
+            "species_detail": True,
+        },
+        name="species_history",
+    ),
     # path("<int:city_id>/species/<str:poke>/"),
     # TODO: rewrite this to use the local reporting form
     path("<int:city_id>/report/", views.report_nest, name="report_nest"),

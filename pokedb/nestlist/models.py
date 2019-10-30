@@ -307,7 +307,7 @@ class NstMetropolisMajor(models.Model):
         return self.name
 
     def web_url(self):
-        return url_reverser("city", {"city": self.pk})
+        return url_reverser("city", {"city_id": self.pk})
 
     def api_url(self):
         return None
@@ -323,6 +323,9 @@ class NstMetropolisMajor(models.Model):
 
     def ct(self):
         return self
+
+    def report_form_url(self):
+        return url_reverser("report_nest", {"city_id": self.pk})
 
 
 class NstNeighborhood(models.Model):
@@ -348,6 +351,9 @@ class NstNeighborhood(models.Model):
         return url_reverser(
             "neighborhood", {"city_id": self.major_city.pk, "neighborhood_id": self.pk}
         )
+
+    def ct(self):
+        return self.major_city
 
 
 class NstParkSystem(models.Model):
@@ -793,11 +799,17 @@ def add_a_report(
 def nsla_sp_filter(
     species: Union[str, int],
     nsla: "QuerySet[NstSpeciesListArchive]" = NstSpeciesListArchive.objects.all(),
+    species_set: "Optional[QuerySet[Pokemon]]" = None,
 ) -> "QuerySet[NstSpeciesListArchive]":
+    if not species_set:  # putting this as a default param raises error
+        species_set = enabled_in_pogo(nestable_species())
     return nsla.filter(
         Q(
             species_name_fk__in=match_species_by_name_or_number(
-                sp_txt=species, previous_evolution_search=True
+                sp_txt=species,
+                previous_evolution_search=True,
+                age_up=True,
+                input_set=species_set,
             )
         )
         | Q(species_txt__icontains=species)  # for free-text row-matching
@@ -884,12 +896,20 @@ def rotations_without_report(
     )
 
 
-def park_nesting_history(nest: NstLocation, species: Optional[str] = None):
+def park_nesting_history(
+    nest: NstLocation, species: Optional[str] = None
+) -> "QuerySet[NstSpeciesListArchive]":
     return (
         nsla_sp_filter(species, NstSpeciesListArchive.objects.filter(nestid=nest))
         if species
-        else NstSpeciesListArchive.objects.filter(nestid=nest).order_by("rotation_num")
-    )
+        else NstSpeciesListArchive.objects.filter(nestid=nest)
+    ).order_by("-rotation_num")
+
+
+def species_nesting_history(city: int, sp: str) -> "QuerySet[NstSpeciesListArchive]":
+    return nsla_sp_filter(
+        sp, NstSpeciesListArchive.objects.filter(nestid__neighborhood__major_city=city)
+    ).order_by("-rotation_num")
 
 
 class NewRotationStatus(NamedTuple):

@@ -68,3 +68,28 @@ tr.confirmed:hover {
 .address-error {
   color: e8d9d9;
 }
+
+.sort-info {
+  display: none;
+}
+
+address {
+  font-style: roman;
+}
+
+.verification {
+  min-width: 4em;
+}
+
+.neighborhood {
+  min-width: 7em;
+}
+
+.species {
+  min-width: 4em;
+  max-width: 8em;
+}
+
+.nest-name {
+  max-width: 12em;
+}
