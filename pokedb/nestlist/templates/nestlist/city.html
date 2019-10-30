@@ -6,30 +6,33 @@
     <meta property="og:type" content="list">
     <meta property="og:locale" content="en_US">
     <meta property="og:title" content="{{ location }} nests as of {{ rotation.date_priority_display }}">
-	{% block self-url %}
-    	<meta property="og:url" content="{% url 'nestlist:city_historic_date' location.id rotation.pk %}">
+	{% block self_url %}
+    	<meta property="og:url" content="{{ url('nestlist:city_historic_date', city_id=location.ct().pk, date=rotation.pk) }}">
 	{% endblock %}
-    {% load static %}
-    <link rel="stylesheet" type="text/css" href="{% static 'nestlist/css/style.css' %}">
+    <link rel="stylesheet" type="text/css" href="{{ static('nestlist/css/style.css') }}">
     <!-- TODO: update icon later -->
-    <link rel="icon" type="image/png" href="{% static 'nestlist/images/ballhead cc.png' %}">
+    <link rel="icon" type="image/png" href="{{ static('nestlist/images/ballhead cc.png') }}">
 
     <style>
 	{% if not history %}
-	td.rotation,th.rotation {
+	td.rotation, th.rotation {
 		display: none;
 	}{% endif %}
 	{% if neighbor_view %}
-	td.neighborhood,th.neighborhood {
+	td.neighborhood, th.neighborhood {
 		display: none;
 	}{% endif %}
 	{% if species_count == 1 %}
-	td.species,th.species,td.number,th.number {
+	td.species, th.species, td.number, th.number {
 		display: none;
+	}{% endif %}
+	{% if nest_view %}
+	td.nest-name, th.nest-name {
+	  display: none;
 	}{% endif %}
     </style>
 
-    <script type="text/javascript" src="{% static 'nestlist/js/sort_t.js' %}"></script>
+    <script type="text/javascript" src="{{ static('nestlist/js/sort_t.js') }}"></script>
     <title>
 		{% if location.short_name %}
 			{{ location.short_name }}
@@ -44,8 +47,8 @@
 <body ontouchstart="" onclick="">
 <center>
 	<header>
-		{% block top-nav %}
-			<p><a href="{{ location.ct.report_form_url }}">Report a nest!</a></p>
+		{% block top_nav %}
+			<p><a href="{{ location.ct().report_form_url() }}">Report a nest!</a></p>
 		{% endblock %}
 	</header>
 <table id="nestList">
@@ -63,51 +66,70 @@
 		class="nest {% if nest.confirmation %}confirmed{% else %}unconfirmed{% endif %}" >
 			<td class="rotation">
 				<span class="sort-info">{{ nest.rotation_num }}</span>
-				<a href="{% url 'nestlist:city_historic_date' location.ct.pk nest.rotation_num.pk %}">{{ nest.rotation_num }}</a>
+				<a href="{{ url('nestlist:city_historic_date', city_id=location.ct().pk, date=nest.rotation_num.pk) }}">{{ nest.rotation_num }}</a>
 			</td>
 			<td class="neighborhood" itemprop="containedInPlace"
 			id="{{ nest.nestid.neighborhood.pk }}">
 				<span class="sort-info">{{ nest.nestid.neighborhood }}</span>
-				<a href="{{ nest.nestid.neighborhood.web_url }}">{{ nest.nestid.neighborhood }}</a>
+				<a href="{{ nest.nestid.neighborhood.web_url() }}">{{ nest.nestid.neighborhood }}</a>
 			</td>
 			<td class="nest-name tooltip" itemprop="name">
-				<span class="sort-info">{{ nest.nestid.full_name }}</span>
-				<a href="{{ nest.nestid.web_url }}">{{ nest.nestid.get_name }}</a>
-				<address class="tooltiptext" itemprop="address">
+				<span class="sort-info">{{ nest.nestid.full_name() }}</span>
+				<a href="{{ nest.nestid.web_url() }}">{{ nest.nestid.get_name() }}</a>
+				<div class="tooltiptext">
 					{% if nest.nestid.address %}
-					{{ nest.nestid.address }}
+					<address itemprop="address">{{ nest.nestid.address }}</address>
 					{% else %}
 					<span class="address-error">No address on file</span>
 					{% endif %}
 					{% if nest.nestid.private %}
 					<div class="privacy-notice">Private property, please be respectful</div>
 					{% endif %}
-				</address>
+				</div>
 			</td>
 			<td class="number">
+				{% if nest.species_no %}
 				<span class="sort-info">{{ nest.species_no }}</span>
-				<a href="{% url 'nestlist:species_history' location.ct.pk nest.species_no %}">{{ nest.species_no }}</a>
+				<a href="{{ url('nestlist:species_history', city_id=location.ct().pk, poke=nest.species_no) }}">{{ nest.species_no }}</a>
+				{% else %}N/A{% endif %}
 			</td>
 			<td class="species">
 				{% if nest.species_name_fk %}
 				<span class="sort-info">{{ nest.species_name_fk }}</span>
-				<a href="{% url 'nestlist:species_history' location.ct.pk nest.species_name_fk.pk %}">{{ nest.species_txt }}</a>
+				<a href="{{ url('nestlist:species_history', city_id=location.ct().pk, poke=nest.species_name_fk.pk) }}">{{ nest.species_txt }}</a>
 				{% else %}{{ nest.species_txt }}{% endif %}
 			</td>
-			<td class="verification">{% if nest.confirmation %}Yes{% else %}No{% endif %}</td>
+			<td class="verification tooltip">
+				<span class="sort-info">{% if nest.confirmation %}Yes{% else %}No{% endif %}</span>
+				{% if nest.confirmation %}Yes{% else %}No{% endif %}
+				{% if nest.report_audit.all() %}
+				<div class="tooltiptext audit">
+					{% for rpt in nest.report_audit.all()|sort(attribute="timestamp", reverse=True) %}
+					<span class="{% if not rpt.bot.restricted() %}ge{% endif %}">
+						<span class="m">{{ rpt.web_str()[1] }}</span> {# species info #}
+						<span style="display:inline-block;"> {# timestamp #}
+							{{ rpt.web_str()[0].strftime("%b") }}
+							{{ rpt.web_str()[0].strftime("%d")|ordinal }}
+							{{ rpt.web_str()[0].strftime("%H:%M") }}
+							<span class="f">{{ rpt.web_str()[2] }}</span> {# hashed username #}
+						</span></span><br>
+					{% endfor %}
+				</div>
+				{% endif %}
+			</td>
 		</tr>
 	{% endfor %}
 </table>
 	<hr>
 	<footer>
-		{% block bottom-notes %}
+		{% block bottom_notes %}
 		<p class="confirmed">
 			Species with a <span class="species">bold name</span> and an <span class="number">italic pokédex number</span> have multiple confirming reports.
 		</p>
 		<p>Mid-rotation events may throw off the accuracy of the list.</p>
-		<a href="{{ location.ct.report_form_url }}">Report a nest!</a>
+		<a href="{{ location.ct().report_form_url() }}">Report a nest!</a>
 		{% endblock %}
 	</footer>
 </center>
-{% block empty-zone %}{% endblock %}
+{% block empty_zone %}{% endblock %}
 </body></html>

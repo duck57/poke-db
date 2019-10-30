@@ -39,14 +39,16 @@ INSTALLED_APPS = [
     "speciesinfo.apps.SpeciesinfoConfig",
     "nestlist.apps.NestlistConfig",
     "pokeperfect.apps.PokeperfectConfig",
+    "rest_framework",
+    "memcache_status",
+    "django_jinja",
+    "django_jinja.contrib._humanize",
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-    "rest_framework",
-    "memcache_status",
 ]
 
 MIDDLEWARE = [
@@ -63,9 +65,28 @@ ROOT_URLCONF = "pokedb.urls"
 
 TEMPLATES = [
     {
-        "BACKEND": "django.template.backends.django.DjangoTemplates",
+        "BACKEND": "django_jinja.backend.Jinja2",
         "DIRS": [os.path.join(BASE_DIR, "templates")],
         "APP_DIRS": True,
+        "OPTIONS": {
+            "match_extension": ".html",
+            "context_processors": [
+                "django.template.context_processors.debug",
+                "django.template.context_processors.request",
+                "django.contrib.auth.context_processors.auth",
+                "django.contrib.messages.context_processors.messages",
+                "django.contrib.auth.context_processors.auth",
+                "django.template.context_processors.i18n",
+                "django.template.context_processors.media",
+                "django.template.context_processors.static",
+                "django.template.context_processors.tz",
+            ],
+        },
+    },
+    {
+        "BACKEND": "django.template.backends.django.DjangoTemplates",
+        # "DIRS": [os.path.join(BASE_DIR, "templates")],
+        # "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
                 "django.template.context_processors.debug",
@@ -74,7 +95,7 @@ TEMPLATES = [
                 "django.contrib.messages.context_processors.messages",
             ]
         },
-    }
+    },
 ]
 
 WSGI_APPLICATION = "pokedb.wsgi.application"

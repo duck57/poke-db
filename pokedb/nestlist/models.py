@@ -470,7 +470,11 @@ class AirtableImportLog(models.Model):
 
 class NstRawRpt(models.Model):
     nsla_pk = models.ForeignKey(
-        NstSpeciesListArchive, models.SET_NULL, null=True, db_column="nsla_pk"
+        NstSpeciesListArchive,
+        models.SET_NULL,
+        null=True,
+        db_column="nsla_pk",
+        related_name="report_audit",
     )
     bot = models.ForeignKey(NstAdminEmail, models.SET_NULL, null=True)
     user_name = models.CharField(max_length=120, blank=False, null=True)
@@ -492,11 +496,18 @@ class NstRawRpt(models.Model):
     class Meta:
         db_table = "nst_raw_rpt"
 
-    def __str__(self):
+    def __str__(self) -> str:
         return f"{self.user_name} reported {self.raw_species_num} at {self.raw_park_info} on {self.timestamp}"
 
     def privacy_str(self) -> str:
         return f"{self.raw_species_num} reported at {self.raw_park_info} on {self.timestamp}"
+
+    def web_str(self) -> (datetime, str):
+        return (
+            self.timestamp,
+            self.raw_species_num,
+            hex(hash(self.user_name.lower()))[3:7],
+        )
 
     def web_url(self):
         return reverse(

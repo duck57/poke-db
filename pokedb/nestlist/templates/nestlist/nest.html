@@ -1,15 +1,15 @@
 {% extends "nestlist/city.html" %}
 
-{% block self-url %}
-<meta property="og:url" content="{% url 'nestlist:nest_history' location.ct.pk location.pk %}">
+{% block self_url %}
+<meta property="og:url" content="{{ url('nestlist:nest_history', city_id=location.ct().pk, nest_id=location.pk) }}">
 {% endblock %}
 
-{% block top-nav %}
-<p><a href="{% url 'nestlist:report_nest' location.ct.pk %}">Report a nest!</a></p>
+{% block top_nav %}
+<p><a href="{{ location.ct().report_form_url() }}">Report a nest!</a></p>
 <small>Nest in
-    <a href="{% url 'nestlist:city' location.ct.pk %}">{{ location.ct }}</a>
+    <a href="{{ location.ct().web_url() }}">{{ location.ct() }}</a>
     and
-    <a href="{% url 'nestlist:neighborhood' location.ct.pk location.neighborhood.pk %}">{{ location.neighborhood }}</a>
+    <a href="{{ location.neighborhood.web_url() }}">{{ location.neighborhood }}</a>
 </small>
 {% endblock %}
 
@@ -17,6 +17,6 @@
 <h3>{{ location.official_name }}</h3>
 {% endblock %}
 
-{% block bottom-notes %}
-<p><a href="{% url 'nestlist:report_nest' location.ct.pk %}">Report a nest!</a></p>
+{% block bottom_notes %}
+<p><a href="{{ location.ct().report_form_url() }}">Report a nest!</a></p>
 {% endblock %}

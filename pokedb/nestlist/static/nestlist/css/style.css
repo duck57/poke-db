@@ -32,7 +32,7 @@ tr.confirmed:hover {
 
 .tooltip .tooltiptext {
   visibility: hidden;
-  width: 128px;
+  width: 151px;
   background-color: black;
   color: #e8e8d9;
   text-align: center;
@@ -74,7 +74,7 @@ tr.confirmed:hover {
 }
 
 address {
-  font-style: roman;
+  font-style: normal;
 }
 
 .verification {
@@ -92,4 +92,16 @@ address {
 
 .nest-name {
   max-width: 12em;
+}
+
+.ge {
+  color: gold;
+}
+
+.f, .ge .m {
+  font-style: italic;
+}
+
+.audit {
+  font-size: small;
 }

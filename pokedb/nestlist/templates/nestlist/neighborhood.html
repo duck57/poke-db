@@ -1,18 +1,18 @@
 {% extends "nestlist/city.html" %}
 
-{% block top-nav %}
-<p><a href="{{ location.ct.report_form_url }}">Report a nest!</a></p>
+{% block top_nav %}
+<p><a href="{{ location.ct().report_form_url() }}">Report a nest!</a></p>
 <small>Neighborhood or suburb of
-    <a href="{{ location.ct.web_url }}">{{ location.major_city }}</a>
+    <a href="{{ location.ct().web_url() }}">{{ location.major_city }}</a>
 </small>
 {% endblock %}
 
-{% block empty-zone %}
+{% block empty_zone %}
 {% if empties %}
 <h3>Unreported Nests</h3>
 <ul>
     {% for nest in empties %}
-        <li><a href="{{ nest.web_url }}">{{ nest.get_name }}</a></li>
+        <li><a href="{{ nest.web_url() }}">{{ nest.get_name() }}</a></li>
     {% endfor %}
 </ul>
 {% endif %}
