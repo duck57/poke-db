@@ -27,30 +27,24 @@
 		display: none;
 	}{% endif %}
 	{% if nest_view %}
-	td.nest-name, th.nest-name {
+	td.nest-name, th.nest-name, td.neighborhood, th.neighborhood {
 	  display: none;
 	}{% endif %}
     </style>
 
     <script type="text/javascript" src="{{ static('nestlist/js/sort_t.js') }}"></script>
     <title>
-		{% if location.short_name %}
-			{{ location.short_name }}
-		{% elif location.name %}
-			{{ location.name }}
-		{% else %}
-			{{ location.get_name }}  <!-- TODO: give get_name to all location-type items -->
-		{% endif %}
+		{{ location.get_name() }}
 		Nests!
 	</title>
 </head>
 <body ontouchstart="" onclick="">
-<center>
-	<header>
-		{% block top_nav %}
-			<p><a href="{{ location.ct().report_form_url() }}">Report a nest!</a></p>
-		{% endblock %}
-	</header>
+<header>
+	{% block top_nav %}
+		<p><a href="{{ location.ct().report_form_url() }}">Report a nest!</a></p>
+	{% endblock %}
+</header>
+<main>
 <table id="nestList">
 	<caption>{% block information %} {{ location }}<br>#{{ rotation }} {% endblock %}</caption>
 	<tr>
@@ -88,9 +82,11 @@
 				</div>
 			</td>
 			<td class="number">
-				{% if nest.species_no %}
+				{% if nest.sp_no() %}
 				<span class="sort-info">{{ nest.species_no }}</span>
-				<a href="{{ url('nestlist:species_history', city_id=location.ct().pk, poke=nest.species_no) }}">{{ nest.species_no }}</a>
+				<a href="{{ url('nestlist:species_history', city_id=location.ct().pk, poke=nest.species_no) }}">
+					{{ nest.sp_no() }}
+				</a>
 				{% else %}N/A{% endif %}
 			</td>
 			<td class="species">
@@ -120,16 +116,20 @@
 		</tr>
 	{% endfor %}
 </table>
-	<hr>
-	<footer>
-		{% block bottom_notes %}
-		<p class="confirmed">
-			Species with a <span class="species">bold name</span> and an <span class="number">italic pokédex number</span> have multiple confirming reports.
-		</p>
-		<p>Mid-rotation events may throw off the accuracy of the list.</p>
-		<a href="{{ location.ct().report_form_url() }}">Report a nest!</a>
-		{% endblock %}
-	</footer>
-</center>
+</main>
+<hr>
+<footer>
+	{% block bottom_notes %}
+	<p class="confirmed">
+		Species with a <span class="species">bold name</span> and an <span class="number">italic pokédex number</span> have multiple confirming reports.
+		<br>
+		{{ current_nest_list.filter(confirmation=True).count() }} out of {{ current_nest_list.count() }} reports confirmed.
+	</p>
+	<p>Mid-rotation events may throw off the accuracy of the list.</p>
+	<a href="{{ location.ct().report_form_url() }}">Report a nest!</a>
+	<br>
+	<a style="font-size: small;" href="https://github.com/duck57/poke-db/tree/master/pokedb/nestlist">source</a>
+	{% endblock %}
+</footer>
 {% block empty_zone %}{% endblock %}
 </body></html>

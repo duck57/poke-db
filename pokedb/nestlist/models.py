@@ -5,7 +5,6 @@ After all the class-based models are the static methods for dealing with the mod
 which will prove useful all over the place.
 """
 
-
 from .utils import parse_date, str_int, append_utc, true_if_y
 from django.db import models
 from django.db.models import Q
@@ -22,7 +21,6 @@ from typing import Union, Optional, Tuple, NamedTuple, Dict
 from datetime import datetime
 from django.urls import reverse
 from abc import ABC, abstractmethod
-
 
 APP_PREFIX: str = "nestlist"  # is there some way to import this dynamically?
 
@@ -446,6 +444,9 @@ on {self.rotation_num.date_priority_display()}"
             return True
         return False
 
+    def sp_no(self) -> Optional[str]:
+        return None if self.species_no is None else f"{self.species_no:03}"
+
     def web_url(self):
         return reverse(
             "nestlist:nest_history",
@@ -503,11 +504,9 @@ class NstRawRpt(models.Model):
         return f"{self.raw_species_num} reported at {self.raw_park_info} on {self.timestamp}"
 
     def web_str(self) -> (datetime, str):
-        return (
-            self.timestamp,
-            self.raw_species_num,
-            hex(hash(self.user_name.lower()))[3:7],
-        )
+        hsh = hash(self.user_name.lower())
+        offset = -int(str(hsh)[-1])
+        return self.timestamp, self.raw_species_num, hex(hsh)[offset - 5 : offset - 1]
 
     def web_url(self):
         return reverse(
@@ -811,6 +810,7 @@ def nsla_sp_filter(
     species: Union[str, int],
     nsla: "QuerySet[NstSpeciesListArchive]" = NstSpeciesListArchive.objects.all(),
     species_set: "Optional[QuerySet[Pokemon]]" = None,
+    single_species: bool = False,
 ) -> "QuerySet[NstSpeciesListArchive]":
     if not species_set:  # putting this as a default param raises error
         species_set = enabled_in_pogo(nestable_species())
@@ -821,6 +821,7 @@ def nsla_sp_filter(
                 previous_evolution_search=True,
                 age_up=True,
                 input_set=species_set,
+                only_one=single_species,
             )
         )
         | Q(species_txt__icontains=species)  # for free-text row-matching
@@ -919,7 +920,9 @@ def park_nesting_history(
 
 def species_nesting_history(city: int, sp: str) -> "QuerySet[NstSpeciesListArchive]":
     return nsla_sp_filter(
-        sp, NstSpeciesListArchive.objects.filter(nestid__neighborhood__major_city=city)
+        sp,
+        NstSpeciesListArchive.objects.filter(nestid__neighborhood__major_city=city),
+        single_species=True,
     ).order_by("-rotation_num")
 
 
@@ -1031,7 +1034,7 @@ def delete_rotation(
     if deletion_size <= auto_upd8_count:
         summary = f"Only {deletion_size} auto-created entries deleted [out of {auto_upd8_count}]"
         return deletion_dance()
-    confirmation_prompt: str = f"{deletion_size-auto_upd8_count} user-recorded nests will be deleted "
+    confirmation_prompt: str = f"{deletion_size - auto_upd8_count} user-recorded nests will be deleted "
     confirmation_prompt += (
         f"in addition to the {auto_upd8_count} automatically-rotating nests."
     )

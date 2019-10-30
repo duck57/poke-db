@@ -95,7 +95,7 @@ address {
 }
 
 .ge {
-  color: gold;
+  color: #e8e8d9;
 }
 
 .f, .ge .m {
@@ -104,4 +104,17 @@ address {
 
 .audit {
   font-size: small;
+}
+
+header, footer {
+  text-align: center;
+  margin: auto;
+}
+
+td.number, td.verification {
+  text-align: right;
+}
+
+table {
+  margin: auto;
 }

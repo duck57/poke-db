@@ -18,7 +18,7 @@ from rest_framework.generics import ListAPIView, CreateAPIView, RetrieveAPIView
 
 # Create your views here.
 from nestlist.utils import str_int
-from speciesinfo.models import Pokemon, match_species_by_name_or_number
+from speciesinfo.models import Pokemon, match_species_by_name_or_number, enabled_in_pogo
 from .models import (
     NstSpeciesListArchive,
     NstMetropolisMajor,
@@ -112,8 +112,9 @@ class NestListView(generic.ListView):
         except ValueError:
             return HttpResponseBadRequest(f"Try again with a valid date.")
         except Http404:
-            errstring = f"No nests found for {scope} #{pk} "
-            errstring += f"on {self.get_rot8()}"
+            errstring = f"No nests found for {scope} #{pk}"
+            if scope != "nest":
+                errstring += f" on {self.get_rot8()}"
             ss = self.get_sp()
             if ss:
                 errstring += f" matching a search for {ss}"
@@ -151,7 +152,13 @@ class NestListView(generic.ListView):
                         age_up=True,
                         previous_evolution_search=True,
                         only_one=True,
+                        input_set=enabled_in_pogo(
+                            Pokemon.objects.all()
+                        ),  # prevent MultipleObjectsReturned
                     )
+                    .exclude(
+                        pk="(Egg)"
+                    )  # keeps things working smoothly (eggs don't nest)
                     .get()
                     .name
                     if str_int(sp)
