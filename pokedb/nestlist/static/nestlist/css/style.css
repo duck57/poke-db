@@ -1,3 +1,7 @@
+:root {
+  --fancy-squiggle: url("data:image/svg+xml;charset=utf8,%3Csvg id='squiggle-link' xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' xmlns:ev='http://www.w3.org/2001/xml-events' viewBox='0 0 20 4'%3E%3Cstyle type='text/css'%3E.squiggle{animation:shift .64s linear infinite;}@keyframes shift {from {transform:translateX(-20px);}to {transform:translateX(0px);}}%3C/style%3E%3Cpath fill='none' stroke='%233f8a40' stroke-width='2' class='squiggle' d='M0,3.5 c 5,0,5,-3,10,-3 s 5,3,10,3 c 5,0,5,-3,10,-3 s 5,3,10,3'/%3E%3C/svg%3E");
+}
+
 th {
     background-color: #d9d9d9;
     cursor: row-resize;
@@ -78,7 +82,7 @@ address {
 }
 
 .verification {
-  min-width: 4em;
+  min-width: 2em;
 }
 
 .neighborhood {
@@ -119,6 +123,13 @@ table {
   margin: auto;
 }
 
+.nest-alt-name:hover {
+  background-image: var(--fancy-squiggle);
+  background-position: bottom;
+  background-repeat: repeat-x;
+  background-size: auto 2px;
+}
+
 a {
   text-decoration: none;
 }
@@ -128,8 +139,25 @@ a:hover {
   text-decoration: underline;
   */
   /* SVG animation from https://css-tricks.com/having-fun-with-link-hover-effects/ */
-  background-image: url("data:image/svg+xml;charset=utf8,%3Csvg id='squiggle-link' xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' xmlns:ev='http://www.w3.org/2001/xml-events' viewBox='0 0 20 4'%3E%3Cstyle type='text/css'%3E.squiggle{animation:shift .64s linear infinite;}@keyframes shift {from {transform:translateX(-20px);}to {transform:translateX(0px);}}%3C/style%3E%3Cpath fill='none' stroke='%233f8a40' stroke-width='2' class='squiggle' d='M0,3.5 c 5,0,5,-3,10,-3 s 5,3,10,3 c 5,0,5,-3,10,-3 s 5,3,10,3'/%3E%3C/svg%3E");
+  background-image: var(--fancy-squiggle);
   background-position: bottom;
   background-repeat: repeat-x;
   background-size: auto 3px;
+}
+
+.report-link {
+  border-style: groove;
+  border-width: 5px;
+  border-radius: 8px;
+  border-color: #3f8a40; /* some kind of green */
+  padding: 20px 20px;
+  margin: auto;
+  text-transform: uppercase;
+  width: 20vw;
+  font-family: Optima, sans-serif;
+  font-size: calc(12px + 1vw);;
+}
+
+.report-link:hover {
+  text-decoration: overline;
 }

@@ -40,8 +40,8 @@
 </head>
 <body ontouchstart="" onclick="">
 <header>
+	<p class="report-link"><a href="{{ location.ct().report_form_url() }}">Report a nest</a></p>
 	{% block top_nav %}
-		<p><a href="{{ location.ct().report_form_url() }}">Report a nest!</a></p>
 	{% endblock %}
 </header>
 <main>
@@ -53,7 +53,7 @@
 		<th onclick="sortTable('nestList', 2)" tabindex="2" class="heading nest-name">Park</th>
 		<th onclick="sortTable('nestList', 3)" tabindex="3" class="heading number">#</th>
 		<th onclick="sortTable('nestList', 4)" tabindex="4" class="heading species">Species</th>
-		<th onclick="sortTable('nestList', 5)" tabindex="5" class="heading verification">Verified?</th>
+		<th onclick="sortTable('nestList', 5)" tabindex="5" class="heading verification">2x?</th>
 	</tr>
 	{% for nest in current_nest_list %}
 		<tr id="{{ nest.id }}" itemscope itemtype="https://schema.org/Place"
@@ -83,7 +83,7 @@
 			</td>
 			<td class="number">
 				{% if nest.sp_no() %}
-				<span class="sort-info">{{ nest.species_no }}</span>
+				<span class="sort-info">{{ nest.sp_no() }}</span> {# zero-pad to make sorting happy #}
 				<a href="{{ url('nestlist:species_history', city_id=location.ct().pk, poke=nest.species_no) }}">
 					{{ nest.sp_no() }}
 				</a>
@@ -96,8 +96,8 @@
 				{% else %}{{ nest.species_txt }}{% endif %}
 			</td>
 			<td class="verification tooltip">
-				<span class="sort-info">{% if nest.confirmation %}Yes{% else %}No{% endif %}</span>
-				{% if nest.confirmation %}Yes{% else %}No{% endif %}
+				<span class="sort-info">{% if nest.confirmation %}1{% else %}2{% endif %}</span>
+				{% if nest.confirmation %}✅{% else %}🔭{% endif %}
 				{% if nest.report_audit.all() %}
 				<div class="tooltiptext audit">
 					{% for rpt in nest.report_audit.all()|sort(attribute="timestamp", reverse=True) %}
@@ -121,13 +121,14 @@
 <footer>
 	{% block bottom_notes %}
 	<p class="confirmed">
-		Species with a <span class="species">bold name</span> and an <span class="number">italic pokédex number</span> have multiple confirming reports.
+		✅ Species with a <span class="species">bold name</span> and an <span class="number">italic pokédex number</span> have multiple confirming reports.
 		<br>
 		{{ current_nest_list.filter(confirmation=True).count() }} out of {{ current_nest_list.count() }} reports confirmed.
+		<br>
+		🔭 Nests only have a single report.
 	</p>
 	<p>Mid-rotation events may throw off the accuracy of the list.</p>
-	<a href="{{ location.ct().report_form_url() }}">Report a nest!</a>
-	<br>
+	<p class="report-link"><a href="{{ location.ct().report_form_url() }}">Report a nest</a></p>
 	<a style="font-size: small;" href="https://github.com/duck57/poke-db/tree/master/pokedb/nestlist">source</a>
 	{% endblock %}
 </footer>
