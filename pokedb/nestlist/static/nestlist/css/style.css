@@ -118,3 +118,18 @@ td.number, td.verification {
 table {
   margin: auto;
 }
+
+a {
+  text-decoration: none;
+}
+
+a:hover {
+  /* turn me off to avoid conflicting hover effects
+  text-decoration: underline;
+  */
+  /* SVG animation from https://css-tricks.com/having-fun-with-link-hover-effects/ */
+  background-image: url("data:image/svg+xml;charset=utf8,%3Csvg id='squiggle-link' xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' xmlns:ev='http://www.w3.org/2001/xml-events' viewBox='0 0 20 4'%3E%3Cstyle type='text/css'%3E.squiggle{animation:shift .64s linear infinite;}@keyframes shift {from {transform:translateX(-20px);}to {transform:translateX(0px);}}%3C/style%3E%3Cpath fill='none' stroke='%233f8a40' stroke-width='2' class='squiggle' d='M0,3.5 c 5,0,5,-3,10,-3 s 5,3,10,3 c 5,0,5,-3,10,-3 s 5,3,10,3'/%3E%3C/svg%3E");
+  background-position: bottom;
+  background-repeat: repeat-x;
+  background-size: auto 3px;
+}
