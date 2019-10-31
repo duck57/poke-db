@@ -67,9 +67,10 @@ class PokeCategory(models.Model):
 
 
 class BodyPlan(models.Model):
-    name = models.CharField(max_length=50)
-    description = models.CharField(max_length=50, blank=True, null=True)
-    notes = models.CharField(max_length=50, blank=True, null=True)
+    name = models.CharField(max_length=50, unique=True)
+    description = models.CharField(max_length=69, blank=True, null=True)
+    notes = models.CharField(max_length=69, blank=True, null=True)
+    alt_name = models.CharField(max_length=50, unique=True, null=True, blank=True)
 
     class Meta:
         db_table = "body_plan"
@@ -436,12 +437,17 @@ def match_species_by_name_or_number(
         return return_me(input_set.filter(name__icontains=sp_txt))
 
     # using this dict as a way to be extensible and comment why these functions get called
-    attribute_match: dict = {
+    attribute_match: Dict[str, QuerySet[Pokemon]] = {
         "region": input_set.filter(generation__region__icontains=sp_txt),
         "type": match_species_by_type(sp_txt, input_set),
         "egg group": (
             match_species_by_egg_group(sp_txt[4:], input_set)
             if len(sp_txt) > 7 and sp_txt[:4] == "egg:"
+            else input_set.none()
+        ),
+        "body plan": (
+            match_species_by_body_plan(sp_txt[5:], input_set)
+            if len(sp_txt) > 8 and sp_txt[:5] == "body:"
             else input_set.none()
         ),
     }
@@ -528,6 +534,14 @@ def match_species_by_type(
     return input_list.filter(
         Q(type1__name__icontains=target_type) | Q(type1__name__icontains=target_type)
     ).order_by("dex_number")
+
+
+def match_species_by_body_plan(
+    plan: str, input_list: "QuerySet[Pokemon]" = Pokemon.objects.all()
+) -> "QuerySet[Pokemon]":
+    return input_list.filter(
+        Q(body_plan__name__icontains=plan) | Q(body_plan__alt_name__icontains=plan)
+    )
 
 
 def get_surrounding_species(
