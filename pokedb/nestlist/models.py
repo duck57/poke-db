@@ -21,6 +21,7 @@ from typing import Union, Optional, Tuple, NamedTuple, Dict
 from datetime import datetime
 from django.urls import reverse
 from abc import ABC, abstractmethod
+from djchoices import DjangoChoices, ChoiceItem
 
 APP_PREFIX: str = "nestlist"  # is there some way to import this dynamically?
 
@@ -119,7 +120,13 @@ class HasParkSys(ABC):
 
 
 class NstAdminEmail(models.Model):
-    name = models.CharField(max_length=90, blank=True, null=True)
+    class UserType(DjangoChoices):
+        human = ChoiceItem(0)
+        system = ChoiceItem(2)
+        survey = ChoiceItem(1)
+        scanner = ChoiceItem(3)
+
+    name = models.CharField(max_length=90)
     city = models.ForeignKey(
         "NstMetropolisMajor",
         on_delete=models.SET_NULL,
@@ -128,23 +135,29 @@ class NstAdminEmail(models.Model):
         null=True,
     )
     shortname = models.CharField(max_length=20, blank=True, null=True)
-    # TODO: remove this once 1-1 w/ auth.models.user
-    e_mail = models.CharField(db_column="e-mail", max_length=90, blank=True, null=True)
-    is_bot = models.PositiveSmallIntegerField(null=True)
-    # char field (choices=…) field
-    bot_types: Dict[int, str] = {0: "human", 1: "bot", 2: "SYSTEM"}
+    auth_user = models.OneToOneField(
+        "auth.user",
+        on_delete=models.SET_NULL,
+        related_name="nest_user",
+        null=True,
+        blank=True,
+    )
+    is_bot = models.PositiveSmallIntegerField(
+        null=True, blank=False, default=UserType.survey, choices=UserType.choices
+    )
 
     class Meta:
         db_table = "nst_admin_email"
 
     def __str__(self):
-        return f"{self.shortname} [{self.pk}] {self.e_mail}"
+        return f"{self.shortname if self.shortname else self.name} [{self.UserType.values[self.is_bot]}]"
 
     def restricted(self) -> bool:
-        return False if self.is_bot in [0, 2] else True
-
-    def user_type(self) -> str:
-        return self.bot_types.get(self.is_bot, "misconfiguration")
+        return (
+            False
+            if self.is_bot in [self.UserType.human, self.UserType.system]
+            else True
+        )
 
 
 class NstAltName(models.Model):
@@ -227,13 +240,17 @@ class NstLocation(models.Model):
     primary_silph_id = models.IntegerField(blank=True, null=True)
     osm_id = models.IntegerField(db_column="OSM_id", blank=True, null=True)
     park_system = models.ForeignKey(
-        "NstParkSystem", models.DO_NOTHING, db_column="park_system", null=True
+        "NstParkSystem",
+        models.DO_NOTHING,
+        db_column="park_system",
+        null=True,
+        blank=True,
     )
     resident_history = models.ManyToManyField(
         "NstRotationDate", through="NstSpeciesListArchive", symmetrical=True
     )
     duplicate_of = models.ForeignKey(
-        "NstLocation", models.SET_NULL, db_column="duplicate_of", null=True
+        "NstLocation", models.SET_NULL, db_column="duplicate_of", null=True, blank=True
     )
 
     search_fields = ["nestID", "official_name", "short_name", "alternate_name"]
@@ -328,7 +345,9 @@ class NstMetropolisMajor(models.Model):
 
 class NstNeighborhood(models.Model):
     name = models.CharField(max_length=222)
-    region = models.ManyToManyField(to="NstCombinedRegion", blank=True)
+    region = models.ManyToManyField(
+        to="NstCombinedRegion", blank=True, related_name="neighborhoods"
+    )
     lat = models.FloatField(blank=True, null=True)
     lon = models.FloatField(blank=True, null=True)
     major_city = models.ForeignKey(

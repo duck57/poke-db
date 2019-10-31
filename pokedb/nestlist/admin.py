@@ -3,6 +3,7 @@ from django.contrib import admin
 # Register your models here.
 from .models import *
 
+admin.site.register(NstAdminEmail)
 admin.site.register(NstLocation)
 admin.site.register(NstMetropolisMajor)
 admin.site.register(NstNeighborhood)
