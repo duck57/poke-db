@@ -66,27 +66,41 @@ ROOT_URLCONF = "pokedb.urls"
 TEMPLATES = [
     {
         "BACKEND": "django_jinja.backend.Jinja2",
-        "DIRS": [os.path.join(BASE_DIR, "templates")],
         "APP_DIRS": True,
         "OPTIONS": {
-            "match_extension": ".html",
+            "match_extension": ".jinja",
+            "match_regex": r"^(?!admin/).*",
+            "app_dirname": "templates",
             "context_processors": [
                 "django.template.context_processors.debug",
                 "django.template.context_processors.request",
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
                 "django.contrib.auth.context_processors.auth",
-                "django.template.context_processors.i18n",
-                "django.template.context_processors.media",
+                # "django.template.context_processors.i18n",  # not currently necessary
+                # "django.template.context_processors.media",  # not currently necessary
                 "django.template.context_processors.static",
                 "django.template.context_processors.tz",
+            ],
+            "extensions": [
+                "jinja2.ext.do",
+                "jinja2.ext.loopcontrols",
+                "jinja2.ext.with_",
+                "jinja2.ext.i18n",
+                "jinja2.ext.autoescape",
+                "django_jinja.builtins.extensions.CsrfExtension",
+                "django_jinja.builtins.extensions.CacheExtension",
+                "django_jinja.builtins.extensions.TimezoneExtension",
+                "django_jinja.builtins.extensions.UrlsExtension",
+                "django_jinja.builtins.extensions.StaticFilesExtension",
+                "django_jinja.builtins.extensions.DjangoFiltersExtension",
             ],
         },
     },
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        # "DIRS": [os.path.join(BASE_DIR, "templates")],
-        # "APP_DIRS": True,
+        "DIRS": [],
+        "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
                 "django.template.context_processors.debug",

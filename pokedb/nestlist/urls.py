@@ -6,13 +6,13 @@ urlpatterns = [
     path("", views.CityIndex.as_view(), name="list_of_cities"),
     path(
         "<int:city_id>/",
-        views.NestListView.as_view(template_name="nestlist/city.html"),
+        views.NestListView.as_view(template_name="nestlist/city.jinja"),
         {"scope": "city", "pk_name": "city_id"},
         name="city",
     ),
     path(
         "<int:city_id>/nest/<int:nest_id>/",
-        views.NestListView.as_view(template_name="nestlist/nest.html"),
+        views.NestListView.as_view(template_name="nestlist/nest.jinja"),
         {"scope": "nest", "pk_name": "nest_id", "history": True},
         name="nest_history",
     ),
@@ -29,7 +29,7 @@ urlpatterns = [
     ),
     path(
         "<int:city_id>/neighborhood/<int:neighborhood_id>/",
-        views.NestListView.as_view(template_name="nestlist/neighborhood.html"),
+        views.NestListView.as_view(template_name="nestlist/neighborhood.jinja"),
         {"scope": "neighborhood", "pk_name": "neighborhood_id"},
         name="neighborhood",
     ),
@@ -37,7 +37,7 @@ urlpatterns = [
     # path("<int:city_id>/neighborhoods/<int:neighborhood_id>/"),
     path(
         "<int:city_id>/rotation/<int:date>/",
-        views.NestListView.as_view(template_name="nestlist/city.html"),
+        views.NestListView.as_view(template_name="nestlist/city.jinja"),
         {"scope": "city", "pk_name": "city_id"},
         name="city_historic_date",
     ),
@@ -61,7 +61,7 @@ urlpatterns = [
     # path("park_system/<int:ps_id>/"),
     path(
         "<int:city_id>/species-history/<str:poke>/",
-        views.NestListView.as_view(template_name="nestlist/species-history.html"),
+        views.NestListView.as_view(template_name="nestlist/species-history.jinja"),
         {
             "scope": "city",
             "pk_name": "city_id",

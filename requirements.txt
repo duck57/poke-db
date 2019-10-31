@@ -1,3 +1,4 @@
+django-choices
 django-jinja
 asciimatics
 airtable

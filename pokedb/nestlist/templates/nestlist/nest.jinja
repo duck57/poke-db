@@ -1,4 +1,4 @@
-{% extends "nestlist/city.html" %}
+{% extends "nestlist/city.jinja" %}
 
 {% block self_url %}
 <meta property="og:url" content="{{ url('nestlist:nest_history', city_id=location.ct().pk, nest_id=location.pk) }}">

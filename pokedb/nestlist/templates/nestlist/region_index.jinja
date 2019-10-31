@@ -1,0 +1,5 @@
+{% extends "nestlist/city_index.jinja" %}
+
+{% block place_URL %} {% url 'nestlist:region' parent_city.pk place.pk %} {% endblock %}
+
+{% block city_specification %} for {{ parent_city.name }}{% endblock %}

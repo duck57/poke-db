@@ -177,7 +177,7 @@ class NestListView(generic.ListView):
 class NeighborhoodIndex(generic.ListView):
     model = NstNeighborhood
     context_object_name = "place_list"
-    template_name = "nestlist/neighborhood_index.html"
+    template_name = "nestlist/neighborhood_index.jinja"
 
     def get_queryset(self):
         return NstNeighborhood.objects.filter(
@@ -198,7 +198,7 @@ class NeighborhoodIndex(generic.ListView):
 class RegionalIndex(generic.ListView):
     model = NstNeighborhood
     context_object_name = "place_list"
-    template_name = "nestlist/region_index.html"
+    template_name = "nestlist/region_index.jinja"
 
     def get_queryset(self):
         return (
@@ -222,7 +222,7 @@ class RegionalIndex(generic.ListView):
 
 class CityIndex(generic.ListView):
     model = NstMetropolisMajor
-    template_name = "nestlist/city_index.html"
+    template_name = "nestlist/city_index.jinja"
     context_object_name = "place_list"
 
     def get_queryset(self):
