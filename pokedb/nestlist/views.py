@@ -9,6 +9,7 @@ from django.http import (
     Http404,
     HttpResponseNotFound,
     QueryDict,
+    HttpResponse,
 )
 from django.urls import reverse
 from urllib.parse import urlencode
@@ -33,8 +34,10 @@ from .models import (
     NstParkSystem,
     species_nesting_history,
     NstRotationDate,
+    add_a_report,
 )
 from .serializers import ParkSerializer
+from .forms import NestReportForm
 
 
 def append_search_terms(url_base: str, terms: QueryDict):
@@ -43,15 +46,56 @@ def append_search_terms(url_base: str, terms: QueryDict):
 
 
 def report_nest(request, **kwargs):
-    """
-    TODO: replace this with real class-based methods
-    This is a placeholder until further dev work finishes to
-    allow this to take precedence
-    :param request:
-    :param kwargs:
-    :return:
-    """
-    return HttpResponseRedirect("http://columbusnestreport.cf")
+    try:
+        city = NstMetropolisMajor.objects.get(pk=kwargs["city_id"], active=True)
+    except ObjectDoesNotExist:
+        return Http404(f"{kwargs['city_id']} is not a valid city")
+    # if this is a POST request we need to process the form data
+    if request.method == "POST":
+        # create a form instance and populate it with data from the request:
+        form = NestReportForm(request.POST, city=city)
+        # check whether it's valid:
+        if form.is_valid():
+            # process the data in form.cleaned_data as required
+            cd = form.cleaned_data
+            submission_status = add_a_report(
+                name=cd["your_name"],
+                bot_id=city.airtable_bot.pk,
+                nest=cd["park"],
+                species=cd["species"],
+                timestamp=cd["timestamp"],
+                server="🕸",
+            )
+
+            if submission_status.status != 9:
+                # redirect to a new URL:
+                return HttpResponseRedirect(
+                    reverse(
+                        "nestlist:thank_you",
+                        kwargs={"city_id": city.pk, "status": submission_status.status},
+                    )
+                )
+            else:
+                pass  # add stuff to the form validation later
+
+    # if a GET (or any other method) we'll create a blank form
+    else:
+        form = NestReportForm()
+
+    return render(
+        request, "nestlist/report-form.jinja", {"form": form, "location": city}
+    )
+
+
+def thank_you(request, **kwargs):
+    return render(
+        request,
+        "nestlist/thankyou.jinja",
+        {
+            "location": NstMetropolisMajor.objects.get(pk=kwargs["city_id"]),
+            "status": kwargs["status"],
+        },
+    )
 
 
 class NestListView(generic.ListView):
@@ -123,6 +167,10 @@ class NestListView(generic.ListView):
             return HttpResponseNotFound(errstring)
 
     def get_context_data(self, **kwargs) -> Dict:
+        """
+        This dude could probably be refactored, perhaps into subclasses
+        :return: context data with all the fun bits the specific templates expect
+        """
         context = super().get_context_data(**kwargs)
         scope: str = self.kwargs["scope"]
         pk: Union[str, int] = self.kwargs[self.kwargs["pk_name"]]
@@ -244,4 +292,6 @@ class ParkViewSet(ListAPIView):
 
 
 class NestDetail(RetrieveAPIView):
+    model = NstLocation
+    serializer_class = ParkSerializer
     pass
