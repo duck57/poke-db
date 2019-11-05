@@ -561,6 +561,7 @@ def query_nests(
     location_id: int = None,
     location_type: str = "",
     only_one: bool = False,
+    exclude_permanent: bool = True,
 ) -> "QuerySet[NstLocation]":
     """
     Queries nests that match a given name
@@ -574,13 +575,12 @@ def query_nests(
     :param location_id: id of the location to search
     :param location_type: "city", "neighborhood", or "region"
     :param only_one: throw an error if more than one result
-    :return: None if no results
+    :param exclude_permanent: exclude nests with permanent nesting species from the results
+    :return: A QuerySet of NstLocation results
     """
-    if only_one and str_int(search):
-        res = NstLocation.objects.filter(nestID=search)
-        if res:
-            return res
-    out = (
+    out: "QuerySet[NstLocation]" = NstLocation.objects.filter(
+        nestID=search
+    ) if only_one and str_int(search) else (
         NstLocation.objects.filter(
             Q(official_name__icontains=search)
             | Q(
@@ -592,6 +592,8 @@ def query_nests(
         .distinct()
         .order_by("official_name")
     )
+    if exclude_permanent:
+        out = out.exclude(permanent_species__isnull=False)
     if location_id:
         location_type = location_type.strip().lower()
         if location_type == "city":
@@ -726,7 +728,11 @@ def add_a_report(
     try:  # park link
         park_link: NstLocation = get_true_self(
             query_nests(
-                nest, location_type="city", location_id=bot.city, only_one=True
+                nest,
+                location_type="city",
+                location_id=bot.city,
+                only_one=True,
+                exclude_permanent=True if restricted else False,
             ).get()
         )
     except NstLocation.MultipleObjectsReturned:

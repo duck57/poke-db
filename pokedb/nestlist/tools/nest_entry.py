@@ -75,7 +75,7 @@ def search_nest_query(search: Union[int, str]) -> Union[int, NstLocation]:
     :return: a nest
     """
 
-    res = query_nests(search)
+    res = query_nests(search, exclude_permanent=False)
     num = res.count()
 
     if num == 1:

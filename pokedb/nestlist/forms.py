@@ -21,7 +21,9 @@ def pokemon_validator(value):
 def park_validator(value, place=None):
     match_count = query_nests(value, location_id=place, location_type="city").count()
     if match_count != 1:
-        raise ValidationError(f"{value} matched {match_count} nests instead of 1")
+        errstr: str = f"{value} matched {match_count} nests instead of 1"
+        errstr += "\nIf you are sure it is spelled correctly and in the right city, please contact a nest master"
+        raise ValidationError(errstr)
 
 
 def date_validator(value):
@@ -50,6 +52,7 @@ class NestReportForm(forms.Form):
 Discord handle, Facebook name, or phone number \
 so long as you're consistent.",
                 "alt": "test12",
+                "autofill": True,
             }
         ),
     )
