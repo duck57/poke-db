@@ -127,9 +127,13 @@ def true_if_y(
     match_string: str = {
         "lower": "yes",
         "UPPER": "YES",
+        # input is converted to UPPERCASE if case-matching is unimportant
         None: "YES",
-        False: "YES",  # in case of bad calling code
-    }.get(insist_case)
+        # we can guess the meaning of some bad calling code
+        False: "YES",
+    }.get(
+        insist_case
+    )  # no default so that match_string=True throws an error
     assert match_string is not None, f"Invalid value of insist_case: {insist_case}"
     if (insist_case == "lower" and st != st.lower()) or (
         insist_case == "UPPER" and st != st.upper()
@@ -137,13 +141,13 @@ def true_if_y(
         return False
     if not insist_case:
         st = st.upper()
+    if not only_yes:
+        st = st[:3]
+    elif len(st) == 2:  # "ye"
+        return False  # returns false for only_yes=True
     if spell_it:
-        if (st if only_yes else st[:3]) in match_string:
-            return True
-        return False
-    if (st if only_yes else st[0]) in match_string[0]:
-        return True
-    return False
+        return True if f"{st:<3}" in match_string else False
+    return True if st[0] == match_string[0] else False
 
 
 def disp_qs_select(qs: Collection, none_option: Union[bool, str] = True) -> int:
