@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-{% load static %}
 <html lang="en-us">
 <head>
     <meta charset="UTF-8">
@@ -7,11 +6,10 @@
     <meta property="og:type" content="list">
     <meta property="og:locale" content="en_US">
     <meta property="og:title" content="{{ title }}">
-    <meta property="og:url" content="{% block self-url %}{% url 'nestlist:list_of_cities' %}{% endblock %}">
-    {% load static %}
-    <link rel="stylesheet" type="text/css" href="{% static 'nestlist/css/style.css' %}">
+    <meta property="og:url" content="{% block self_url %}{{ url('nestlist:list_of_cities') }}{% endblock %}">
+    <link rel="stylesheet" type="text/css" href="{{ static('nestlist/css/style.css') }}">
     <!-- TODO: update icon later -->
-    <link rel="icon" type="image/png" href="{% static 'nestlist/images/ballhead cc.png' %}">
+    <link rel="icon" type="image/png" href="{{ static('nestlist/images/ballhead cc.png') }}">
     <title>{{ title }}</title>
 </head>
 <body>
@@ -20,7 +18,7 @@
 {% if place_list %}
     <ul>
     {% for place in place_list %}
-    <li><a href="{% block place_URL %}{% url 'nestlist:city' place.pk %}{% endblock %}">{{ place.name }}</a></li>
+    <li><a href="{{ place.web_url() }}">{{ place.name }}</a></li>
     {% endfor %}
     </ul>
 {% else %}

@@ -272,6 +272,7 @@ class CityIndex(generic.ListView):
         context = super().get_context_data(**kwargs)
         context["scope_name"] = "city"
         context["scope_plural"] = "cities"
+        context["title"] = "Cities reporting to this server"
         return context
 
 
