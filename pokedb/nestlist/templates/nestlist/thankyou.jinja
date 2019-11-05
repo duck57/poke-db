@@ -13,8 +13,8 @@
 
     <title>Thank you for your report</title>
 </head>
-<body>
-<main style="margin:auto;">
+<body class="center">
+<main>
     {% if status in [1,0] %}{# treat duplicates as first reports #}
     <h1>First Sighting</h1>
     <p>Thank you for reporting a new nest for this rotation or being the first to report after an event moved things about.</p>
@@ -40,7 +40,7 @@
     {% endif %}
 </main>
 <br>
-<nav style="margin:auto;">
+<nav>
     <a class="report-link" href="{{ location.ct().report_form_url() }}">Report another</a>
     <a class="report-link" href="{{ location.web_url() }}">View list</a>
 </nav>

@@ -46,7 +46,15 @@
 </header>
 <main>
 <table id="nestList">
-	<caption>{% block information %} {{ location }}<br>#{{ rotation }} {% endblock %}</caption>
+	<caption>
+        {% block information %}
+        <nav>
+        <a href="{{ location.web_url() }}">{{ location }}</a>
+        <br>
+        <a href="{{ url('nestlist:city_historic_date', city_id=location.ct().pk, date=rotation.pk) }}">#{{ rotation }}</a>
+        </nav>
+        {% endblock %}
+    </caption>
 	<tr>
 		<th onclick="sortTable('nestList', 0)" tabindex="0" class="heading rotation">Rotation</th>
 		<th onclick="sortTable('nestList', 1)" tabindex="1" class="heading neighborhood">Neighborhood</th>

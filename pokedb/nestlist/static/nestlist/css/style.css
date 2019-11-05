@@ -153,11 +153,38 @@ a:hover {
   padding: 20px 20px;
   margin: auto;
   text-transform: uppercase;
+  text-align: center;
   width: 20vw;
+  min-width: min-content;
   font-family: Optima, sans-serif;
-  font-size: calc(12px + 1vw);;
+  font-size: calc(12px + 1vw);
+  white-space: nowrap;
+  display: block flow;
 }
 
 .report-link:hover {
   text-decoration: overline;
+}
+
+.center {
+  margin: 0;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  -ms-transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%);
+  min-width: 333px;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  white-space: nowrap;
+}
+
+nav {
+  display: flex;
+  flex-flow: row wrap;
+  justify-content: space-between;
+  align-items: baseline;
+  align-content: flex-start;
+
 }
