@@ -703,42 +703,45 @@ def add_a_report(
     if not timestamp:
         error_list["timestamp"] = (416, "Timestamp is emtpy", "")
     try:  # bot id
-        bot: NstAdminEmail = NstAdminEmail.objects.get(pk=bot_id)
-        restricted: bool = bot.restricted()
+        bot: Optional[NstAdminEmail] = NstAdminEmail.objects.get(pk=bot_id)
     except NstAdminEmail.DoesNotExist:
         error_list["bot_id"] = (401, "Bad bot ID", f"{bot_id}")
+        bot = None
+    restricted: bool = bot.restricted() if bot else True
     try:  # species link
         sp_lnk: Optional[Pokemon] = match_species_by_name_or_number(
             species,
             only_one=True,
             input_set=Pokemon.objects.all()
-            if search_all  # update below code when new generations drop
+            if search_all
             else enabled_in_pogo(nestable_species()),
+            age_up=True,
+            previous_evolution_search=True,
         ).get()
     except Pokemon.DoesNotExist:
         if restricted:
             error_list["pokémon"] = (404, "not found", f"{species}")
-        else:
-            sp_lnk = None  # free-text pokémon entries
+        sp_lnk = None  # free-text pokémon entries
     except Pokemon.MultipleObjectsReturned:
         if restricted:
             error_list["pokémon"] = (412, "too many results", f"{species}")
-        else:
-            sp_lnk = None  # free-text it for human entries
+        sp_lnk = None  # free-text it for human entries
     try:  # park link
-        park_link: NstLocation = get_true_self(
+        park_link: Optional[NstLocation] = get_true_self(
             query_nests(
                 nest,
-                location_type="city",
-                location_id=bot.city,
+                location_type="city",  # could change later for more specific report forms
+                location_id=bot.city if bot is not None else None,
                 only_one=True,
                 exclude_permanent=True if restricted else False,
             ).get()
         )
     except NstLocation.MultipleObjectsReturned:
         error_list["nest"] = (412, "too many results", f"{nest}")
+        park_link = None
     except NstLocation.DoesNotExist:
         error_list["nest"] = (404, "not found", f"{nest}")
+        park_link = None
     if rotation is None:  # rotation
         try:
             rotation = get_rotation(timestamp)
@@ -1001,12 +1004,12 @@ def new_rotation(
 
 
 def delete_rotation(
-    rotation_to_delete: NstRotationDate,
+    rotation_to_delete: NstRotationDate,  # No, the number of the rotation isn't good enough here
     deletion_user: int = settings.SYSTEM_BOT_USER,
     accept_consequences: bool = true_if_y(
         input(
             f"Deleting a rotation also removes all NSLA entries associated with it. Do you wish to continue?"
-        )
+        )  # for use in some other admin util
         if __name__ == "__main__"
         else f"no.",
         spell_it=True,
@@ -1023,7 +1026,7 @@ def delete_rotation(
     def deletion_dance() -> NstRawRpt:
         """Deletes the rotation and inserts the audit log"""
         # called here because the DB is set up to forbid the deletion of a rotation with any NSLA rows
-        NstSpeciesListArchive.objects.filter(rotation_num=rotation_to_delete).delete()
+        deletion_set.delete()
         info = str(rotation_to_delete)
         rotation_to_delete.delete()
         return NstRawRpt.objects.create(
@@ -1035,11 +1038,13 @@ def delete_rotation(
             timestamp=append_utc(datetime.utcnow()),
         )
 
+    # Prep work and checking inputs
     if not accept_consequences:
         accept_consequences: bool = true_if_y(
             input(
                 f"Deleting a rotation also removes all NSLA entries associated with it. Do you wish to continue?"
-            )
+            ),
+            spell_it=True,
         )  # catch it here for imports
     if not accept_consequences:
         return None
@@ -1050,18 +1055,30 @@ def delete_rotation(
             f"Just who is trying to delete this, anyway?  {deletion_user} is not a real user ID."
         )
         return None
-    if du.restricted:
+    if du.restricted():
         print(f"User {du} is a restricted bot.  No can do: 401.")
         return None
-    auto_upd8_count: int = NstLocation.objects.filter(
-        permanent_species__isnull=False
-    ).count()
-    deletion_size: int = NstSpeciesListArchive.objects.filter(
+    if not isinstance(rotation_to_delete, NstRotationDate):
+        print(f"{rotation_to_delete} is not a NstRotationDate object.")
+        return None
+
+    # Gather what to delete
+    deletion_set: "QuerySet[NstSpeciesListArchive]" = NstSpeciesListArchive.objects.filter(
         rotation_num=rotation_to_delete
-    ).count()
+    )
+    deletion_size: int = deletion_set.count()
+    if deletion_size == 0:
+        summary = f"Rotation {rotation_to_delete.pk} had no nests and was deleted without a fuss"
+        return deletion_dance()
+    auto_upd8_set: "QuerySet[NstSpeciesListArchive]" = deletion_set.filter(
+        nestid__permanent_species__isnull=False
+    )
+    auto_upd8_count: int = auto_upd8_set.count()
     if deletion_size <= auto_upd8_count:
         summary = f"Only {deletion_size} auto-created entries deleted [out of {auto_upd8_count}]"
         return deletion_dance()
+
+    # Final confirmation check on manually-entered nests
     confirmation_prompt: str = f"{deletion_size - auto_upd8_count} user-recorded nests will be deleted "
     confirmation_prompt += (
         f"in addition to the {auto_upd8_count} automatically-rotating nests."
