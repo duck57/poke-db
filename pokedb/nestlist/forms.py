@@ -60,12 +60,16 @@ so long as you're consistent.",
             }
         ),
     )
+    park = forms.CharField(
+        label="Park", validators=[park_validator], help_text="Where were you?"
+    )
+    species = forms.CharField(
+        label="Species", validators=[pokemon_validator], help_text="What did you see?"
+    )
     timestamp = forms.CharField(
         label="time of sighting",
         initial=parse_relative_date("h-1").strftime("%Y-%m-%d %H:%M"),
-        help_text="When did you see the pokémon?",
-        # =forms.TextInput(attrs={"placeholder": "When were you?"}),
+        help_text="When were they seen?",
+        # widget=forms.TextInput(attrs={"placeholder": "When were you?"}),
         validators=[date_validator],
     )
-    park = forms.CharField(label="Park", validators=[park_validator])
-    species = forms.CharField(label="Species", validators=[pokemon_validator])
