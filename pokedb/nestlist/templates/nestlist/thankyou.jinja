@@ -27,7 +27,7 @@
     {% elif status == 9 %}
     <h1>Error</h1>
         {% if errors %}
-        <ul>{% for err in errors %}<li>{{ err }}</li>{% endfor %}</ul>
+        <ul>{% for err in errors %}<li>{{ err }} {{ errors[err] }}</li>{% endfor %}</ul>
         {% else %}
         <p>Something went really wrong here.  Ask a senior nest master to check logs.</p>
         {% endif %}
@@ -35,7 +35,7 @@
     <h1>Bruh.</h1>
     <p>Somehow you ended up with a submission status of {{ status }}.  This isn't supposed to happen.</p>
         {% if errors %}
-        <ul>{% for err in errors %}<li>{{ err }}</li>{% endfor %}</ul>
+        <ul>{% for err in errors %}<li>{{ err }} {{ errors[err] }}</li>{% endfor %}</ul>
         {% endif %}
     {% endif %}
 </main>

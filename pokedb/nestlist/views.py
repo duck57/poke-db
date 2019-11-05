@@ -60,7 +60,7 @@ def report_nest(request, **kwargs):
             cd = form.cleaned_data
             submission_status = add_a_report(
                 name=cd["your_name"],
-                bot_id=city.airtable_bot.pk,
+                bot_id=city.airtable_bot.pk if city.airtable_bot else None,
                 nest=cd["park"],
                 species=cd["species"],
                 timestamp=cd["timestamp"],
@@ -79,7 +79,16 @@ def report_nest(request, **kwargs):
                     },
                 )
             else:
-                pass  # add stuff to the form validation later
+                # TODO: pass user errors back to the form automatically as validation errors
+                return render(
+                    request,
+                    "nestlist/thankyou.jinja",
+                    {
+                        "location": city,
+                        "status": submission_status.status,
+                        "errors": submission_status.errors_by_location,
+                    },
+                )
 
     # if a GET (or any other method) we'll create a blank form
     else:

@@ -12,7 +12,11 @@ from speciesinfo.models import (
 
 def pokemon_validator(value):
     match_count = match_species_by_name_or_number(
-        sp_txt=value, only_one=True, input_set=enabled_in_pogo(nestable_species())
+        sp_txt=value,
+        only_one=True,
+        input_set=enabled_in_pogo(nestable_species()),
+        age_up=True,
+        previous_evolution_search=True,
     ).count()
     if match_count != 1:
         raise ValidationError(f"{value} matched {match_count} pokémon instead of 1")
