@@ -15,6 +15,7 @@
 </head>
 <body>
 <main class="center">
+<nav><a href="{{ location.ct().web_url() }}">◀📓 Return to List</a></nav>
 <form action="{{ url('nestlist:report_nest', city_id=location.ct().pk) }}" method="post">
     {% csrf_token %}
     <table>

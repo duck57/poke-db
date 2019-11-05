@@ -25,13 +25,13 @@ th:focus {
   border-width: 5px;
   border-radius: 8px;
   border-color: #3f8a40; /* some kind of green */
-  padding: 10px 10px;
+  padding: 10px 0px;
   margin: auto;
-  width: 100%;
   text-transform: uppercase;
   font-family: Optima, sans-serif;
   font-size: calc(10px + 0.5vw);
   white-space: nowrap;
+  box-sizing: content-box;
 }
 
 .fancy-button:hover, fancy-button:active, fancy-button:focus {
@@ -54,4 +54,29 @@ th:focus {
   left: 50%;
   -ms-transform: translate(-50%, -50%);
   transform: translate(-50%, -50%);
+}
+
+.errorlist {
+  margin: 0;
+  padding: 0;
+  color: red;
+  font-family: Futura, monospace;
+  font-size: x-small;
+}
+
+ul.errorlist > li {
+  display: inline-block;
+}
+
+.helptext {
+  color: #0911f9;
+  font-size: small;
+}
+
+input {
+  width: 90%;
+}
+
+td {
+  width: 11em;
 }
