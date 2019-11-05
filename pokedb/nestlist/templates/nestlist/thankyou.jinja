@@ -14,7 +14,35 @@
     <title>Thank you for your report</title>
 </head>
 <body>
-<a class="report-link" href="{{ location.ct().report_form_url() }}">Report another</a>
-<a class="report-link" href="{{ location.web_url() }}">View list</a>
+<main style="margin:auto;">
+    {% if status in [1,0] %}{# treat duplicates as first reports #}
+    <h1>First Sighting</h1>
+    <p>Thank you for reporting a new nest for this rotation or being the first to report after an event moved things about.</p>
+    {% elif status == 2 %}
+    <h1>Confirmation</h1>
+    <p>Thank you for your confirming report.</p>
+    {% elif status == 4 %}
+    <h1>Report Received</h1>
+    <p>Your report has been received.  However, another trainer will need to confirm your sighting before the list updates.</p>
+    {% elif status == 9 %}
+    <h1>Error</h1>
+        {% if errors %}
+        <ul>{% for err in errors %}<li>{{ err }}</li>{% endfor %}</ul>
+        {% else %}
+        <p>Something went really wrong here.  Ask a senior nest master to check logs.</p>
+        {% endif %}
+    {% else %}
+    <h1>Bruh.</h1>
+    <p>Somehow you ended up with a submission status of {{ status }}.  This isn't supposed to happen.</p>
+        {% if errors %}
+        <ul>{% for err in errors %}<li>{{ err }}</li>{% endfor %}</ul>
+        {% endif %}
+    {% endif %}
+</main>
+<br>
+<nav style="margin:auto;">
+    <a class="report-link" href="{{ location.ct().report_form_url() }}">Report another</a>
+    <a class="report-link" href="{{ location.web_url() }}">View list</a>
+</nav>
 </body>
 </html>

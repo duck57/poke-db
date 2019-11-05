@@ -68,12 +68,15 @@ def report_nest(request, **kwargs):
             )
 
             if submission_status.status != 9:
-                # redirect to a new URL:
-                return HttpResponseRedirect(
-                    reverse(
-                        "nestlist:thank_you",
-                        kwargs={"city_id": city.pk, "status": submission_status.status},
-                    )
+                # thank-you page
+                return render(
+                    request,
+                    "nestlist/thankyou.jinja",
+                    {
+                        "location": city,
+                        "status": submission_status.status,
+                        "errors": submission_status.errors_by_location,
+                    },
                 )
             else:
                 pass  # add stuff to the form validation later
@@ -84,17 +87,6 @@ def report_nest(request, **kwargs):
 
     return render(
         request, "nestlist/report-form.jinja", {"form": form, "location": city}
-    )
-
-
-def thank_you(request, **kwargs):
-    return render(
-        request,
-        "nestlist/thankyou.jinja",
-        {
-            "location": NstMetropolisMajor.objects.get(pk=kwargs["city_id"]),
-            "status": kwargs["status"],
-        },
     )
 
 

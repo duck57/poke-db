@@ -72,5 +72,4 @@ urlpatterns = [
     ),
     # path("<int:city_id>/species/<str:poke>/"),
     path("<int:city_id>/report/", views.report_nest, name="report_nest"),
-    path("<int:city_id>/thank-you/<int:status>/", views.thank_you, name="thank_you"),
 ]
