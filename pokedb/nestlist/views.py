@@ -63,32 +63,20 @@ def report_nest(request, **kwargs):
                 bot_id=city.airtable_bot.pk if city.airtable_bot else None,
                 nest=cd["park"].strip(),
                 species=cd["species"].strip(),
-                timestamp=parse_date(cd["timestamp"].strip()),
+                timestamp=parse_date(str(cd["timestamp"])),
                 server="🕸",
             )
 
-            if submission_status.status != 9:
-                # thank-you page
-                return render(
-                    request,
-                    "nestlist/thankyou.jinja",
-                    {
-                        "location": city,
-                        "status": submission_status.status,
-                        "errors": submission_status.errors_by_location,
-                    },
-                )
-            else:
-                # TODO: pass user errors back to the form automatically as validation errors
-                return render(
-                    request,
-                    "nestlist/thankyou.jinja",
-                    {
-                        "location": city,
-                        "status": submission_status.status,
-                        "errors": submission_status.errors_by_location,
-                    },
-                )
+            # thank-you page
+            return render(
+                request,
+                "nestlist/thankyou.jinja",
+                {
+                    "location": city,
+                    "status": submission_status.status,
+                    "errors": submission_status.errors_by_location,
+                },
+            )
 
     # if a GET (or any other method) we'll create a blank form
     else:

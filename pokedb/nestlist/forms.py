@@ -2,14 +2,17 @@ from django import forms
 from django.core.exceptions import ValidationError
 from django.utils import timezone
 from nestlist.models import query_nests
-from nestlist.utils import parse_relative_date, parse_date
+from nestlist.utils import parse_date
 from speciesinfo.models import (
     match_species_by_name_or_number,
     enabled_in_pogo,
     nestable_species,
 )
+from typing import Dict, Any
 
 MAGIC_NEWLINE = f" gnbgkas "
+QUOT_L = f"«"
+QUOT_R = f"»"
 
 
 def pokemon_validator(value, isl=enabled_in_pogo(nestable_species())):
@@ -20,7 +23,7 @@ def pokemon_validator(value, isl=enabled_in_pogo(nestable_species())):
         age_up=True,
         previous_evolution_search=True,
     ).count()
-    stem: str = f"⚠️'{value}' "
+    stem: str = f"⚠️{QUOT_L}{value}{QUOT_R} "
     if match_count == 0:
         raise ValidationError(stem + f"did not match any pokémon.")
     elif match_count > 1:
@@ -34,7 +37,7 @@ def park_validator(value, place=None, restrict_city: bool = False):
     match_count: int = query_nests(
         value, location_id=place, location_type="city"
     ).count()
-    err_str: str = f"⚠️'{value}' "
+    err_str: str = f"⚠️{QUOT_L}{value}{QUOT_R} "
     if match_count == 0:
         err_str += f"did not match any nests." + MAGIC_NEWLINE
         err_str += f"\nIf you are sure it is spelled correctly and in the right city, please contact a nest master."
@@ -49,7 +52,7 @@ def date_validator(value):
     try:
         g = parse_date(value)
     except ValueError:
-        raise ValidationError(f"⚠️'{value}' is an invalid date.")
+        raise ValidationError(f"⚠️{QUOT_L}{value}{QUOT_R} is an invalid date.")
     if g > timezone.now():
         raise ValidationError(
             f"👽Support for time-travelling players has yet to be implemented."
@@ -83,8 +86,18 @@ so long as you're consistent.",
     )
     timestamp = forms.CharField(
         label="time of sighting",
-        initial=parse_relative_date("h-1").strftime("%Y-%m-%d %H:%M"),
+        initial=parse_date("h-1").strftime("%Y-%m-%d %H:%M"),
         help_text="When were they seen?",
         # widget=forms.TextInput(attrs={"placeholder": "When were you?"}),
         validators=[date_validator],
     )
+
+    def clean(self) -> Dict[str, Any]:
+        # filter parks within the city
+        cd = self.cleaned_data
+        try:
+            park_validator(cd["park"], self.city, True)
+        except ValidationError as ve:
+            self.add_error("park", ve)
+        cd["timestamp"] = parse_date(cd["timestamp"])
+        return cd
