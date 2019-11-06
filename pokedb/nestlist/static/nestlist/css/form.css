@@ -34,7 +34,7 @@ th:focus {
   box-sizing: content-box;
 }
 
-.fancy-button:hover, fancy-button:active, fancy-button:focus {
+.fancy-button:hover, .fancy-button:active, .fancy-button:focus {
   text-decoration: overline;
   text-shadow: 3px 2px #09f911;
 }
@@ -59,7 +59,7 @@ th:focus {
 .errorlist {
   margin: 0;
   padding: 0;
-  color: red;
+  color: #B00B13; /* contrast accessibility */
   font-family: Futura, monospace;
   font-size: x-small;
 }

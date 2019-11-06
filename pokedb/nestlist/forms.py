@@ -9,6 +9,8 @@ from speciesinfo.models import (
     nestable_species,
 )
 
+MAGIC_NEWLINE = f" gnbgkas "
+
 
 def pokemon_validator(value, isl=enabled_in_pogo(nestable_species())):
     match_count: int = match_species_by_name_or_number(
@@ -18,12 +20,13 @@ def pokemon_validator(value, isl=enabled_in_pogo(nestable_species())):
         age_up=True,
         previous_evolution_search=True,
     ).count()
-    stem: str = f"'{value}' "
+    stem: str = f"⚠️'{value}' "
     if match_count == 0:
         raise ValidationError(stem + f"did not match any pokémon.")
     elif match_count > 1:
         raise ValidationError(
-            stem + f"matched {match_count} pokémon.  Please be more specific."
+            stem
+            + f"matched {match_count} pokémon.{MAGIC_NEWLINE}  Please be more specific."
         )
 
 
@@ -31,14 +34,14 @@ def park_validator(value, place=None, restrict_city: bool = False):
     match_count: int = query_nests(
         value, location_id=place, location_type="city"
     ).count()
-    err_str: str = f"'{value}' "
+    err_str: str = f"⚠️'{value}' "
     if match_count == 0:
-        err_str += f"did not match any nests."
+        err_str += f"did not match any nests." + MAGIC_NEWLINE
         err_str += f"\nIf you are sure it is spelled correctly and in the right city, please contact a nest master."
         raise ValidationError(err_str)
     if restrict_city and match_count > 1:
         err_str += f"matched {match_count} nests when a unique match was required."
-        err_str += f"\nPlease be more specific."
+        err_str += MAGIC_NEWLINE + f"\nPlease be more specific."
         raise ValidationError(err_str)
 
 
@@ -46,10 +49,10 @@ def date_validator(value):
     try:
         g = parse_date(value)
     except ValueError:
-        raise ValidationError(f"'{value}' is an invalid date.")
+        raise ValidationError(f"⚠️'{value}' is an invalid date.")
     if g > timezone.now():
         raise ValidationError(
-            f"Support for time-travelling players has yet to be implemented."
+            f"👽Support for time-travelling players has yet to be implemented."
         )
 
 

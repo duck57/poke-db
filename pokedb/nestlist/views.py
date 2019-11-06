@@ -18,7 +18,7 @@ from rest_framework import viewsets
 from rest_framework.generics import ListAPIView, CreateAPIView, RetrieveAPIView
 
 # Create your views here.
-from nestlist.utils import str_int
+from nestlist.utils import str_int, parse_date
 from speciesinfo.models import Pokemon, match_species_by_name_or_number, enabled_in_pogo
 from .models import (
     NstSpeciesListArchive,
@@ -59,11 +59,11 @@ def report_nest(request, **kwargs):
             # process the data in form.cleaned_data as required
             cd = form.cleaned_data
             submission_status = add_a_report(
-                name=cd["your_name"],
+                name=cd["your_name"].lower().strip(),
                 bot_id=city.airtable_bot.pk if city.airtable_bot else None,
-                nest=cd["park"],
-                species=cd["species"],
-                timestamp=cd["timestamp"],
+                nest=cd["park"].strip(),
+                species=cd["species"].strip(),
+                timestamp=parse_date(cd["timestamp"].strip()),
                 server="🕸",
             )
 
