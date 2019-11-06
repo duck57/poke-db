@@ -56,12 +56,12 @@
         {% endblock %}
     </caption>
 	<tr>
-		<th onclick="sortTable('nestList', 0)" tabindex="0" class="heading rotation">Rotation</th>
-		<th onclick="sortTable('nestList', 1)" tabindex="1" class="heading neighborhood">Neighborhood</th>
-		<th onclick="sortTable('nestList', 2)" tabindex="2" class="heading nest-name">Park</th>
-		<th onclick="sortTable('nestList', 3)" tabindex="3" class="heading number">#</th>
-		<th onclick="sortTable('nestList', 4)" tabindex="4" class="heading species">Species</th>
-		<th onclick="sortTable('nestList', 5)" tabindex="5" class="heading verification">2x?</th>
+		<th onclick="sortTable('nestList', 0)" onkeydown="sortKeyTable(event, 0)" tabindex="0" class="heading rotation">Rotation</th>
+		<th onclick="sortTable('nestList', 1)" onkeydown="sortKeyTable(event, 1)" tabindex="0" class="heading neighborhood">Neighborhood</th>
+		<th onclick="sortTable('nestList', 2)" onkeydown="sortKeyTable(event, 2)" tabindex="0" class="heading nest-name">Park</th>
+		<th onclick="sortTable('nestList', 3)" onkeydown="sortKeyTable(event, 3)" tabindex="0" class="heading number">#</th>
+		<th onclick="sortTable('nestList', 4)" onkeydown="sortKeyTable(event, 4)" tabindex="0" class="heading species">Species</th>
+		<th onclick="sortTable('nestList', 5)" onkeydown="sortKeyTable(event, 5)" tabindex="0" class="heading verification">2x?</th>
 	</tr>
 	{% for nest in current_nest_list %}
 		<tr id="{{ nest.id }}" itemscope itemtype="https://schema.org/Place"
@@ -99,7 +99,7 @@
 			</td>
 			<td class="species">
 				{% if nest.species_name_fk %}
-				<span class="sort-info">{{ nest.species_name_fk }}</span>
+				<span class="sort-info">{% if nest.species_name_fk %}{{ nest.species_name_fk.name }}{% else %}{{ nest.species_txt }}{% endif %}</span>
 				<a href="{{ url('nestlist:species_history', city_id=location.ct().pk, poke=nest.species_name_fk.pk) }}">{{ nest.species_txt }}</a>
 				{% else %}{{ nest.species_txt }}{% endif %}
 			</td>
@@ -141,4 +141,11 @@
 	{% endblock %}
 </footer>
 {% block empty_zone %}{% endblock %}
+<script type="text/javascript">
+	function sortKeyTable(e, column) {
+		if (e.keyCode == 13) {
+			sortTable('nestList', column)
+		}
+	}
+</script>
 </body></html>
