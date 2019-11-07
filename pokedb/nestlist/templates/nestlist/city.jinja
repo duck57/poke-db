@@ -40,7 +40,7 @@
 </head>
 <body ontouchstart="" onclick="">
 <header>
-	<p class="report-link"><a href="{{ location.ct().report_form_url() }}">Report a nest</a></p>
+	{% block report_button %}<p class="report-link"><a href="{{ location.ct().report_form_url() }}">Report a nest</a></p>{% endblock %}
 	{% block top_nav %}
 	{% endblock %}
 </header>
@@ -67,7 +67,7 @@
 		class="nest {% if nest.confirmation %}confirmed{% else %}unconfirmed{% endif %}" >
 			<td class="rotation">
 				<span class="sort-info">{{ nest.rotation_num }}</span>
-				<a href="{{ url('nestlist:city_historic_date', city_id=location.ct().pk, date=nest.rotation_num.pk) }}">{{ nest.rotation_num }}</a>
+				<a href="{{ url('nestlist:city_historic_date', city_id=nest.ct().pk, date=nest.rotation_num.pk) }}">{{ nest.rotation_num }}</a>
 			</td>
 			<td class="neighborhood" itemprop="containedInPlace"
 			id="{{ nest.nestid.neighborhood.pk }}">
@@ -91,7 +91,7 @@
 			<td class="number">
 				{% if nest.sp_no() %}
 				<span class="sort-info">{{ nest.sp_no() }}</span> {# zero-pad to make sorting happy #}
-				<a href="{{ url('nestlist:species_history', city_id=location.ct().pk, poke=nest.species_no) }}">
+				<a href="{{ url('nestlist:species_history', city_id=nest.ct().pk, poke=nest.species_no) }}">
 					{{ nest.sp_no() }}
 				</a>
 				{% else %}N/A{% endif %}
@@ -99,7 +99,7 @@
 			<td class="species">
 				{% if nest.species_name_fk %}
 				<span class="sort-info">{% if nest.species_name_fk %}{{ nest.species_name_fk.name }}{% else %}{{ nest.species_txt }}{% endif %}</span>
-				<a href="{{ url('nestlist:species_history', city_id=location.ct().pk, poke=nest.species_name_fk.pk) }}">{{ nest.species_txt }}</a>
+				<a href="{{ url('nestlist:species_history', city_id=nest.ct().pk, poke=nest.species_name_fk.pk) }}">{{ nest.species_txt }}</a>
 				{% else %}{{ nest.species_txt }}{% endif %}
 			</td>
 			<td class="verification tooltip">
@@ -135,7 +135,7 @@
 		🔭 Nests only have a single report.
 	</p>
 	<p>Mid-rotation events may throw off the accuracy of the list.</p>
-	<p class="report-link"><a href="{{ location.ct().report_form_url() }}">Report a nest</a></p>
+	{{ self.report_button() }}
 	<a style="font-size: small;" href="https://github.com/duck57/poke-db/tree/master/pokedb/nestlist">source</a>
 	{% endblock %}
 </footer>

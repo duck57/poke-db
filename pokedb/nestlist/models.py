@@ -469,6 +469,9 @@ on {self.rotation_num.date_priority_display()}"
     def sp_no(self) -> Optional[str]:
         return None if self.species_no is None else f"{self.species_no:03}"
 
+    def ct(self) -> NstMetropolisMajor:
+        return self.nestid.ct()
+
     def web_url(self):
         return reverse(
             "nestlist:nest_history",
@@ -558,10 +561,13 @@ def get_rotation(date) -> NstRotationDate:
 
 def query_nests(
     search: Union[str, int],
-    location_id: int = None,
+    location_id: Optional[
+        Union[int, NstNeighborhood, NstCombinedRegion, NstMetropolisMajor]
+    ] = None,
     location_type: str = "",
     only_one: bool = False,
     exclude_permanent: bool = True,
+    restrict_city: Optional[NstMetropolisMajor] = None,
 ) -> "QuerySet[NstLocation]":
     """
     Queries nests that match a given name
@@ -576,6 +582,8 @@ def query_nests(
     :param location_type: "city", "neighborhood", or "region"
     :param only_one: throw an error if more than one result
     :param exclude_permanent: exclude nests with permanent nesting species from the results
+    :param restrict_city: enforce that the nest results have some tangential relationship to this city
+                          this isn't sensible without location_id being specified
     :return: A QuerySet of NstLocation results
     """
     out: "QuerySet[NstLocation]" = NstLocation.objects.filter(
@@ -601,8 +609,14 @@ def query_nests(
         elif location_type == "neighborhood":
             out = out.filter(neighborhood=location_id)
         elif location_type == "region":
-            # TODO: update this once regions are improved
             out = out.filter(neighborhood__region=location_id)
+        elif location_type == "ps":
+            out = out.filter(park_system=location_id)
+    if restrict_city:
+        out = out.filter(
+            Q(neighborhood__major_city=restrict_city)
+            | Q(neighborhood__region__neighborhoods__major_city=restrict_city)
+        )
     return out
 
 
@@ -636,6 +650,8 @@ def add_a_report(
     rotation: Optional[NstRotationDate] = None,
     confirmation: Optional[bool] = None,
     search_all: bool = False,
+    subsearch_place: Optional[int] = None,
+    subsearch_type: str = "city",
 ) -> ReportStatus:
     """
     Adds a raw report and updates the NSLA if applicable
@@ -644,6 +660,8 @@ def add_a_report(
     For "bots" with an is_bot != 1, reports always succeed at updating
     non-bot "bots" do not generate a NstRawReport entry if they do not modify anything
 
+    :param subsearch_type: "city"/"region"/"neighborhood" specifies which model to use on query_nests
+    :param subsearch_place: numeric id of the above
     :param search_all: search for all species or just the currently nestable ones
     :param confirmation: leave None to let the system decide how to handle this
     :param name: who submitted the report
@@ -727,13 +745,16 @@ def add_a_report(
             error_list["pokémon"] = (412, "too many results", f"{species}")
         sp_lnk = None  # free-text it for human entries
     try:  # park link
+        if not subsearch_place:
+            subsearch_place = bot.city.pk if bot else None
         park_link: Optional[NstLocation] = get_true_self(
             query_nests(
                 nest,
-                location_type="city",  # could change later for more specific report forms
-                location_id=bot.city if bot is not None else None,
+                location_type=subsearch_type,  # could change later for more specific report forms
+                location_id=subsearch_place,
                 only_one=True,
                 exclude_permanent=True if restricted else False,
+                restrict_city=bot.city if bot else None,
             ).get()
         )
     except NstLocation.MultipleObjectsReturned:
@@ -769,11 +790,11 @@ def add_a_report(
     )
     if fresh:  # we're done if it's a new report
         return record_report(2 if confirmation else 1)
+
+    # duplicate-checking and conflict resolution
     prior_reports: "QuerySet[NstRawRpt]" = NstRawRpt.objects.filter(
         Q(nsla_pk=nsla_link) | Q(nsla_pk_unlink=nsla_link.pk)
-    ).order_by(
-        "-timestamp"
-    )  # for duplicate-checking and conflict resolution later
+    ).order_by("-timestamp")
 
     # no change from manual edit
     if (
@@ -788,7 +809,9 @@ def add_a_report(
     # it's only bot posting from here on
 
     if sp_lnk == nsla_link.species_name_fk:  # confirmations and duplicates
-        if prior_reports.filter(user_name=name, attempted_dex_num=sp_lnk).count():
+        if prior_reports.filter(
+            user_name__iexact=name, attempted_dex_num=sp_lnk
+        ).count():
             return record_report(0)  # exact duplicates
         if nsla_link.confirmation:
             return record_report(2)  # previously-confirmed nests
@@ -801,13 +824,9 @@ def add_a_report(
 
     # only take one report to update to the next species
     # unless it's confirmed by a human or system bot
-    if (
-        sp_lnk
-        in get_surrounding_species(
-            nsla_link.species_name_fk, nestable_species()
-        ).values()
-        and nsla_link.last_mod_by.is_bot == 1
-    ):
+    if sp_lnk in get_surrounding_species(
+        nsla_link.species_name_fk, nestable_species()
+    ).values() and (nsla_link.last_mod_by.restricted() or not nsla_link.confirmation):
         confirmation = False
         return update_nsla(1)
     # human and bot confirmations need to go through the normal double agreement to overturn process
@@ -816,11 +835,14 @@ def add_a_report(
     # this assumes that the report being added is always the most recent one (so it may break on historic data import)
     if prior_reports.filter(attempted_dex_num=sp_lnk).count():
         # there was a prior report for this nest that agrees with the species given here
-        confirmation = True if nsla_link.last_mod_by.is_bot == 1 else False
+        confirmation = True if nsla_link.last_mod_by.restricted() else False
         return update_nsla(2)
 
     # update if the same user reports the nest again with better data
-    if prior_reports.first() is not None and prior_reports.first().user_name == name:
+    if (
+        prior_reports.first() is not None
+        and prior_reports.first().user_name.lower() == name.lower()
+    ):  # preserve case when saving but ignore it for comparison
         confirmation = False
         return update_nsla(1)
 
@@ -873,17 +895,15 @@ def get_local_nsla_for_rotation(
     :return: The filtered NSLA for the given location and date
     """
     out_list: "QuerySet[NstSpeciesListArchive]" = NstSpeciesListArchive.objects.filter(
-        rotation_num=rotation
+        rotation_num=rotation,
+        nestid__in=query_nests(
+            "",
+            location_type=location_type,
+            location_id=location_pk,
+            exclude_permanent=False,
+        ),
     ).order_by("nestid__official_name")
-    if species:
-        out_list = nsla_sp_filter(species, out_list)
-    if location_type.lower() == "city":
-        return out_list.filter(nestid__neighborhood__major_city=location_pk)
-    if location_type.lower() == "neighborhood":
-        return out_list.filter(nestid__neighborhood=location_pk)
-    if location_type.lower() == "region":
-        return out_list.filter(nestid__neighborhood__region=location_pk)
-    return out_list.none()
+    return nsla_sp_filter(species, out_list) if species else out_list
 
 
 def collect_empty_nests(
@@ -949,11 +969,11 @@ def park_nesting_history(
     ).order_by("-rotation_num")
 
 
-def species_nesting_history(city: int, sp: str) -> "QuerySet[NstSpeciesListArchive]":
+def species_nesting_history(
+    city: "QuerySet[NstLocation]", sp: str
+) -> "QuerySet[NstSpeciesListArchive]":
     return nsla_sp_filter(
-        sp,
-        NstSpeciesListArchive.objects.filter(nestid__neighborhood__major_city=city),
-        single_species=True,
+        sp, NstSpeciesListArchive.objects.filter(nestid__in=city), single_species=True
     ).order_by("-rotation_num")
 
 

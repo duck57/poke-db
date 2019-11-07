@@ -18,7 +18,7 @@ from rest_framework import viewsets
 from rest_framework.generics import ListAPIView, CreateAPIView, RetrieveAPIView
 
 # Create your views here.
-from nestlist.utils import str_int, parse_date
+from nestlist.utils import str_int, parse_date, nested_dict
 from speciesinfo.models import Pokemon, match_species_by_name_or_number, enabled_in_pogo
 from .models import (
     NstSpeciesListArchive,
@@ -35,6 +35,7 @@ from .models import (
     species_nesting_history,
     NstRotationDate,
     add_a_report,
+    query_nests,
 )
 from .serializers import ParkSerializer
 from .forms import NestReportForm
@@ -65,6 +66,8 @@ def report_nest(request, **kwargs):
                 species=cd["species"].strip(),
                 timestamp=parse_date(str(cd["timestamp"])),
                 server="🕸",
+                subsearch_place=cd["subplace"],
+                subsearch_type=cd["scope"],
             )
 
             # thank-you page
@@ -87,6 +90,11 @@ def report_nest(request, **kwargs):
     )
 
 
+"""
+CBVs for the HTML display
+"""
+
+
 class NestListView(generic.ListView):
     model = NstSpeciesListArchive
     context_object_name = "current_nest_list"
@@ -98,23 +106,36 @@ class NestListView(generic.ListView):
         "nest": NstLocation,
         "ps": NstParkSystem,
     }
+    template_name = "nestlist/city.jinja"
 
-    def get_rot8(self):
+    def get_rot8(self) -> NstRotationDate:
         srg = self.request.GET
         return get_rotation(
             self.kwargs.get("date", srg.get("date", srg.get("rotation", "t")))
         )
 
-    def get_sp(self):
+    def get_sp(self) -> Union[int, str]:
         srg = self.request.GET
-        return srg.get("pokemon", srg.get("species", srg.get("pokémon", None)))
+        return self.kwargs.get(
+            "poke", srg.get("pokemon", srg.get("species", srg.get("pokémon", None)))
+        )
+
+    def get_pk(self):
+        return self.kwargs[self.kwargs["pk_name"]]
+
+    def eligible_parks(self) -> "QuerySet[NstLocation]":
+        return query_nests("", self.get_pk(), self.kwargs["pk_name"])
 
     def get_queryset(self) -> "QuerySet[NstSpeciesListArchive]":
+        """
+        Unified method for generating a the Nest List
+        :return: the NSLA Q set
+        """
         scope = self.kwargs["scope"]
-        pk = self.kwargs[self.kwargs["pk_name"]]
+        pk = self.get_pk()
         species = self.get_sp()
         if self.kwargs.get("species_detail"):
-            return species_nesting_history(sp=self.kwargs["poke"], city=pk)
+            return species_nesting_history(sp=species, city=self.eligible_parks())
         if scope in ["neighborhood", "city", "ps", "region"]:
             return get_local_nsla_for_rotation(
                 rotation=self.get_rot8(),
@@ -129,7 +150,7 @@ class NestListView(generic.ListView):
 
     def get(self, request, *args, **kwargs):
         scope: str = self.kwargs["scope"]
-        pk: Union[str, int] = self.kwargs[self.kwargs["pk_name"]]
+        pk = self.get_pk()
         try:
             location = self.model_list[scope].objects.get(pk=pk)
         except ObjectDoesNotExist:
@@ -146,69 +167,124 @@ class NestListView(generic.ListView):
         except ValueError:
             return HttpResponseBadRequest(f"Try again with a valid date.")
         except Http404:
-            errstring: str = f"No nests found for {scope} #{pk}"
+            err_str: str = f"🚫 No nests found for {scope} #{pk}"
             if scope != "nest":
-                errstring += f" on {self.get_rot8()}"
+                err_str += f" on {self.get_rot8()}"
             ss: str = self.get_sp()
             if ss:
-                errstring += f" matching a search for {ss}"
-            errstring += f"."
-            return HttpResponseNotFound(errstring)
+                err_str += f" matching a search for {ss}"
+            err_str += f"."
+            return HttpResponseNotFound(err_str)
 
     def get_context_data(self, **kwargs) -> Dict:
         """
-        This dude could probably be refactored, perhaps into subclasses
-        :return: context data with all the fun bits the specific templates expect
+        :return: context data for the templates
         """
-        context = super().get_context_data(**kwargs)
+        context: Dict = super().get_context_data(**kwargs)
         scope: str = self.kwargs["scope"]
         pk: Union[str, int] = self.kwargs[self.kwargs["pk_name"]]
         context["location"] = self.model_list[scope].objects.get(pk=pk)
         context["rotation"]: NstRotationDate = self.get_rot8()
-        if scope == "neighborhood":
-            context["neighbor_view"]: bool = True
-            context["empties"]: "QuerySet[NstLocation]" = collect_empty_nests(
-                rotation=context["rotation"],
-                location_type="neighborhood",
-                location_pk=pk,
-            )
-        elif scope == "nest":
-            nest: NstLocation = context["location"]
-            context["nest_view"]: bool = True
-            context["other_names"]: List[str] = [
-                nest.short_name
-            ] if nest.short_name else []
-            for name in nest.alternate_name.exclude(hide_me=True):
-                context["other_names"].append(name.name)
-        if self.kwargs.get("history"):
-            context["history"]: bool = True
-            if self.kwargs.get("species_detail"):
-                sp: str = self.kwargs["poke"]
-                context["species_count"]: int = (
-                    species_nesting_history(sp=sp, city=pk)
-                    .values("species_name_fk")
-                    .distinct()
-                    .count()
-                )
-                context["species_name"]: str = (
-                    match_species_by_name_or_number(
-                        sp_txt=sp,
-                        age_up=True,
-                        previous_evolution_search=True,
-                        only_one=True,
-                        input_set=enabled_in_pogo(
-                            Pokemon.objects.all()
-                        ),  # prevent MultipleObjectsReturned
-                    )
-                    .exclude(
-                        pk="(Egg)"
-                    )  # keeps things working smoothly (eggs don't nest)
-                    .get()
-                    .name
-                    if str_int(sp)
-                    else sp
-                )
+        context["history"]: bool = True if self.kwargs.get("history") else False
+        context["pk"] = pk
         return context
+
+
+class NeighborhoodView(NestListView):
+    template_name = "nestlist/neighborhood.jinja"
+
+    def get_context_data(self, **kwargs) -> Dict:
+        context = super().get_context_data(**kwargs)
+        context["neighbor_view"]: bool = True
+        context["empties"]: "QuerySet[NstLocation]" = collect_empty_nests(
+            rotation=context["rotation"],
+            location_type="neighborhood",
+            location_pk=context["pk"],
+        )
+        return context
+
+
+class NestHistoryView(NestListView):
+    template_name = "nestlist/nest.jinja"
+
+    def get_context_data(self, **kwargs) -> Dict:
+        context = super().get_context_data(**kwargs)
+        nest: NstLocation = context["location"]
+        context["nest_view"]: bool = True
+        context["other_names"]: List[str] = [nest.short_name] if nest.short_name else []
+        for name in nest.alternate_name.exclude(hide_me=True):
+            context["other_names"].append(name.name)
+        context["empty_rotations"] = rotations_without_report(
+            self.get_pk(), str(self.get_sp())
+        )
+        return context
+
+
+class SpeciesHistoryView(NestListView):
+    template_name = "nestlist/species-history.jinja"
+
+    def get_context_data(self, **kwargs) -> Dict:
+        context: Dict = super().get_context_data(**kwargs)
+        sp: str = self.kwargs["poke"]
+        context["species_count"]: int = (
+            species_nesting_history(sp=sp, city=super().eligible_parks())
+            .values("species_name_fk")
+            .distinct()
+            .count()
+        )
+        context["species_name"]: str = (
+            match_species_by_name_or_number(
+                sp_txt=sp,
+                age_up=True,
+                previous_evolution_search=True,
+                only_one=True,
+                input_set=enabled_in_pogo(
+                    Pokemon.objects.all()
+                ),  # prevent MultipleObjectsReturned
+            )
+            .exclude(pk="(Egg)")  # keeps things working smoothly (eggs don't nest)
+            .get()
+            .name
+            if str_int(sp)
+            else sp
+        )
+        return context
+
+
+class RegionView(NestListView):
+    template_name = "nestlist/region.jinja"
+
+    def get_context_data(self, **kwargs) -> Dict:
+        context: Dict = super().get_context_data(**kwargs)
+        context["neighborhoods"] = NstNeighborhood.objects.filter(
+            region=super().get_pk()
+        )
+        context["cities_touched"]: Dict = nested_dict()
+        for n in context["neighborhoods"]:
+            context["cities_touched"][n.major_city][n] = True
+        return context
+
+
+class ParkSystemView(NestListView):
+    template_name = "nestlist/park-sys.jinja"
+
+    def get_context_data(self, **kwargs) -> Dict:
+        context: Dict = super().get_context_data(**kwargs)
+        context["parks_in_system"] = NstLocation.objects.filter(
+            park_system=super().get_pk()
+        )
+        context["cities_touched"] = set()
+        context["neighborhoods"] = set()
+        context["regions_touched"] = set()
+        for park in context["parks_in_system"]:
+            context["cities_touched"].add(park.neighborhood.major_city)
+            context["neighborhoods"].add(park.neighborhood)
+        return context
+
+
+"""
+Index Views
+"""
 
 
 class NeighborhoodIndex(generic.ListView):
@@ -271,6 +347,11 @@ class CityIndex(generic.ListView):
         context["scope_plural"] = "cities"
         context["title"] = "Cities reporting to this server"
         return context
+
+
+"""
+API views
+"""
 
 
 class ParkViewSet(ListAPIView):

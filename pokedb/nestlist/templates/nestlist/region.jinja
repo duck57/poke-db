@@ -1,1 +1,26 @@
-{% extends "city.jinja" %}
+{% extends "nestlist/city.jinja" %}
+
+{% block information %}
+        <nav>
+			<span><a href="{{ location.web_url() }}">{{ location }}</a></span>
+			<span>#{{ rotation }}</span>
+        </nav>
+        {% endblock %}
+
+{% block self_url %}<meta property="og:url" content="{{ location.web_url() }}">{% endblock %}
+{% block report_button %}<p style="background-color: #d9d9e8;">Click on a more specific place to access its report button</p>{% endblock %}
+
+{% block empty_zone %}
+<h1>{{ location.get_name() }}</h1>
+<ul>
+    {% for city in cities_touched|sort(attribute='name') %}
+    <li><a href="{{ city.web_url() }}">{{ city.get_name() }}</a>
+        <ul>
+            {% for nb in cities_touched[city]|sort(attribute='name') %}
+            <li><a href="{{ nb.web_url() }}">{{ nb.get_name() }}</a></li>
+            {% endfor %}
+        </ul>
+    </li>
+    {% endfor %}
+</ul>
+{% endblock %}
