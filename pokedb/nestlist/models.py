@@ -1113,3 +1113,48 @@ def delete_rotation(
 def get_true_self(nest: NstLocation) -> NstLocation:
     """Follows a nest.duplicate_of trail to reveal the canonical current nest"""
     return get_true_self(nest.duplicate_of) if nest.duplicate_of else nest
+
+
+def which_regions(place) -> "QuerySet[NstCombinedRegion]":
+    if isinstance(place, NstMetropolisMajor):
+        return NstCombinedRegion.objects.filter(
+            neighborhoods__major_city=place
+        ).distinct()
+    if isinstance(place, NstParkSystem):
+        return NstCombinedRegion.objects.filter(
+            neighborhoods__nstlocation__park_system=place
+        ).distinct()
+    if isinstance(place, NstNeighborhood):
+        return place.region.all()
+    if isinstance(place, NstLocation):
+        return place.neighborhood.region.all()
+    if isinstance(place, NstSpeciesListArchive):
+        return place.nestid.neighborhood.region.all()
+    return NstCombinedRegion.objects.none()
+
+
+def which_cities(
+    place: Union[NstCombinedRegion, NstParkSystem]
+) -> "QuerySet[NstMetropolisMajor]":
+    """Intended for use with objects with multiple possible city links"""
+    return (
+        NstMetropolisMajor.objects.filter(nstneighborhood__region=place)
+        if isinstance(place, NstCombinedRegion)
+        else NstMetropolisMajor.objects.filter(
+            nstneighborhood__nstlocation__park_system=place
+        )
+    ).distinct()
+
+
+def which_ps(place) -> "QuerySet[NstParkSystem]":
+    if isinstance(place, NstMetropolisMajor):
+        return NstParkSystem.objects.filter(
+            nstlocation__neighborhood__major_city=place
+        ).distinct()
+    if isinstance(place, NstNeighborhood):
+        return NstParkSystem.objects.filter(nstlocation__neighborhood=place).distinct()
+    if isinstance(place, NstCombinedRegion):
+        return NstParkSystem.objects.filter(
+            nstlocation__neighborhood__region=place
+        ).distinct()
+    return NstParkSystem.objects.none()

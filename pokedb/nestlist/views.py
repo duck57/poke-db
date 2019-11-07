@@ -1,4 +1,4 @@
-from typing import Dict, List, Union
+from typing import Dict, List, Union, Optional
 
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import QuerySet
@@ -126,12 +126,21 @@ class NestListView(generic.ListView):
     def eligible_parks(self) -> "QuerySet[NstLocation]":
         return query_nests("", self.get_pk(), self.kwargs["pk_name"])
 
+    def get_scope(self) -> Optional[str]:
+        return self.kwargs.get("scope")
+
+    def get_location(self):
+        try:
+            return self.model_list[self.get_scope()].objects.get(pk=self.get_pk())
+        except ObjectDoesNotExist:
+            return None
+
     def get_queryset(self) -> "QuerySet[NstSpeciesListArchive]":
         """
         Unified method for generating a the Nest List
         :return: the NSLA Q set
         """
-        scope = self.kwargs["scope"]
+        scope = self.get_scope()
         pk = self.get_pk()
         species = self.get_sp()
         if self.kwargs.get("species_detail"):
@@ -149,11 +158,10 @@ class NestListView(generic.ListView):
             return NstSpeciesListArchive.objects.none()
 
     def get(self, request, *args, **kwargs):
-        scope: str = self.kwargs["scope"]
+        scope: str = self.get_scope()
         pk = self.get_pk()
-        try:
-            location = self.model_list[scope].objects.get(pk=pk)
-        except ObjectDoesNotExist:
+        location = self.get_location()
+        if not location:
             return HttpResponseNotFound(f"No {scope} with id {pk}")
         if (
             scope in ["neighborhood", "nest"]
@@ -181,12 +189,10 @@ class NestListView(generic.ListView):
         :return: context data for the templates
         """
         context: Dict = super().get_context_data(**kwargs)
-        scope: str = self.kwargs["scope"]
-        pk: Union[str, int] = self.kwargs[self.kwargs["pk_name"]]
-        context["location"] = self.model_list[scope].objects.get(pk=pk)
+        context["location"] = self.get_location()
         context["rotation"]: NstRotationDate = self.get_rot8()
         context["history"]: bool = True if self.kwargs.get("history") else False
-        context["pk"] = pk
+        context["pk"] = self.get_pk()
         return context
 
 
@@ -199,7 +205,7 @@ class NeighborhoodView(NestListView):
         context["empties"]: "QuerySet[NstLocation]" = collect_empty_nests(
             rotation=context["rotation"],
             location_type="neighborhood",
-            location_pk=context["pk"],
+            location_pk=self.get_pk(),
         )
         return context
 
@@ -225,7 +231,7 @@ class SpeciesHistoryView(NestListView):
 
     def get_context_data(self, **kwargs) -> Dict:
         context: Dict = super().get_context_data(**kwargs)
-        sp: str = self.kwargs["poke"]
+        sp: str = self.get_sp()
         context["species_count"]: int = (
             species_nesting_history(sp=sp, city=super().eligible_parks())
             .values("species_name_fk")
@@ -256,9 +262,7 @@ class RegionView(NestListView):
 
     def get_context_data(self, **kwargs) -> Dict:
         context: Dict = super().get_context_data(**kwargs)
-        context["neighborhoods"] = NstNeighborhood.objects.filter(
-            region=super().get_pk()
-        )
+        context["neighborhoods"] = NstNeighborhood.objects.filter(region=self.get_pk())
         context["cities_touched"]: Dict = nested_dict()
         for n in context["neighborhoods"]:
             context["cities_touched"][n.major_city][n] = True
@@ -271,7 +275,7 @@ class ParkSystemView(NestListView):
     def get_context_data(self, **kwargs) -> Dict:
         context: Dict = super().get_context_data(**kwargs)
         context["parks_in_system"] = NstLocation.objects.filter(
-            park_system=super().get_pk()
+            park_system=self.get_pk()
         )
         context["cities_touched"] = set()
         context["neighborhoods"] = set()
