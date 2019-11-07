@@ -183,8 +183,7 @@ h1, h2, h3, h4, h5, h6 {
 nav {
   display: flex;
   flex-flow: row wrap;
-  justify-content: space-between;
+  justify-content: space-around;
   align-items: baseline;
   align-content: flex-start;
-
 }

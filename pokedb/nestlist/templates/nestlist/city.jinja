@@ -49,9 +49,8 @@
 	<caption>
         {% block information %}
         <nav>
-        <a href="{{ location.web_url() }}">{{ location }}</a>
-        <br>
-        <a href="{{ url('nestlist:city_historic_date', city_id=location.ct().pk, date=rotation.pk) }}">#{{ rotation }}</a>
+			<span><a href="{{ location.web_url() }}">{{ location }}</a></span>
+			<span><a href="{{ url('nestlist:city_historic_date', city_id=location.ct().pk, date=rotation.pk) }}">#{{ rotation }}</a></span>
         </nav>
         {% endblock %}
     </caption>
