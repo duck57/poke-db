@@ -1,3 +1,3 @@
 {% extends "nestlist/city.jinja" %}
 
-{% block information %}{{ location }}<br><strong>{{ species_name }} history</strong>{% endblock %}
+{% block information %}<a href="{{ location.web_url() }}">{{ location }}</a><br><strong>{{ species_name }} history</strong>{% endblock %}
