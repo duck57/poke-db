@@ -136,15 +136,63 @@
 	</p>
 	<p>Mid-rotation events may throw off the accuracy of the list.</p>
 	{{ self.report_button() }}
-	<a style="font-size: small;" href="https://github.com/duck57/poke-db/tree/master/pokedb/nestlist">source</a>
+	<p><a style="font-size: small;" href="https://github.com/duck57/poke-db/tree/master/pokedb/nestlist">source</a></p>
 	{% endblock %}
 </footer>
-{% block empty_zone %}{% endblock %}
+
+{% block empty_zone %}
+<div style="max-width:33%; min-width: 20em; margin:auto;">
+	{% if ps_touched %}
+	<button type="button" class="active collapsible"><h4>Park Systems</h4></button>
+	<ul class="content start-open">
+	  {% for ps in ps_touched %}<li><a href="{{ ps.web_url() }}">{{ ps.get_name() }}</a></li>{% endfor %}
+	</ul>
+	{% endif %}
+	{% if regions_touched %}
+	<button type="button" class="collapsible"><h4>Regions</h4></button>
+	<ul class="content">
+	    {% for r in regions_touched|sort(attribute="name") %}
+		<li>
+			<a href="{{ r.web_url() }}">{{ r.get_name() }}</a>
+			<ul>
+				{% for n in r.neighborhoods.all()|sort(attribute="name") %}
+				<li><a href="{{ n.web_url() }}">{{ n.get_name() }}</a></li>
+				{% endfor %}
+			</ul>
+		</li>
+		{% endfor %}
+	</ul>
+	{% endif %}
+	{% if neighborhoods %}
+	<button type="button" class="collapsible"><h4>All Neighborhoods</h4></button>
+	<ul class="content">
+	  {% for n in neighborhoods|sort(attribute="name") %}<li><a href="{{ n.web_url() }}">{{ n.get_name() }}</a></li>{% endfor %}
+	</ul>
+	{% endif %}
+</div>
+{% endblock %}
+
 <script type="text/javascript">
-	function sortKeyTable(e, column) {
-		if (e.keyCode == 13) {
-			sortTable('nestList', column)
-		}
+function sortKeyTable(e, column) {
+	if (e.keyCode == 13) {
+		sortTable('nestList', column)
 	}
+}
+</script>
+<script type="text/javascript">
+var coll = document.getElementsByClassName("collapsible");
+var i;
+
+for (i = 0; i < coll.length; i++) {
+  coll[i].addEventListener("click", function() {
+    this.classList.toggle("active");
+    var content = this.nextElementSibling;
+    if (content.style.display === "block") {
+      content.style.display = "none";
+    } else {
+      content.style.display = "block";
+    }
+  });
+}
 </script>
 </body></html>

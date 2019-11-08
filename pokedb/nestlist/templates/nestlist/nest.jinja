@@ -1,11 +1,19 @@
 {% extends "nestlist/city.jinja" %}
 
 {% block self_url %}
-<meta property="og:url" content="{{ url('nestlist:nest_history', city_id=location.ct().pk, nest_id=location.pk) }}">
+<meta property="og:url" content="{{ location.web_url() }}">
 {% endblock %}
 
 {% block top_nav %}
 <small>Nest in
+    {% if location.park_system %}
+        <a href="{{ location.park_system.web_url() }}">{{ location.park_system.name }}</a>,
+    {% endif%}
+    {% if regions_touched %}
+        {% for r in regions_touched %}
+        <a href="{{ r.web_url() }}">{{ r.name }}</a>,
+        {% endfor %}
+    {% endif %}
     <a href="{{ location.ct().web_url() }}">{{ location.ct() }}</a>
     and
     <a href="{{ location.neighborhood.web_url() }}">{{ location.neighborhood }}</a>
@@ -37,3 +45,5 @@
 <div style="font-size: small;">{{ location.notes }}</div>
 {% endif %}
 {% endblock %}
+
+{% block empty_zone %}{% endblock %}

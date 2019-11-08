@@ -176,14 +176,42 @@ a:hover {
   min-width: 333px;
 }
 
-h1, h2, h3, h4, h5, h6 {
-  white-space: nowrap;
-}
-
 nav {
   display: flex;
   flex-flow: row wrap;
   justify-content: space-around;
   align-items: baseline;
   align-content: flex-start;
+}
+
+ /* Style the button that is used to open and close the collapsible content */
+.collapsible {
+  background-color: #d9d9d9;
+  color: #123;
+  cursor: pointer;
+  padding: 18 18 0px;
+  width: 100%;
+  border: none;
+  text-align: left;
+  outline: none;
+  font-size: 15px;
+}
+
+/* Add a background color to the button if it is clicked on (add the .active class with JS), and when you move the mouse over it (hover) */
+.active, .collapsible:hover {
+  background-color: #e8e8e8;
+}
+
+/* Style the collapsible content. Note: hidden by default */
+.content {
+  padding: 0 18px;
+  display: none;
+  overflow: hidden;
+  background-color: #e8e8e8;
+  font-family: Gill Sans, Futura, sans-serif;
+}
+
+/* has to be after .content or else it won't work */
+.start-open {
+  display: block;
 }
