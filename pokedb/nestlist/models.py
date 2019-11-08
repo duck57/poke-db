@@ -617,7 +617,7 @@ def query_nests(
             Q(neighborhood__major_city=restrict_city)
             | Q(neighborhood__region__neighborhoods__major_city=restrict_city)
         )
-    return out
+    return out.distinct()
 
 
 class ReportStatus(NamedTuple):
@@ -746,7 +746,7 @@ def add_a_report(
         sp_lnk = None  # free-text it for human entries
     try:  # park link
         if not subsearch_place:
-            subsearch_place = bot.city.pk if bot else None
+            subsearch_place = bot.city.pk if bot.city else None
         park_link: Optional[NstLocation] = get_true_self(
             query_nests(
                 nest,
