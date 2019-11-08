@@ -279,7 +279,7 @@ class RegionView(NestListView):
         return context
 
 
-class ParkSystemView(NestListView):
+class ParkSystemView(RegionView):
     template_name = "nestlist/park-sys.jinja"
 
 

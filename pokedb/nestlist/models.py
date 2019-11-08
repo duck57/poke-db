@@ -384,12 +384,13 @@ class NstParkSystem(models.Model):
         db_table = "nst_park_system"
 
     def __str__(self):
-        return self.name
+        return f"{self.name} [{self.pk}]"
 
     def web_url(self):
-        return reverse(
-            "nestlist:park_system", kwargs={"city_id": 0, "park_system_id": self.pk}
-        )
+        return url_reverser("park_sys", {"ps_id": self.pk})
+
+    def get_name(self):
+        return self.name
 
 
 class NstRotationDate(models.Model):
