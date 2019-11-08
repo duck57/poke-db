@@ -36,6 +36,11 @@ from .models import (
     NstRotationDate,
     add_a_report,
     query_nests,
+    which_regions,
+    which_ps,
+    which_cities,
+    which_neighborhoods,
+    which_parks,
 )
 from .serializers import ParkSerializer
 from .forms import NestReportForm
@@ -193,6 +198,12 @@ class NestListView(generic.ListView):
         context["rotation"]: NstRotationDate = self.get_rot8()
         context["history"]: bool = True if self.kwargs.get("history") else False
         context["pk"] = self.get_pk()
+        # these may be removed for performance later
+        context["cities_touched"] = which_cities(context["location"])
+        context["regions_touched"] = which_regions(context["location"])
+        context["neighborhoods"] = which_neighborhoods(context["location"])
+        context["all_parks"] = which_parks(context["location"])
+        context["ps_touched"] = which_ps(context["location"])
         return context
 
 
@@ -262,7 +273,6 @@ class RegionView(NestListView):
 
     def get_context_data(self, **kwargs) -> Dict:
         context: Dict = super().get_context_data(**kwargs)
-        context["neighborhoods"] = NstNeighborhood.objects.filter(region=self.get_pk())
         context["cities_touched"]: Dict = nested_dict()
         for n in context["neighborhoods"]:
             context["cities_touched"][n.major_city][n] = True
@@ -271,19 +281,6 @@ class RegionView(NestListView):
 
 class ParkSystemView(NestListView):
     template_name = "nestlist/park-sys.jinja"
-
-    def get_context_data(self, **kwargs) -> Dict:
-        context: Dict = super().get_context_data(**kwargs)
-        context["parks_in_system"] = NstLocation.objects.filter(
-            park_system=self.get_pk()
-        )
-        context["cities_touched"] = set()
-        context["neighborhoods"] = set()
-        context["regions_touched"] = set()
-        for park in context["parks_in_system"]:
-            context["cities_touched"].add(park.neighborhood.major_city)
-            context["neighborhoods"].add(park.neighborhood)
-        return context
 
 
 """

@@ -1130,20 +1130,28 @@ def which_regions(place) -> "QuerySet[NstCombinedRegion]":
         return place.neighborhood.region.all()
     if isinstance(place, NstSpeciesListArchive):
         return place.nestid.neighborhood.region.all()
+    if isinstance(place, NstCombinedRegion):
+        return NstCombinedRegion.objects.filter(pk=place.pk)
     return NstCombinedRegion.objects.none()
 
 
-def which_cities(
-    place: Union[NstCombinedRegion, NstParkSystem]
-) -> "QuerySet[NstMetropolisMajor]":
+def which_cities(place) -> "QuerySet[NstMetropolisMajor]":
     """Intended for use with objects with multiple possible city links"""
-    return (
-        NstMetropolisMajor.objects.filter(nstneighborhood__region=place)
-        if isinstance(place, NstCombinedRegion)
-        else NstMetropolisMajor.objects.filter(
+    if isinstance(place, NstCombinedRegion):
+        return NstMetropolisMajor.objects.filter(
+            nstneighborhood__region=place
+        ).distinct()
+    if isinstance(place, NstParkSystem):
+        return NstMetropolisMajor.objects.filter(
             nstneighborhood__nstlocation__park_system=place
-        )
-    ).distinct()
+        ).distinct()
+    if isinstance(place, NstMetropolisMajor):
+        return NstMetropolisMajor.objects.filter(pk=place.pk)
+    if isinstance(place, NstNeighborhood):
+        return NstMetropolisMajor.objects.filter(pk=place.major_city.pk)
+    if isinstance(place, NstLocation):
+        return NstMetropolisMajor.objects.filter(pk=place.neighborhood.major_city.pk)
+    return NstMetropolisMajor.objects.none()
 
 
 def which_ps(place) -> "QuerySet[NstParkSystem]":
@@ -1157,4 +1165,43 @@ def which_ps(place) -> "QuerySet[NstParkSystem]":
         return NstParkSystem.objects.filter(
             nstlocation__neighborhood__region=place
         ).distinct()
+    if isinstance(place, NstLocation) and place.park_system:
+        return NstParkSystem.objects.filter(pk=place.park_system.pk)
+    if isinstance(place, NstParkSystem):
+        return NstParkSystem.objects.filter(pk=place.pk)
     return NstParkSystem.objects.none()
+
+
+def which_neighborhoods(place) -> "QuerySet[NstNeighborhood]":
+    if isinstance(place, NstNeighborhood):
+        return NstNeighborhood.objects.filter(pk=place.pk)
+    if isinstance(place, NstLocation):
+        return NstNeighborhood.objects.filter(pk=place.neighborhood.pk)
+    if isinstance(place, NstMetropolisMajor):
+        return place.nstneighborhood_set.all()
+    if isinstance(place, NstCombinedRegion):
+        return place.neighborhoods.all()
+    if isinstance(place, NstParkSystem):
+        return NstNeighborhood.objects.filter(nstlocation__park_system=place).distinct()
+    return NstNeighborhood.objects.none()
+
+
+def which_parks(place) -> "QuerySet[NstLocation]":
+    if isinstance(place, NstLocation):
+        return NstLocation.objects.filter(pk=place.pk)
+    scope: str = ""
+    if isinstance(place, NstNeighborhood):
+        scope = "neighborhood"
+    if isinstance(place, NstMetropolisMajor):
+        scope = "city"
+    if isinstance(place, NstCombinedRegion):
+        scope = "region"
+    if isinstance(place, NstParkSystem):
+        scope = "ps"
+    return query_nests(
+        "",
+        location_id=place.pk,
+        location_type=scope,
+        exclude_permanent=False,
+        only_one=False,
+    )
