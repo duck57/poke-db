@@ -250,7 +250,12 @@ class NstLocation(models.Model):
         "NstRotationDate", through="NstSpeciesListArchive", symmetrical=True
     )
     duplicate_of = models.ForeignKey(
-        "NstLocation", models.SET_NULL, db_column="duplicate_of", null=True, blank=True
+        "NstLocation",
+        models.SET_NULL,
+        db_column="duplicate_of",
+        null=True,
+        blank=True,
+        related_name="prior_entries",
     )
 
     search_fields = ["nestID", "official_name", "short_name", "alternate_name"]

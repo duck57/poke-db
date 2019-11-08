@@ -215,3 +215,14 @@ nav {
 .start-open {
   display: block;
 }
+
+.duplicate-warning {
+  width: 100%;
+  font-weight: bold;
+  background-color: #e8d9d9;
+}
+
+.duplicate-warning:hover {
+  /*width: max-content;*/
+  background-color: #d9d9e8;
+}

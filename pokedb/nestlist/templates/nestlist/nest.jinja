@@ -5,6 +5,13 @@
 {% endblock %}
 
 {% block top_nav %}
+{% if location.duplicate_of %}
+<p class="duplicate-warning"><a href="{{ location.duplicate_of.web_url() }}">
+    This is a duplicate entry kept for historical data.
+    <br>
+    Click this for the new nest.
+</a></p>
+{% endif %}
 <small>Nest in
     {% if location.park_system %}
         <a href="{{ location.park_system.web_url() }}">{{ location.park_system.name }}</a>,
@@ -47,3 +54,14 @@
 {% endblock %}
 
 {% block empty_zone %}{% endblock %}
+
+{% block dup_note %}
+{% if location.prior_entries.all() %}
+<strong>Prior Duplicates</strong>
+<ul style="font-size: x-small;">
+{% for n in location.prior_entries.all() %}
+    <li><a href="{{ n.web_url() }}">{{ n.get_name() }}</a></li>
+{% endfor %}
+</ul>
+{% endif %}
+{% endblock %}

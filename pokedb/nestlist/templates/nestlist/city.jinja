@@ -44,7 +44,7 @@
 	{% block top_nav %}
 	{% endblock %}
 </header>
-<main>
+<main style="margin: auto; max-width: max-content;">
 <table id="nestList">
 	<caption>
         {% block information %}
@@ -123,6 +123,7 @@
 		</tr>
 	{% endfor %}
 </table>
+{% block dup_note %}{% endblock %}
 </main>
 <hr>
 <footer>
