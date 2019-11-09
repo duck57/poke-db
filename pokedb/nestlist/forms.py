@@ -33,15 +33,26 @@ def pokemon_validator(value, isl=enabled_in_pogo(nestable_species())):
         )
 
 
-def park_validator(value, place=None, restrict_city: bool = False, scope: str = "city"):
+def park_validator(
+    value, place=None, restrict_city: bool = False, scope: str = "jurisdiction"
+):
     match_count: int = query_nests(
         value, location_id=place, location_type=scope, only_one=True
     ).count()
     err_str: str = f"⚠️{QUOT_L}{value}{QUOT_R} "
+    place_num = 0
+    try:
+        place_num = place.pk
+    except AttributeError:
+        pass
     if match_count == 0:
-        err_str += f"did not match any nests in {scope} #{place.pk}." + MAGIC_NEWLINE
-        err_str += f"\nIf you are sure {QUOT_L}{value}{QUOT_R} is the proper spelling and in the correct {scope}, "
-        err_str += "please contact a nest master."
+        err_str += f"did not match any nests"
+        if place_num:
+            err_str += f" in {scope} #{place_num}"
+        err_str += f"." + MAGIC_NEWLINE
+        err_str += f"\nIf you are sure {QUOT_L}{value}{QUOT_R} is the proper spelling"
+        err_str += f" and in the correct {scope}, "
+        err_str += f"please contact a nest master."
         raise ValidationError(err_str)
     if restrict_city and match_count > 1:
         err_str += f"matched {match_count} nests when a unique match was required."
