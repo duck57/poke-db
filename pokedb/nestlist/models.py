@@ -9,6 +9,7 @@ from .utils import parse_date, str_int, append_utc, true_if_y
 from django.db import models
 from django.db.models import Q
 from django.db.models.query import QuerySet
+from django.db.models.functions import Lower
 from django.conf import settings
 from speciesinfo.models import (
     match_species_by_name_or_number,
@@ -567,13 +568,12 @@ def get_rotation(date) -> NstRotationDate:
 
 def query_nests(
     search: Union[str, int],
-    location_id: Optional[
-        Union[int, NstNeighborhood, NstCombinedRegion, NstMetropolisMajor]
-    ] = None,
+    location_id: Optional = None,
     location_type: str = "",
     only_one: bool = False,
     exclude_permanent: bool = True,
-    restrict_city: Optional[NstMetropolisMajor] = None,
+    restrict_city: Optional[Union[NstMetropolisMajor, int]] = None,
+    input_set: "Optional[QuerySet[NstLocation]]" = NstLocation.objects.all(),
 ) -> "QuerySet[NstLocation]":
     """
     Queries nests that match a given name
@@ -585,45 +585,50 @@ def query_nests(
 
     :param search: name to match on nest, set to "" to match all nests
     :param location_id: id of the location to search
-    :param location_type: "city", "neighborhood", or "region"
+    :param location_type: "city", "neighborhood", or "region" (only required for integer location_ids)
     :param only_one: throw an error if more than one result
     :param exclude_permanent: exclude nests with permanent nesting species from the results
     :param restrict_city: enforce that the nest results have some tangential relationship to this city
                           this isn't sensible without location_id being specified
+    :param input_set: start with a restricted set rather than all NstLocation entries
     :return: A QuerySet of NstLocation results
     """
-    out: "QuerySet[NstLocation]" = NstLocation.objects.filter(
-        nestID=search
-    ) if only_one and str_int(search) else (
-        NstLocation.objects.filter(
-            Q(official_name__icontains=search)
-            | Q(
-                nestID=search if str_int(search) else None
-            )  # handle 18th street library
-            | Q(short_name__icontains=search)
-            | Q(alternate_name__name__icontains=search)
-        )
-        .distinct()
-        .order_by("official_name")
+    name: Q = Q(nestID=search) if only_one and str_int(search) else (
+        Q(official_name__icontains=search)
+        | Q(nestID=search if str_int(search) else None)  # handle 18th street library
+        | Q(short_name__icontains=search)
+        | Q(alternate_name__name__icontains=search)
     )
-    if exclude_permanent:
-        out = out.exclude(permanent_species__isnull=False)
+    removals: Q = Q(permanent_species__isnull=False) if exclude_permanent else Q()
+    place: Q = Q()
     if location_id:
-        location_type = location_type.strip().lower()
-        if location_type == "city":
-            out = out.filter(neighborhood__major_city=location_id)
-        elif location_type == "neighborhood":
-            out = out.filter(neighborhood=location_id)
-        elif location_type == "region":
-            out = out.filter(neighborhood__region=location_id)
-        elif location_type == "ps":
-            out = out.filter(park_system=location_id)
-    if restrict_city:
-        out = out.filter(
-            Q(neighborhood__major_city=restrict_city)
-            | Q(neighborhood__region__neighborhoods__major_city=restrict_city)
-        )
-    return out.distinct()
+        location_type = location_type.strip().lower() if location_type else None
+        if isinstance(location_id, NstMetropolisMajor) or (
+            isinstance(location_id, int) and location_type == "city"
+        ):
+            place = Q(neighborhood__major_city=location_id)
+        elif isinstance(location_id, NstNeighborhood) or (
+            isinstance(location_id, int) and location_type == "neighborhood"
+        ):
+            place = Q(neighborhood=location_id)
+        elif isinstance(location_id, NstCombinedRegion) or (
+            isinstance(location_id, int) and location_type == "region"
+        ):
+            place = Q(neighborhood__region=location_id)
+        elif isinstance(location_id, NstParkSystem) or (
+            isinstance(location_id, int) and location_type == "ps"
+        ):
+            place = Q(park_system=location_id)
+    city: Q = Q(
+        Q(neighborhood__major_city=restrict_city)
+        | Q(neighborhood__region__neighborhoods__major_city=restrict_city)
+    ) if restrict_city else Q()
+    return (
+        input_set.filter(name & place & city)
+        .exclude(removals)
+        .distinct()
+        .order_by(Lower("official_name"))
+    )
 
 
 class ReportStatus(NamedTuple):
