@@ -10,7 +10,7 @@ from speciesinfo.models import (
 )
 from typing import Dict, Any
 
-MAGIC_NEWLINE = f" gnbgkas "
+MAGIC_NEWLINE = f"\n gnbgkas \n"
 QUOT_L = f"«"
 QUOT_R = f"»"
 
@@ -36,9 +36,8 @@ def pokemon_validator(value, isl=enabled_in_pogo(nestable_species())):
 def park_validator(
     value, place=None, restrict_city: bool = False, scope: str = "jurisdiction"
 ):
-    match_count: int = query_nests(
-        value, location_id=place, location_type=scope, only_one=True
-    ).count()
+    matches = query_nests(value, location_id=place, location_type=scope, only_one=True)
+    match_count: int = matches.count()
     err_str: str = f"⚠️{QUOT_L}{value}{QUOT_R} "
     place_num = 0
     try:
@@ -56,7 +55,10 @@ def park_validator(
         raise ValidationError(err_str)
     if restrict_city and match_count > 1:
         err_str += f"matched {match_count} nests when a unique match was required."
-        err_str += MAGIC_NEWLINE + f"\nPlease be more specific."
+        err_str += MAGIC_NEWLINE + f"Please be more specific."
+        if match_count < 5:
+            for match in matches:
+                err_str += MAGIC_NEWLINE + f"• {match.get_name()} [{match.pk}]"
         raise ValidationError(err_str)
 
 

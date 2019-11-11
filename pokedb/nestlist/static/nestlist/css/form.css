@@ -7,6 +7,7 @@ html {
 	align-items: center;
 	justify-content: center;
 	height: 100%;
+	font-family: Gill Sans;
 }
 
 table {
@@ -16,6 +17,7 @@ table {
 th {
 	padding: 0.5em;
 	text-align: right;
+	width: min-content;
 }
 tr {
     background-color: #e8e8e8;
@@ -29,13 +31,11 @@ tr {
 	padding: 10px 0px;
 	margin: auto;
 	text-transform: uppercase;
-	font-family: Optima, sans-serif;
 	font-size: calc(10px + 0.5vw);
 	white-space: nowrap;
 	box-sizing: content-box;
 }
 .fancy-button:hover, .fancy-button:focus {
-	text-decoration: overline;
 	text-shadow: 3px 2px #09f911;
 	box-shadow: 0px 0px 10px 0px green;
 }
@@ -63,6 +63,7 @@ ul.errorlist > li {
 
 input {
 	width: 90%;
+	font-family: Futura, sans-serif;
 }
 
 td {
