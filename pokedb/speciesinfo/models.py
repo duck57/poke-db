@@ -2,7 +2,7 @@ from django.db import models
 from django.db.models import Q
 from nestlist.utils import str_int
 from django.db.models.query import QuerySet
-from typing import Union, Dict, Optional
+from typing import Union, Dict, Optional, List, Iterable
 
 
 # Create your models here.
@@ -553,3 +553,35 @@ def get_surrounding_species(
         "previous": input_list.filter(dex_number__lt=search.dex_number).last(),
         "next": input_list.filter(dex_number__gt=search.dex_number).first(),
     }
+
+
+def self_as_qs(s, model: Optional[models.Model] = None) -> "QuerySet[models.Model]":
+    """
+    Takes the input and returns it wrapped in a QuerySet
+    :param s: the thing you want to transform
+    :param model: optional specification to stop errors when using potentially-heterogeneous (nested) Iterables
+    :return: A QuerySet representation of the input
+    """
+
+    # since you can't create a generic empty QuerySet
+    generic_empty: QuerySet = model.objects.none() if model else Ability.objects.none()
+
+    if isinstance(s, QuerySet) and not model:  # check inner QS if a model is specified
+        return s  # it's already a QuerySet
+
+    if isinstance(s, Iterable):
+        # only works if all items are of the same model
+        n: QuerySet = generic_empty
+        for item in s:
+            n = n | self_as_qs(item, model)  # handle nested lists
+        return n
+
+    if not s:
+        return generic_empty
+    if model and not isinstance(s, type(model.objects.all()[0])):
+        return generic_empty
+
+    # for future extensibility
+    m: Type = type(s)
+    n: List = [s.pk]
+    return m.objects.filter(pk__in=n)
