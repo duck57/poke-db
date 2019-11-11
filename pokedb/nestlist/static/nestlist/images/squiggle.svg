@@ -1,0 +1,23 @@
+<svg id='squiggle-link' xmlns='http://www.w3.org/2000/svg'
+     viewBox='0 0 20 4'>
+    <style type='text/css'>
+        .squiggle {
+            animation:shift .64s linear infinite;
+        }
+        @keyframes shift {
+            from {
+                transform:translateX(-20px);
+            }
+            to {
+                transform:translateX(0px);
+            }
+        }
+    </style>
+    <path
+            fill='none'
+            stroke='#3f8a40'
+            stroke-width='2'
+            class='squiggle'
+            d='M0,3.5 c 5,0,5,-3,10,-3 s 5,3,10,3 c 5,0,5,-3,10,-3 s 5,3,10,3'
+    />
+</svg>

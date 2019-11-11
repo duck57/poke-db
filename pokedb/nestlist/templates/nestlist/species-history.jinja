@@ -4,4 +4,13 @@
 <a href="{{ location.web_url() }}">{{ location }}</a><br><strong>{{ species_name }} history</strong>
 {% endblock %}
 
-{% block empty_zone %}{% endblock %}
+{% block empty_zone %}{% if species_search %}
+<p class="species-info">
+    A <a href="{{ location.web_url() }}?pokémon={{ species_search.type1.name }}">{{ species_search.type1.name }}</a>
+    {% if species_search.type2 %} and <a href="{{ location.web_url() }}?pokémon={{ species_search.type2.name }}">{{ species_search.type2.name }}</a>{% endif %}
+    type of the <a href="{{ location.web_url() }}?pokémon=egg:{{ species_search.egg1.name }}">{{ species_search.egg1.name }}</a>
+    {% if species_search.egg2 %} and <a href="{{ location.web_url() }}?pokémon=egg:{{ species_search.egg2.name }}">{{ species_search.egg2.name }}</a>{% endif %}
+    egg group{% if species_search.egg2 %}s{% endif %}
+    with a <a href="{{ location.web_url() }}?pokémon=body:{{ species_search.body_plan.name }}">{{ species_search.body_plan }}</a> body plan.
+</p>
+{% endif %}{% endblock %}

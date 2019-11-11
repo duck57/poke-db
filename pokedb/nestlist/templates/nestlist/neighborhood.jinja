@@ -8,8 +8,8 @@
 
 {% block empty_zone %}
 {% if empties %}
-<h3>Unreported Nests</h3>
-<ul>
+<button type="button" class="collapsible"><h4>Unreported Nests</h4></button>
+<ul class="content">
     {% for nest in empties %}
         <li><a href="{{ nest.web_url() }}">{{ nest.get_name() }}</a></li>
     {% endfor %}

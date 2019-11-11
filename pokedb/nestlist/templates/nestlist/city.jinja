@@ -9,6 +9,7 @@
 	{% block self_url %}
     	<meta property="og:url" content="{{ url('nestlist:city_historic_date', city_id=location.ct().pk, date=rotation.pk) }}">
 	{% endblock %}
+	<meta name="viewport" content="width=device-width; user-scalable=yes">
     <link rel="stylesheet" type="text/css" href="{{ static('nestlist/css/style.css') }}">
     <!-- TODO: update icon later -->
     <link rel="icon" type="image/png" href="{{ static('nestlist/images/ballhead cc.png') }}">
@@ -41,92 +42,160 @@
 <body ontouchstart="" onclick="">
 <header>
 	{% block report_button %}<p class="report-link"><a href="{{ location.ct().report_form_url() }}">Report a nest</a></p>{% endblock %}
+	<form action="{{ location.web_url() }}" method="get" class="search-party">
+		{% if not history %}
+		<span class="search-box">
+			<input
+					type="search"
+					name="pokémon"
+					placeholder="Charizard, 25, Water, egg:Monster, body:Kaijū"
+					class="search-field"
+					value="{% if species_name %}{{ species_name }}{% endif %}"
+			>
+			<br>
+			<input
+					type="submit"
+					value="🗜Restrict Species ➡️"
+					class="search-button"
+			>
+		</span>
+		{% endif %}
+		{% if not history %}
+		<span class="search-box">
+			<input
+					type="search"
+					name="date"
+					placeholder="w-3, m-2, y-1, 1999-09-19"
+					class="search-field"
+					value="{% if raw_date != 't' %}{{ raw_date }}{% endif %}"
+			>
+			<br>
+			<input
+					type="submit"
+					value="️🚀Travel Time ⏲➡️🕰️"
+					class="search-button"
+			>
+		</span>
+		{% endif %}
+	</form>
 	{% block top_nav %}
 	{% endblock %}
 </header>
 <main style="margin: auto; max-width: max-content;">
-<table id="nestList">
-	<caption>
-        {% block information %}
-        <nav>
-			<span><a href="{{ location.web_url() }}">{{ location }}</a></span>
-			<span><a href="{{ url('nestlist:city_historic_date', city_id=location.ct().pk, date=rotation.pk) }}">#{{ rotation }}</a></span>
-        </nav>
-        {% endblock %}
-    </caption>
-	<tr>
-		<th onclick="sortTable('nestList', 0)" onkeydown="sortKeyTable(event, 0)" tabindex="0" class="heading rotation">Rotation</th>
-		<th onclick="sortTable('nestList', 1)" onkeydown="sortKeyTable(event, 1)" tabindex="0" class="heading neighborhood">Neighborhood</th>
-		<th onclick="sortTable('nestList', 2)" onkeydown="sortKeyTable(event, 2)" tabindex="0" class="heading nest-name">Park</th>
-		<th onclick="sortTable('nestList', 3)" onkeydown="sortKeyTable(event, 3)" tabindex="0" class="heading number">#</th>
-		<th onclick="sortTable('nestList', 4)" onkeydown="sortKeyTable(event, 4)" tabindex="0" class="heading species">Species</th>
-		<th onclick="sortTable('nestList', 5)" onkeydown="sortKeyTable(event, 5)" tabindex="0" class="heading verification">2x?</th>
-	</tr>
-	{% for nest in current_nest_list %}
-		<tr id="{{ nest.id }}" itemscope itemtype="https://schema.org/Place"
-		class="nest {% if nest.confirmation %}confirmed{% else %}unconfirmed{% endif %}" >
-			<td class="rotation">
-				<span class="sort-info">{{ nest.rotation_num }}</span>
-				<a href="{{ url('nestlist:city_historic_date', city_id=nest.ct().pk, date=nest.rotation_num.pk) }}">{{ nest.rotation_num }}</a>
-			</td>
-			<td class="neighborhood" itemprop="containedInPlace"
-			id="{{ nest.nestid.neighborhood.pk }}">
-				<span class="sort-info">{{ nest.nestid.neighborhood }}</span>
-				<a href="{{ nest.nestid.neighborhood.web_url() }}">{{ nest.nestid.neighborhood }}</a>
-			</td>
-			<td class="nest-name tooltip" itemprop="name">
-				<span class="sort-info">{{ nest.nestid.full_name() }}</span>
-				<a href="{{ nest.nestid.web_url() }}">{{ nest.nestid.get_name() }}</a>
-				<div class="tooltiptext">
-					{% if nest.nestid.address %}
-					<address itemprop="address">{{ nest.nestid.address }}</address>
-					{% else %}
-					<span class="address-error">No address on file</span>
+	{% if current_nest_list %}{# don't display the table for an empty list #}
+	<table id="nestList">
+		<caption style="margin:auto;">
+			{% block information %}
+			<nav>
+				<span>
+					{% block self_main_link %}
+					<a href="{{ location.web_url() }}" title="Clicking me clears all filters" class="tooltip">
+						{{ location }}
+						<span class="tooltiptext">Clicking me also clears the filters</span>
+					</a>
+					{% endblock %}
+				</span>
+				<span>
+					{% block self_date_link %}
+					<a
+							href="{{ url('nestlist:city_historic_date', city_id=location.ct().pk, date=rotation.pk) }}"
+							class="tooltip"
+							title="Clicking me clears the species filter"
+					>
+						#{{ rotation }}
+						<span class="tooltiptext">Click me to remove the species filter and stay on the same date</span>
+					</a>
+					{% endblock %}
+				</span>
+			</nav>
+			{% endblock %}
+		</caption>
+		<thead><tr>
+			<th scope="col" onclick="sortTable('nestList', 0)" onkeydown="sortKeyTable(event, 0)" tabindex="0" class="heading rotation">Rotation</th>
+			<th scope="col" onclick="sortTable('nestList', 1)" onkeydown="sortKeyTable(event, 1)" tabindex="0" class="heading neighborhood">Neighborhood</th>
+			<th scope="col" onclick="sortTable('nestList', 2)" onkeydown="sortKeyTable(event, 2)" tabindex="0" class="heading nest-name">Park</th>
+			<th scope="col" onclick="sortTable('nestList', 3)" onkeydown="sortKeyTable(event, 3)" tabindex="0" class="heading number">#</th>
+			<th scope="col" onclick="sortTable('nestList', 4)" onkeydown="sortKeyTable(event, 4)" tabindex="0" class="heading species">Species</th>
+			<th scope="col" onclick="sortTable('nestList', 5)" onkeydown="sortKeyTable(event, 5)" tabindex="0" class="heading verification">2x?</th>
+		</tr></thead>
+		<tbody>
+		{% for nest in current_nest_list %}
+			<tr id="{{ nest.id }}" itemscope itemtype="https://schema.org/Place"
+			class="nest {% if nest.confirmation %}confirmed{% else %}unconfirmed{% endif %}" >
+				<td class="rotation">
+					<span class="sort-info">{{ nest.rotation_num }}</span>
+					<a href="{{ url('nestlist:city_historic_date', city_id=nest.ct().pk, date=nest.rotation_num.pk) }}">{{ nest.rotation_num }}</a>
+				</td>
+				<td class="neighborhood" itemprop="containedInPlace"
+				id="{{ nest.nestid.neighborhood.pk }}">
+					<span class="sort-info">{{ nest.nestid.neighborhood }}</span>
+					<a href="{{ nest.nestid.neighborhood.web_url() }}">{{ nest.nestid.neighborhood }}</a>
+				</td>
+				<td class="nest-name tooltip" itemprop="name">
+					<span class="sort-info">{{ nest.nestid.full_name() }}</span>
+					<a href="{{ nest.nestid.web_url() }}">{{ nest.nestid.get_name() }}</a>
+					<div class="tooltiptext">
+						{% if nest.nestid.address %}
+						<address itemprop="address">{{ nest.nestid.address }}</address>
+						{% else %}
+						<span class="address-error">No address on file</span>
+						{% endif %}
+						{% if nest.nestid.private %}
+						<div class="privacy-notice">Private property, please be respectful</div>
+						{% endif %}
+					</div>
+				</td>
+				<td class="number">
+					{% if nest.sp_no() %}
+					<span class="sort-info">{{ nest.sp_no() }}</span> {# zero-pad to make sorting happy #}
+					<a href="{{ url('nestlist:species_history', city_id=nest.ct().pk, poke=nest.species_no) }}">
+						{{ nest.sp_no() }}
+					</a>
+					{% else %}N/A{% endif %}
+				</td>
+				<td class="species">
+					{% if nest.species_name_fk %}
+					<span class="sort-info">{% if nest.species_name_fk %}{{ nest.species_name_fk.name }}{% else %}{{ nest.species_txt }}{% endif %}</span>
+					<a href="{{ url('nestlist:species_history', city_id=nest.ct().pk, poke=nest.species_name_fk.pk) }}">{{ nest.species_txt }}</a>
+					{% else %}{{ nest.species_txt }}{% endif %}
+				</td>
+				<td class="verification tooltip">
+					<span class="sort-info">{% if nest.confirmation %}1{% else %}2{% endif %}</span>
+					{% if nest.confirmation %}✅{% else %}🔭{% endif %}
+					{% if nest.report_audit.all() %}
+					<div class="tooltiptext audit">
+						{% for rpt in nest.report_audit.all()|sort(attribute="timestamp", reverse=True) %}
+						<span class="{% if not rpt.bot.restricted() %}ge{% endif %}">
+							<span class="m">{{ rpt.web_str()[1] }}</span> {# species info #}
+							<span style="display:inline-block;"> {# timestamp #}
+								{{ rpt.web_str()[0].strftime("%b") }}
+								{{ rpt.web_str()[0].strftime("%d")|ordinal }}
+								{{ rpt.web_str()[0].strftime("%H:%M") }}
+								<span class="f">{{ rpt.web_str()[2] }}</span> {# hashed username #}
+							</span></span><br>
+						{% endfor %}
+					</div>
 					{% endif %}
-					{% if nest.nestid.private %}
-					<div class="privacy-notice">Private property, please be respectful</div>
-					{% endif %}
-				</div>
-			</td>
-			<td class="number">
-				{% if nest.sp_no() %}
-				<span class="sort-info">{{ nest.sp_no() }}</span> {# zero-pad to make sorting happy #}
-				<a href="{{ url('nestlist:species_history', city_id=nest.ct().pk, poke=nest.species_no) }}">
-					{{ nest.sp_no() }}
-				</a>
-				{% else %}N/A{% endif %}
-			</td>
-			<td class="species">
-				{% if nest.species_name_fk %}
-				<span class="sort-info">{% if nest.species_name_fk %}{{ nest.species_name_fk.name }}{% else %}{{ nest.species_txt }}{% endif %}</span>
-				<a href="{{ url('nestlist:species_history', city_id=nest.ct().pk, poke=nest.species_name_fk.pk) }}">{{ nest.species_txt }}</a>
-				{% else %}{{ nest.species_txt }}{% endif %}
-			</td>
-			<td class="verification tooltip">
-				<span class="sort-info">{% if nest.confirmation %}1{% else %}2{% endif %}</span>
-				{% if nest.confirmation %}✅{% else %}🔭{% endif %}
-				{% if nest.report_audit.all() %}
-				<div class="tooltiptext audit">
-					{% for rpt in nest.report_audit.all()|sort(attribute="timestamp", reverse=True) %}
-					<span class="{% if not rpt.bot.restricted() %}ge{% endif %}">
-						<span class="m">{{ rpt.web_str()[1] }}</span> {# species info #}
-						<span style="display:inline-block;"> {# timestamp #}
-							{{ rpt.web_str()[0].strftime("%b") }}
-							{{ rpt.web_str()[0].strftime("%d")|ordinal }}
-							{{ rpt.web_str()[0].strftime("%H:%M") }}
-							<span class="f">{{ rpt.web_str()[2] }}</span> {# hashed username #}
-						</span></span><br>
-					{% endfor %}
-				</div>
-				{% endif %}
-			</td>
-		</tr>
-	{% endfor %}
-</table>
-{% block dup_note %}{% endblock %}
+				</td>
+			</tr>
+		{% endfor %}
+	</table>
+	{% else %}
+	<div class="not-found" style="margin:auto; text-align: center;">
+		🚫 No nests found in {{ self.self_main_link() }}
+		{% if not history %} on rotation {{ self.self_date_link() }}{% endif %}
+		{% if species_name %} matching a search for
+		<a href="{{ url('nestlist:species_history', city_id=location.ct().pk, poke=species_name) }}">
+			{{ species_name }}
+		</a>
+		{% endif %}
+		🚫
+	</div>
+	{% endif %}
+	{% block dup_note %}{% endblock %}
 </main>
-<hr>
 <footer>
+	<hr>
 	{% block bottom_notes %}
 	<p class="confirmed">
 		✅ Species with a <span class="species">bold name</span> and an <span class="number">italic pokédex number</span> have multiple confirming reports.
@@ -141,12 +210,18 @@
 	{% endblock %}
 </footer>
 
-{% block empty_zone %}
-<div style="max-width:33%; min-width: 20em; margin:auto;">
+<div style="width:33%; min-width: 20em; margin:auto;">
+	{% block empty_zone %}
 	{% if ps_touched %}
-	<button type="button" class="active collapsible"><h4>Park Systems</h4></button>
-	<ul class="content start-open">
-	  {% for ps in ps_touched %}<li><a href="{{ ps.web_url() }}">{{ ps.get_name() }}</a></li>{% endfor %}
+	<button type="button" class="collapsible"><h4>Park Systems</h4></button>
+	<ul class="content">
+	    {% for ps in ps_touched %}<li><a href="{{ ps.web_url() }}">{{ ps.get_name() }}</a></li>
+		<ul>
+			{% for p in ps.nstlocation_set.all()|sort(attribute="official_name") %}
+			<li><a href="{{ p.web_url() }}">{{ p.get_name() }}</a></li>
+			{% endfor %}
+		</ul>
+		{% endfor %}
 	</ul>
 	{% endif %}
 	{% if regions_touched %}
@@ -170,8 +245,8 @@
 	  {% for n in neighborhoods|sort(attribute="name") %}<li><a href="{{ n.web_url() }}">{{ n.get_name() }}</a></li>{% endfor %}
 	</ul>
 	{% endif %}
+	{% endblock %}
 </div>
-{% endblock %}
 
 <script type="text/javascript">
 function sortKeyTable(e, column) {

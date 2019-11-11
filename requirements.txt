@@ -1,3 +1,4 @@
+djchoices
 django-choices
 django-jinja
 asciimatics

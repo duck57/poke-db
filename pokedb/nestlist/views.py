@@ -1,6 +1,6 @@
 from typing import Dict, List, Union, Optional
 
-from django.core.exceptions import ObjectDoesNotExist
+from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
 from django.db.models import QuerySet
 from django.shortcuts import render, get_object_or_404
 from django.http import (
@@ -103,7 +103,7 @@ CBVs for the HTML display
 class NestListView(generic.ListView):
     model = NstSpeciesListArchive
     context_object_name = "current_nest_list"
-    allow_empty = False
+    allow_empty = True
     model_list = {
         "city": NstMetropolisMajor,
         "neighborhood": NstNeighborhood,
@@ -113,11 +113,15 @@ class NestListView(generic.ListView):
     }
     template_name = "nestlist/city.jinja"
 
-    def get_rot8(self) -> NstRotationDate:
+    def get_raw_date(self) -> str:
         srg = self.request.GET
-        return get_rotation(
-            self.kwargs.get("date", srg.get("date", srg.get("rotation", "t")))
-        )
+        return self.kwargs.get("date", srg.get("date", srg.get("rotation", "t")))
+
+    def get_parsed_date(self):
+        return parse_date(self.get_raw_date())
+
+    def get_rot8(self) -> NstRotationDate:
+        return get_rotation(self.get_raw_date())
 
     def get_sp(self) -> Union[int, str]:
         srg = self.request.GET
@@ -166,6 +170,7 @@ class NestListView(generic.ListView):
         scope: str = self.get_scope()
         pk = self.get_pk()
         location = self.get_location()
+        ss: str = self.get_sp()
         if not location:
             return HttpResponseNotFound(f"No {scope} with id {pk}")
         if (
@@ -183,7 +188,6 @@ class NestListView(generic.ListView):
             err_str: str = f"🚫 No nests found for {scope} #{pk}"
             if scope != "nest":
                 err_str += f" on {self.get_rot8()}"
-            ss: str = self.get_sp()
             if ss:
                 err_str += f" matching a search for {ss}"
             err_str += f"."
@@ -196,6 +200,8 @@ class NestListView(generic.ListView):
         context: Dict = super().get_context_data(**kwargs)
         context["location"] = self.get_location()
         context["rotation"]: NstRotationDate = self.get_rot8()
+        context["raw_date"]: str = self.get_raw_date()
+        context["parsed_date"]: str = self.get_parsed_date()
         context["history"]: bool = True if self.kwargs.get("history") else False
         context["pk"] = self.get_pk()
         # these may be removed for performance later
@@ -204,6 +210,8 @@ class NestListView(generic.ListView):
         context["neighborhoods"] = which_neighborhoods(context["location"])
         context["all_parks"] = which_parks(context["location"])
         context["ps_touched"] = which_ps(context["location"])
+        context["species_name"] = self.get_sp()
+        context["scope"] = self.get_scope()
         return context
 
 
@@ -243,28 +251,35 @@ class SpeciesHistoryView(NestListView):
     def get_context_data(self, **kwargs) -> Dict:
         context: Dict = super().get_context_data(**kwargs)
         sp: str = self.get_sp()
-        context["species_count"]: int = (
-            species_nesting_history(sp=sp, city=super().eligible_parks())
-            .values("species_name_fk")
-            .distinct()
-            .count()
+        context["species_links"]: "QuerySet[Pokemon]" = (
+            Pokemon.objects.filter(
+                nstspecieslistarchive__in=species_nesting_history(
+                    sp=sp, city=self.eligible_parks()
+                )
+            ).distinct()
         )
-        context["species_name"]: str = (
-            match_species_by_name_or_number(
-                sp_txt=sp,
-                age_up=True,
-                previous_evolution_search=True,
-                only_one=True,
-                input_set=enabled_in_pogo(
-                    Pokemon.objects.all()
-                ),  # prevent MultipleObjectsReturned
+        context["species_count"]: int = (context["species_links"].count())
+        try:
+            context["species_search"]: Pokemon = (
+                match_species_by_name_or_number(
+                    sp_txt=sp,
+                    age_up=True,
+                    previous_evolution_search=True,
+                    only_one=True,
+                    input_set=enabled_in_pogo(
+                        Pokemon.objects.all()
+                    ),  # prevent MultipleObjectsReturned
+                )
+                .exclude(pk="(Egg)")  # keeps things working smoothly (eggs don't nest)
+                .get()
             )
-            .exclude(pk="(Egg)")  # keeps things working smoothly (eggs don't nest)
-            .get()
-            .name
-            if str_int(sp)
-            else sp
-        )
+        except ObjectDoesNotExist:
+            pass
+        except MultipleObjectsReturned:
+            pass
+        context["species_name"]: str = context["species_search"].name if context.get(
+            "species_search"
+        ) else sp
         return context
 
 
@@ -274,13 +289,20 @@ class RegionView(NestListView):
     def get_context_data(self, **kwargs) -> Dict:
         context: Dict = super().get_context_data(**kwargs)
         context["cities_touched"]: Dict = nested_dict()
-        for n in context["neighborhoods"]:
-            context["cities_touched"][n.major_city][n] = True
+        for n in context["neighborhoods"].order_by("name"):
+            context["cities_touched"][n.major_city][n] = n
         return context
 
 
 class ParkSystemView(RegionView):
     template_name = "nestlist/park-sys.jinja"
+
+    def get_context_data(self, **kwargs) -> Dict:
+        context: Dict = super().get_context_data(**kwargs)
+        context["cities_touched"]: Dict = nested_dict()
+        for p in context["all_parks"].order_by("official_name"):
+            context["cities_touched"][p.ct()][p] = p
+        return context
 
 
 """

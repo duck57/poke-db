@@ -1,228 +1,307 @@
 :root {
-  --fancy-squiggle: url("data:image/svg+xml;charset=utf8,%3Csvg id='squiggle-link' xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' xmlns:ev='http://www.w3.org/2001/xml-events' viewBox='0 0 20 4'%3E%3Cstyle type='text/css'%3E.squiggle{animation:shift .64s linear infinite;}@keyframes shift {from {transform:translateX(-20px);}to {transform:translateX(0px);}}%3C/style%3E%3Cpath fill='none' stroke='%233f8a40' stroke-width='2' class='squiggle' d='M0,3.5 c 5,0,5,-3,10,-3 s 5,3,10,3 c 5,0,5,-3,10,-3 s 5,3,10,3'/%3E%3C/svg%3E");
+	--fancy-squiggle: url("../images/squiggle.svg");
 }
 
-th {
-    background-color: #d9d9d9;
-    cursor: row-resize;
-    padding: 1 em;
+body {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
 }
-tr:hover {
-    background-color: #d9d9d9;
+
+hr {
+	width: 100%;
+}
+
+thead {
+	background-color: #d9d9d9;
+	cursor: row-resize;
+	padding: 1 em;
+}
+th:focus, th.current-sort {
+	background-color: #e8e8e8;
 }
 th:hover {
-    font-style: italic;
-    background-color: #e8e8d9;
-}
-th:focus {
-    font-style: italic;
-    background-color: #e8e8e8;
+	/*background-color: #e8e8d9;*/
+	box-shadow: inset 0px 0px 15px 5px #E8E8D9;
 }
 
+.sort-asc {
+	transform: rotate(-2.7deg);
+	background-image: linear-gradient(#e8e8e8, #d9d9d9);
+}
+.sort-desc {
+	transform: rotate(2.7deg);
+	background-image: linear-gradient(#d9d9d9, #e8e8e8);
+}
+
+tr:hover {
+		background-color: #d9d9d9;
+}
 tr.confirmed:hover {
-    background-color: #d9e8d9;
+	background-color: #d9e8d9;
 }
 
 .confirmed .species {
-    font-weight: bold;
+	font-weight: bold;
 }
 .confirmed .number {
-    font-style: italic;
+	font-style: italic;
 }
 
 .tooltip {
-  position: relative;
+	position: relative;
 }
 
 .tooltip .tooltiptext {
-  visibility: hidden;
-  width: 151px;
-  background-color: black;
-  color: #e8e8d9;
-  text-align: center;
-  border-radius: 6px;
-  padding: 5px 0;
-  position: absolute;
-  z-index: 1;
-  bottom: 150%;
-  left: 50%;
-  margin-left: -60px;
+	visibility: hidden;
+	width: 151px;
+	background-color: black;
+	color: #e8e8d9;
+	text-align: center;
+	border-radius: 6px;
+	padding: 5px 0;
+	position: absolute;
+	z-index: 1;
+	bottom: 150%;
+	left: 50%;
+	margin-left: -60px;
 }
 
 .tooltip .tooltiptext::after {
-  content: "";
-  position: absolute;
-  top: 100%;
-  left: 50%;
-  margin-left: -5px;
-  border-width: 5px;
-  border-style: solid;
-  border-color: black transparent transparent transparent;
+	content: "";
+	position: absolute;
+	top: 100%;
+	left: 50%;
+	margin-left: -5px;
+	border-width: 5px;
+	border-style: solid;
+	border-color: black transparent transparent transparent;
 }
 
 .tooltip:hover .tooltiptext {
-  visibility: visible;
+	visibility: visible;
 }
 
 .privacy-notice {
-  color: d9d9e8;
-  font-style: italic;
+	color: d9d9e8;
+	font-style: italic;
 }
 
 .address-error {
-  color: e8d9d9;
+	color: e8d9d9;
 }
 
 .sort-info {
-  display: none;
+	display: none;
 }
 
 address {
-  font-style: normal;
+	font-style: normal;
 }
 
 .verification {
-  min-width: 2em;
+	min-width: 2em;
 }
 
 .neighborhood {
-  min-width: 7em;
+	min-width: 7em;
 }
 
 .species {
-  min-width: 4em;
-  max-width: 8em;
+	min-width: 4em;
+	max-width: 8em;
 }
 
 .nest-name {
-  max-width: 12em;
+	max-width: 12em;
 }
 
 .ge {
-  color: #e8e8d9;
+	color: #e8e8d9;
 }
 
 .f, .ge .m {
-  font-style: italic;
+	font-style: italic;
 }
 
 .audit {
-  font-size: small;
+	font-size: small;
 }
 
 header, footer {
-  text-align: center;
-  margin: auto;
+	text-align: center;
+	margin: auto;
+	justify-content: center;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
 }
 
 td.number, td.verification {
-  text-align: right;
+	text-align: right;
 }
 
 table {
-  margin: auto;
+	margin: auto;
 }
 
 .nest-alt-name:hover {
-  background-image: var(--fancy-squiggle);
-  background-position: bottom;
-  background-repeat: repeat-x;
-  background-size: auto 2px;
+	background-image: var(--fancy-squiggle);
+	background-position: bottom;
+	background-repeat: repeat-x;
+	background-size: auto 2px;
 }
 
 a {
-  text-decoration: none;
+	text-decoration: none;
 }
 
 a:hover {
-  /* turn me off to avoid conflicting hover effects
-  text-decoration: underline;
-  */
-  /* SVG animation from https://css-tricks.com/having-fun-with-link-hover-effects/ */
-  background-image: var(--fancy-squiggle);
-  background-position: bottom;
-  background-repeat: repeat-x;
-  background-size: auto 3px;
+	/* turn me off to avoid conflicting hover effects
+	text-decoration: underline;
+	*/
+	/* SVG animation from https://css-tricks.com/having-fun-with-link-hover-effects/ */
+	background-image: var(--fancy-squiggle);
+	background-position: bottom;
+	background-repeat: repeat-x;
+	background-size: auto 3px;
 }
 
 .report-link {
-  border-style: groove;
-  border-width: 5px;
-  border-radius: 8px;
-  border-color: #3f8a40; /* some kind of green */
-  padding: 20px 20px;
-  margin: auto;
-  text-transform: uppercase;
-  text-align: center;
-  width: 20vw;
-  min-width: min-content;
-  font-family: Optima, sans-serif;
-  font-size: calc(12px + 1vw);
-  white-space: nowrap;
-  display: block flow;
+	border-style: groove;
+	border-width: 5px;
+	border-radius: 8px;
+	border-color: #3f8a40; /* some kind of green */
+	padding: 20px 20px;
+	margin: auto;
+	text-transform: uppercase;
+	text-align: center;
+	width: 20vw;
+	min-width: min-content;
+	font-family: Optima, sans-serif;
+	font-size: calc(12px + 1vw);
+	white-space: nowrap;
+	display: block flow;
 }
-
 .report-link:hover {
-  text-decoration: overline;
+	text-decoration: overline;
+	decoration-color: blue;
+	box-shadow: inset 0px 0px 10px 20px #DDFFEEAA;
 }
-
-.center {
-  margin: 0;
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  -ms-transform: translate(-50%, -50%);
-  transform: translate(-50%, -50%);
-  min-width: 333px;
+.report-link:active {
+    color: red;
+    text-shadow: 2px 2px 4px green;
+    box-shadow: 0px -10px 15px 15px #BBEEDD88;
+    box-shadow: inset 0px 0px 15px 15px #BBEEDD88;
 }
 
 nav {
-  display: flex;
-  flex-flow: row wrap;
-  justify-content: space-around;
-  align-items: baseline;
-  align-content: flex-start;
+	display: flex;
+	flex-flow: row wrap;
+	justify-content: space-around;
+	align-items: baseline;
+	align-content: flex-start;
 }
 
  /* Style the button that is used to open and close the collapsible content */
 .collapsible {
-  background-color: #d9d9d9;
-  color: #123;
-  cursor: pointer;
-  padding: 18 18 0px;
-  width: 100%;
-  border: none;
-  text-align: left;
-  outline: none;
-  font-size: 15px;
+	background-color: #d9d9d9;
+	color: #123;
+	cursor: pointer;
+	padding: 18 18 0px;
+	width: 100%;
+	border: none;
+	text-align: left;
+	outline: none;
+	font-size: 15px;
+	font-family: Gill Sans, sans-serif;
 }
 
 /* Add a background color to the button if it is clicked on (add the .active class with JS), and when you move the mouse over it (hover) */
 .active, .collapsible:hover {
-  background-color: #e8e8e8;
+	background-image: linear-gradient(#d9d9d9, #e8e8e8, #d9d9d9, #e8e8e8);
 }
 
 /* Style the collapsible content. Note: hidden by default */
 .content {
-  padding: 0 18px;
-  display: none;
-  overflow: hidden;
-  background-color: #e8e8e8;
-  font-family: Gill Sans, Futura, sans-serif;
+	padding: 0 18px;
+	margin-top: 0px;
+	display: none;
+	overflow: hidden;
+	background-image: linear-gradient(#e8e8e8, #d9d9d9);
+	font-family: Gill Sans, Futura, sans-serif;
 }
 
 /* has to be after .content or else it won't work */
 .start-open {
-  display: block;
+	display: block;
 }
 
 .duplicate-warning {
-  width: 100%;
-  font-weight: bold;
-  background-color: #e8d9d9;
+    width: 100%;
+    font-weight: bold;
+	background-color: #e8d9d9;
+	text-align: center;
+}
+.duplicate-warning:hover {
+	/*width: max-content;*/
+	background-color: #d9d9e8;
 }
 
-.duplicate-warning:hover {
-  /*width: max-content;*/
-  background-color: #d9d9e8;
+.duplicate-history > h6 {
+    margin: 5px auto 0px;
+}
+.duplicate-history > ul {
+    margin: 0px auto auto;
+}
+
+.not-found {
+	background-color: #e8d9d9;
+}
+
+.search-party {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-around;
+    width: 100%;
+}
+
+.search-button {
+    width: 100%;
+    margin-top: 0px;
+    background-image: linear-gradient(to bottom right, #e8e8e8, #d9d9d9);
+    border: ridge;
+    border-top-style: none;
+    padding: 2px;
+    text-shadow: 1px 1px 3px #d9e8d9;
+    font-family: Futura, sans-serif;
+    box-shadow: inset 0px -5px 5px -1px #d9d9d9d9;
+    border-radius: 0 0 10% 10% / 0 0 69% 69%;
+}
+
+.search-field {
+    width: 100%;
+    margin-bottom: 0px;
+    background-image: linear-gradient(to right, #d9d9e8, #e8d9d9, #d9d9e8, #e8d9d9, #d9d9e8);
+    border: ridge;
+    border-bottom-style: none;
+    padding: 5px;
+    font-family: Futura, sans-serif;
+    box-shadow: inset 0px 5px 5px -1px #C979F755;
+    border-radius: 10% 10% 0 0 / 69% 69% 0 0;
+}
+
+.search-field:focus {
+    box-shadow: inset 0px 5px 5px 0px #78C8F769;
+}
+
+.search-button:active {
+    border: inset;
+    border-top: none;
+    box-shadow: inset 2px 1px 2px 4px #44444444;
+}
+
+.species-info {
+    background-image: linear-gradient(to left, #e8e8d9FF, #FFFFFF00, #d9e8d9FF);
 }

@@ -1,82 +1,70 @@
 :root {
-  --fancy-squiggle: url("data:image/svg+xml;charset=utf8,%3Csvg id='squiggle-link' xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' xmlns:ev='http://www.w3.org/2001/xml-events' viewBox='0 0 20 4'%3E%3Cstyle type='text/css'%3E.squiggle{animation:shift .64s linear infinite;}@keyframes shift {from {transform:translateX(-20px);}to {transform:translateX(0px);}}%3C/style%3E%3Cpath fill='none' stroke='%233f8a40' stroke-width='2' class='squiggle' d='M0,3.5 c 5,0,5,-3,10,-3 s 5,3,10,3 c 5,0,5,-3,10,-3 s 5,3,10,3'/%3E%3C/svg%3E");
+	--fancy-squiggle: url("../images/squiggle.svg");
 }
+
+html {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	height: 100%;
+}
+
 table {
-  margin: auto;
+	margin: auto;
+	background-color: #d9d9d9;
 }
 th {
-    background-color: #d9d9d9;
-    padding: 1 em;
-    text-align: right;
+	padding: 0.5em;
+	text-align: right;
 }
-tr:hover {
-    background-color: #d9d9d9;
-}
-th:hover {
-    background-color: #e8e8d9;
-}
-th:focus {
-    font-style: italic;
+tr {
     background-color: #e8e8e8;
 }
 
 .fancy-button { /* see .report-link in style.css */
-  border-style: groove;
-  border-width: 5px;
-  border-radius: 8px;
-  border-color: #3f8a40; /* some kind of green */
-  padding: 10px 0px;
-  margin: auto;
-  text-transform: uppercase;
-  font-family: Optima, sans-serif;
-  font-size: calc(10px + 0.5vw);
-  white-space: nowrap;
-  box-sizing: content-box;
+	border-style: ridge;
+	border-width: 5px;
+	border-radius: 8px;
+	border-color: #3f8a40; /* some kind of green */
+	padding: 10px 0px;
+	margin: auto;
+	text-transform: uppercase;
+	font-family: Optima, sans-serif;
+	font-size: calc(10px + 0.5vw);
+	white-space: nowrap;
+	box-sizing: content-box;
 }
-
-.fancy-button:hover, .fancy-button:active, .fancy-button:focus {
-  text-decoration: overline;
-  text-shadow: 3px 2px #09f911;
+.fancy-button:hover, .fancy-button:focus {
+	text-decoration: overline;
+	text-shadow: 3px 2px #09f911;
+	box-shadow: 0px 0px 10px 0px green;
 }
-
-.vertical-center {
-  margin: 0;
-  position: absolute;
-  top: 50%;
-  -ms-transform: translateY(-50%);
-  transform: translateY(-50%);
-}
-
-.center {
-  margin: 0;
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  -ms-transform: translate(-50%, -50%);
-  transform: translate(-50%, -50%);
+.fancy-button:active {
+    box-shadow: inset 0px 0px 8px 3px #AAEE88;
+    border-style: groove;
 }
 
 .errorlist {
-  margin: 0;
-  padding: 0;
-  color: #B00B13; /* contrast accessibility */
-  font-family: Futura, monospace;
-  font-size: x-small;
+	margin: 0;
+	padding: 0;
+	color: #B00B13; /* contrast accessibility */
+	font-family: Futura, monospace;
+	font-size: x-small;
 }
 
 ul.errorlist > li {
-  display: inline-block;
+	display: inline-block;
 }
 
 .helptext {
-  color: #0911f9;
-  font-size: small;
+	color: #0911f9;
+	font-size: small;
 }
 
 input {
-  width: 90%;
+	width: 90%;
 }
 
 td {
-  width: 11em;
+	width: 11em;
 }

@@ -57,11 +57,13 @@
 
 {% block dup_note %}
 {% if location.prior_entries.all() %}
-<strong>Prior Duplicates</strong>
+<div class="duplicate-history">
+<h6>Prior Duplicates</h6>
 <ul style="font-size: x-small;">
 {% for n in location.prior_entries.all() %}
     <li><a href="{{ n.web_url() }}">{{ n.get_name() }}</a></li>
 {% endfor %}
 </ul>
+</div>
 {% endif %}
 {% endblock %}
