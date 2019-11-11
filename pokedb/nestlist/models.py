@@ -17,6 +17,7 @@ from speciesinfo.models import (
     nestable_species,
     get_surrounding_species,
     enabled_in_pogo,
+    self_as_qs,
 )
 from typing import Union, Optional, Tuple, NamedTuple, Dict
 from datetime import datetime
@@ -1142,7 +1143,7 @@ def which_regions(place) -> "QuerySet[NstCombinedRegion]":
     if isinstance(place, NstSpeciesListArchive):
         return place.nestid.neighborhood.region.all()
     if isinstance(place, NstCombinedRegion):
-        return NstCombinedRegion.objects.filter(pk=place.pk)
+        return self_as_qs(place)
     return NstCombinedRegion.objects.none()
 
 
@@ -1157,11 +1158,11 @@ def which_cities(place) -> "QuerySet[NstMetropolisMajor]":
             nstneighborhood__nstlocation__park_system=place
         ).distinct()
     if isinstance(place, NstMetropolisMajor):
-        return NstMetropolisMajor.objects.filter(pk=place.pk)
+        return self_as_qs(place)
     if isinstance(place, NstNeighborhood):
-        return NstMetropolisMajor.objects.filter(pk=place.major_city.pk)
+        return self_as_qs(place.major_city)
     if isinstance(place, NstLocation):
-        return NstMetropolisMajor.objects.filter(pk=place.neighborhood.major_city.pk)
+        return self_as_qs(place.neighborhood.major_city)
     return NstMetropolisMajor.objects.none()
 
 
@@ -1177,17 +1178,17 @@ def which_ps(place) -> "QuerySet[NstParkSystem]":
             nstlocation__neighborhood__region=place
         ).distinct()
     if isinstance(place, NstLocation) and place.park_system:
-        return NstParkSystem.objects.filter(pk=place.park_system.pk)
+        return self_as_qs(place.park_system)
     if isinstance(place, NstParkSystem):
-        return NstParkSystem.objects.filter(pk=place.pk)
+        return self_as_qs(place)
     return NstParkSystem.objects.none()
 
 
 def which_neighborhoods(place) -> "QuerySet[NstNeighborhood]":
     if isinstance(place, NstNeighborhood):
-        return NstNeighborhood.objects.filter(pk=place.pk)
+        return self_as_qs(place)
     if isinstance(place, NstLocation):
-        return NstNeighborhood.objects.filter(pk=place.neighborhood.pk)
+        return self_as_qs(place.neighborhood)
     if isinstance(place, NstMetropolisMajor):
         return place.nstneighborhood_set.all()
     if isinstance(place, NstCombinedRegion):
@@ -1199,7 +1200,7 @@ def which_neighborhoods(place) -> "QuerySet[NstNeighborhood]":
 
 def which_parks(place) -> "QuerySet[NstLocation]":
     if isinstance(place, NstLocation):
-        return NstLocation.objects.filter(pk=place.pk)
+        return self_as_qs(place)
     scope: str = ""
     if isinstance(place, NstNeighborhood):
         scope = "neighborhood"
