@@ -58,7 +58,9 @@ def park_validator(
         err_str += MAGIC_NEWLINE + f"Please be more specific."
         if match_count < 5:
             for match in matches:
-                err_str += MAGIC_NEWLINE + f"• {match.get_name()} [{match.pk}]"
+                err_str += (
+                    MAGIC_NEWLINE + f"• {match.get_name()} [{match.neighborhood}]"
+                )
         raise ValidationError(err_str)
 
 
