@@ -60,7 +60,7 @@ def parse_relative_date(date: str) -> datetime:
 
 def parse_date(date: str = "") -> datetime:
     """Fancy wrapper for dateutil.parse that accepts m-6 formats as well"""
-    date = date.strip().lower()
+    date = str(date).strip().lower()
     if not date:
         return parse_date("t")  # return today as a default
     if date == "t":
@@ -251,3 +251,19 @@ def local_time_on_date(
 def append_utc(naive: datetime) -> datetime:
     """Appends TZ-awareness to UTC datetimes"""
     return pytz.utc.localize(naive)
+
+
+def class_lookup(cls) -> set:
+    """Returns the class hierarchy for a class"""
+    return set(type.mro(cls))
+
+
+def pretty_class_lookup(cls) -> None:
+    """Pretty output for class_lookup"""
+    for c in class_lookup(cls):
+        print(c)
+
+
+def compare_classes(c1, c2) -> set:
+    """Returns the common parent classes of two classes"""
+    return class_lookup(c1) & class_lookup(c2)

@@ -25,6 +25,16 @@
     and
     <a href="{{ location.neighborhood.web_url() }}">{{ location.neighborhood }}</a>
 </small>
+{% if current_nest %}
+<p class="current-resident">
+    Current resident:
+    <strong>{{ current_nest[0].species_txt }}</strong>
+</p>
+{% else %}
+<p class="empty-nest">
+    No current report.
+</p>
+{% endif %}
 {% endblock %}
 
 {% block information %}

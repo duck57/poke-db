@@ -41,7 +41,10 @@
 </head>
 <body ontouchstart="" onclick="">
 <header>
-	{% block report_button %}<p class="report-link"><a href="{{ location.ct().report_form_url() }}">Report a nest</a></p>{% endblock %}
+	{% block report_button %}
+	<p class="report-link">
+		<a href="{{ location.ct().report_form_url() }}">Report a nest</a>
+	</p>{% endblock %}
 	<form action="{{ location.web_url() }}" method="get" class="search-party">
 		{% if not history %}
 		<span class="search-box">
@@ -120,8 +123,13 @@
 		</tr></thead>
 		<tbody>
 		{% for nest in current_nest_list %}
-			<tr id="{{ nest.id }}" itemscope itemtype="https://schema.org/Place"
-			class="nest {% if nest.confirmation %}confirmed{% else %}unconfirmed{% endif %}" >
+			<tr
+					id="{{ nest.id }}"
+					itemscope itemtype="https://schema.org/Place"
+					class="nest
+						{% if nest.confirmation %}confirmed{% else %}unconfirmed{% endif %}
+						{% if history and nest.rotation_num == rotation %}present{% endif %}"
+			>
 				<td class="rotation">
 					<span class="sort-info">{{ nest.rotation_num }}</span>
 					<a href="{{ url('nestlist:city_historic_date', city_id=nest.ct().pk, date=nest.rotation_num.pk) }}">{{ nest.rotation_num }}</a>
@@ -154,8 +162,8 @@
 					{% else %}N/A{% endif %}
 				</td>
 				<td class="species">
-					{% if nest.species_name_fk %}
 					<span class="sort-info">{% if nest.species_name_fk %}{{ nest.species_name_fk.name }}{% else %}{{ nest.species_txt }}{% endif %}</span>
+					{% if nest.species_name_fk %}
 					<a href="{{ url('nestlist:species_history', city_id=nest.ct().pk, poke=nest.species_name_fk.pk) }}">{{ nest.species_txt }}</a>
 					{% else %}{{ nest.species_txt }}{% endif %}
 				</td>
@@ -197,12 +205,16 @@
 <footer>
 	<hr>
 	{% block bottom_notes %}
-	<p class="confirmed">
+	<p class="confirmed present">
 		✅ Species with a <span class="species">bold name</span> and an <span class="number">italic pokédex number</span> have multiple confirming reports.
 		<br>
 		{{ current_nest_list.filter(confirmation=True).count() }} out of {{ current_nest_list.count() }} reports confirmed.
 		<br>
 		🔭 Nests only have a single report.
+		{% if history %}
+		<br>
+		<span class="rotation">Today's rotation date is italic.</span>
+		{% endif %}
 	</p>
 	<p>Mid-rotation events may throw off the accuracy of the list.</p>
 	{{ self.report_button() }}

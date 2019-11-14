@@ -304,3 +304,15 @@ nav {
 .species-info {
     background-image: linear-gradient(to left, #e8e8d9FF, #FFFFFF00, #d9e8d9FF);
 }
+
+.present > .rotation {
+    font-style: italic;
+}
+
+.current-resident {
+    background-image: linear-gradient(to right, #d9e8d9, #FFe8d911, #d9e8d9FF);
+}
+
+.empty-nest {
+    background-image: linear-gradient(#00000000, #e8d9d9e8);
+}
