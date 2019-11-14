@@ -23,7 +23,7 @@
 	td.neighborhood, th.neighborhood {
 		display: none;
 	}{% endif %}
-	{% if species_count == 1 %}
+	{% if species_search %}
 	td.species, th.species, td.number, th.number {
 		display: none;
 	}{% endif %}
@@ -240,7 +240,7 @@
 	</ul>
 	{% endif %}
 	{% if neighborhoods %}
-	<button type="button" class="collapsible"><h4>All Neighborhoods</h4></button>
+	<button type="button" class="collapsible"><h4>All Neighborhoods &amp; Suburbs</h4></button>
 	<ul class="content">
 	  {% for n in neighborhoods|sort(attribute="name") %}<li><a href="{{ n.web_url() }}">{{ n.get_name() }}</a></li>{% endfor %}
 	</ul>
