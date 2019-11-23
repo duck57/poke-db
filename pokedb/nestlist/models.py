@@ -5,12 +5,18 @@ After all the class-based models are the static methods for dealing with the mod
 which will prove useful all over the place.
 """
 
-from .utils import parse_date, str_int, append_utc, true_if_y
+from abc import abstractmethod
+from datetime import datetime
+from typing import Union, Optional, Tuple, NamedTuple, Dict, Type
+
+from django.conf import settings
 from django.db import models
 from django.db.models import Q
-from django.db.models.query import QuerySet
 from django.db.models.functions import Lower
-from django.conf import settings
+from django.db.models.query import QuerySet
+from django.urls import reverse
+from djchoices import DjangoChoices, ChoiceItem
+
 from speciesinfo.models import (
     match_species_by_name_or_number,
     Pokemon,
@@ -19,11 +25,7 @@ from speciesinfo.models import (
     enabled_in_pogo,
     self_as_qs,
 )
-from typing import Union, Optional, Tuple, NamedTuple, Dict, Type
-from datetime import datetime
-from django.urls import reverse
-from abc import ABC, abstractmethod
-from djchoices import DjangoChoices, ChoiceItem
+from .utils import parse_date, str_int, append_utc, true_if_y
 
 APP_PREFIX: str = "nestlist"  # is there some way to import this dynamically?
 
@@ -35,6 +37,12 @@ def make_url_name(name: str) -> str:
 
 def url_reverser(rev_name: str, params: Dict):
     return reverse(make_url_name(rev_name), kwargs=params)
+
+
+class Place:
+    @abstractmethod
+    def pk(self):
+        pass
 
 
 class HasURLMixin:
@@ -188,7 +196,7 @@ class NstAltName(models.Model):
         return f"{self.name} [{self.main_entry.get_name()}]"
 
 
-class NstCombinedRegion(models.Model, ComplicatedNameMixin, HasURLMixin):
+class NstCombinedRegion(models.Model, ComplicatedNameMixin, HasURLMixin, Place):
     name = models.CharField(max_length=222)
 
     class Meta:
@@ -227,7 +235,12 @@ class NstCombinedRegion(models.Model, ComplicatedNameMixin, HasURLMixin):
 
 
 class NstLocation(
-    models.Model, GeographicCoordsModel, ComplicatedNameMixin, HasCityMixin, HasURLMixin
+    models.Model,
+    GeographicCoordsModel,
+    ComplicatedNameMixin,
+    HasCityMixin,
+    HasURLMixin,
+    Place,
 ):
     nestID = models.AutoField(primary_key=True, db_column="nest_id")
     official_name = models.CharField(max_length=222)
@@ -309,12 +322,14 @@ class NstLocation(
             "nest_api_detail", {"city_id": self.ct().pk, "nest_id": self.pk}
         )
 
-    def to_representation(self, extended=False):
-        return {"name": self.get_name(), "other names": self.official_name}
-
 
 class NstMetropolisMajor(
-    models.Model, HasCityMixin, HasURLMixin, ComplicatedNameMixin, GeographicCoordsModel
+    models.Model,
+    HasCityMixin,
+    HasURLMixin,
+    ComplicatedNameMixin,
+    GeographicCoordsModel,
+    Place,
 ):
     name = models.CharField(db_column="Name", max_length=123)
     short_name = models.CharField(
@@ -354,7 +369,12 @@ class NstMetropolisMajor(
 
 
 class NstNeighborhood(
-    models.Model, HasCityMixin, HasURLMixin, ComplicatedNameMixin, GeographicCoordsModel
+    models.Model,
+    HasCityMixin,
+    HasURLMixin,
+    ComplicatedNameMixin,
+    GeographicCoordsModel,
+    Place,
 ):
     name = models.CharField(max_length=222)
     region = models.ManyToManyField(
@@ -400,7 +420,7 @@ class NstNeighborhood(
         return self.name
 
 
-class NstParkSystem(models.Model, HasURLMixin, ComplicatedNameMixin):
+class NstParkSystem(models.Model, HasURLMixin, ComplicatedNameMixin, Place):
     name = models.CharField(max_length=123)
     website = models.CharField(max_length=234, blank=True, null=True)
 
@@ -602,7 +622,7 @@ def get_rotation(date) -> NstRotationDate:
 
 def query_nests(
     search: Union[str, int],
-    location_id: Optional = None,
+    location_id: Optional[Place] = None,
     location_type: str = "",
     only_one: bool = False,
     exclude_permanent: bool = True,
@@ -645,7 +665,7 @@ def query_nests(
             place = Q(neighborhood__region=location_id)
         elif location_type == "ps":
             place = Q(park_system=location_id)
-    elif isinstance(location_id, models.Model):
+    elif isinstance(location_id, Place):
         place = Q(pk__in=which_parks(location_id))
     city: Q = Q(
         Q(neighborhood__major_city=restrict_city)
@@ -922,13 +942,13 @@ def nsla_sp_filter(
 
 def get_local_nsla_for_rotation(
     rotation: NstRotationDate,
-    location_pk,
+    location_pk: Union[int, Place],
     location_type: str = "",
     species: Optional[str] = None,
 ) -> "QuerySet[NstSpeciesListArchive]":
     """
     :param rotation: NstRotationDate object
-    :param location_pk: numeric ID of location to filter
+    :param location_pk: numeric ID of location to filter (or pure object)
     :param location_type: 'city', 'neighborhood', or 'region'
     :param species: optional filter for species
     :return: The filtered NSLA for the given location and date
@@ -946,7 +966,7 @@ def get_local_nsla_for_rotation(
 
 
 def collect_empties(
-    search_type: Union[models.Model, str],
+    search_type: Union[Type, str],
     rotation: Optional[NstRotationDate] = None,
     location: Optional = None,
 ) -> QuerySet:
@@ -999,7 +1019,7 @@ def collect_empties(
 
 
 def collect_empty_nests(
-    rotation: Optional[NstRotationDate] = None, location_pk: Optional = None
+    rotation: Optional[NstRotationDate] = None, location_pk: Optional[Place] = None
 ) -> "QuerySet[NstLocation]":
     """
     Collect empty nests
@@ -1186,11 +1206,15 @@ def get_true_self(nest: NstLocation) -> NstLocation:
 
 
 """
-The "if place is None:" in the below methods is to support collect_empties
+for all the below models
+:param place: some place object
 """
 
 
-def which(model: models.Model, place: Optional) -> QuerySet:
+def which(model: Type[models.Model], place: Optional[Place]) -> QuerySet:
+    """
+    The "if place is None:" in the below methods is to support collect_empties
+    """
     return (
         {
             NstLocation: which_parks(place),
@@ -1205,17 +1229,13 @@ def which(model: models.Model, place: Optional) -> QuerySet:
     )
 
 
-def which_rotations(place) -> "QuerySet[NstRotationDate]":
-    if place is None:
-        return NstRotationDate.objects.all()
+def which_rotations(place: Place) -> "QuerySet[NstRotationDate]":
     return NstRotationDate.objects.filter(
         nstspecieslistarchive__nestid__in=which_parks(place)
     )
 
 
-def which_regions(place) -> "QuerySet[NstCombinedRegion]":
-    if place is None:
-        return NstCombinedRegion.objects.all()
+def which_regions(place: Place) -> "QuerySet[NstCombinedRegion]":
     if isinstance(place, NstMetropolisMajor):
         return NstCombinedRegion.objects.filter(
             neighborhoods__major_city=place
@@ -1235,10 +1255,8 @@ def which_regions(place) -> "QuerySet[NstCombinedRegion]":
     return NstCombinedRegion.objects.none()
 
 
-def which_cities(place) -> "QuerySet[NstMetropolisMajor]":
+def which_cities(place: Place) -> "QuerySet[NstMetropolisMajor]":
     """Intended for use with objects with multiple possible city links"""
-    if place is None:
-        return NstMetropolisMajor.objects.all()
     if isinstance(place, NstCombinedRegion):
         return NstMetropolisMajor.objects.filter(
             nstneighborhood__region=place
@@ -1256,9 +1274,7 @@ def which_cities(place) -> "QuerySet[NstMetropolisMajor]":
     return NstMetropolisMajor.objects.none()
 
 
-def which_ps(place) -> "QuerySet[NstParkSystem]":
-    if place is None:
-        return NstParkSystem.objects.all()
+def which_ps(place: Place) -> "QuerySet[NstParkSystem]":
     if isinstance(place, NstMetropolisMajor):
         return NstParkSystem.objects.filter(
             nstlocation__neighborhood__major_city=place
@@ -1276,9 +1292,7 @@ def which_ps(place) -> "QuerySet[NstParkSystem]":
     return NstParkSystem.objects.none()
 
 
-def which_neighborhoods(place) -> "QuerySet[NstNeighborhood]":
-    if place is None:
-        return NstNeighborhood.objects.all()
+def which_neighborhoods(place: Place) -> "QuerySet[NstNeighborhood]":
     if isinstance(place, NstNeighborhood):
         return self_as_qs(place)
     if isinstance(place, NstLocation):
@@ -1292,9 +1306,7 @@ def which_neighborhoods(place) -> "QuerySet[NstNeighborhood]":
     return NstNeighborhood.objects.none()
 
 
-def which_parks(place) -> "QuerySet[NstLocation]":
-    if place is None:
-        return NstLocation.objects.all()
+def which_parks(place: Place) -> "QuerySet[NstLocation]":
     if isinstance(place, NstLocation):
         return self_as_qs(place)
     scope: str = ""
