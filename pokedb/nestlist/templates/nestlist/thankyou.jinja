@@ -8,12 +8,13 @@
     <meta property="og:locale" content="en_US">
 	{% block self_url %}{% endblock %}
     <link rel="stylesheet" type="text/css" href="{{ static('nestlist/css/style.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ static('nestlist/css/form.css') }}">
     <!-- TODO: update icon later -->
     <link rel="icon" type="image/png" href="{{ static('nestlist/images/ballhead cc.png') }}">
 
     <title>Thank you for your report</title>
 </head>
-<body class="center">
+<body style="font-family: initial;">
 <main>
     {% if status in [1,0] %}{# treat duplicates as first reports #}
     <h1>First Sighting</h1>
