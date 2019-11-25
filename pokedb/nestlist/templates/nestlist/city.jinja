@@ -132,7 +132,7 @@
 			>
 				<td class="rotation">
 					<span class="sort-info">{{ nest.rotation_num }}</span>
-					<a href="{{ url('nestlist:city_historic_date', city_id=nest.ct().pk, date=nest.rotation_num.pk) }}">{{ nest.rotation_num }}</a>
+					<a href="{{ url('nestlist:city_historic_date', city_id=nest.nestid.ct().pk, date=nest.rotation_num.pk) }}">{{ nest.rotation_num }}</a>
 				</td>
 				<td class="neighborhood" itemprop="containedInPlace"
 				id="{{ nest.nestid.neighborhood.pk }}">
@@ -156,7 +156,7 @@
 				<td class="number">
 					{% if nest.sp_no() %}
 					<span class="sort-info">{{ nest.sp_no() }}</span> {# zero-pad to make sorting happy #}
-					<a href="{{ url('nestlist:species_history', city_id=nest.ct().pk, poke=nest.species_no) }}">
+					<a href="{{ url('nestlist:species_history', city_id=nest.nestid.ct().pk, poke=nest.species_no) }}">
 						{{ nest.sp_no() }}
 					</a>
 					{% else %}N/A{% endif %}
@@ -164,7 +164,7 @@
 				<td class="species">
 					<span class="sort-info">{% if nest.species_name_fk %}{{ nest.species_name_fk.name }}{% else %}{{ nest.species_txt }}{% endif %}</span>
 					{% if nest.species_name_fk %}
-					<a href="{{ url('nestlist:species_history', city_id=nest.ct().pk, poke=nest.species_name_fk.pk) }}">{{ nest.species_txt }}</a>
+					<a href="{{ url('nestlist:species_history', city_id=nest.nestid.ct().pk, poke=nest.species_name_fk.pk) }}">{{ nest.species_txt }}</a>
 					{% else %}{{ nest.species_txt }}{% endif %}
 				</td>
 				<td class="verification tooltip">
@@ -227,12 +227,15 @@
 	{% if ps_touched %}
 	<button type="button" class="collapsible"><h4>Park Systems</h4></button>
 	<ul class="content">
-	    {% for ps in ps_touched %}<li><a href="{{ ps.web_url() }}">{{ ps.get_name() }}</a></li>
-		<ul>
-			{% for p in ps.nstlocation_set.all()|sort(attribute="official_name") %}
-			<li><a href="{{ p.web_url() }}">{{ p.get_name() }}</a></li>
-			{% endfor %}
-		</ul>
+	    {% for ps in ps_touched %}
+		<li>
+			<a href="{{ ps.web_url() }}">{{ ps.get_name() }}</a>
+			<ul>
+				{% for p in ps.nstlocation_set.all()|sort(attribute="official_name") %}
+				<li><a href="{{ p.web_url() }}">{{ p.get_name() }}</a></li>
+				{% endfor %}
+			</ul>
+		</li>
 		{% endfor %}
 	</ul>
 	{% endif %}
