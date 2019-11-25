@@ -9,7 +9,7 @@ from dateutil.relativedelta import *
 from collections import defaultdict
 import readline
 import pytz
-from typing import Union, Optional, Collection
+from typing import Union, Optional, Collection, List
 
 """
 Module of miscellaneous static helper functions that are re-used between modules.
@@ -267,3 +267,41 @@ def pretty_class_lookup(cls) -> None:
 def compare_classes(c1, c2) -> set:
     """Returns the common parent classes of two classes"""
     return class_lookup(c1) & class_lookup(c2)
+
+
+def cardinal_direction_from_bearing(
+    bearing: float, *, emoji: bool = False, chr_lst: Optional[List[str]] = None
+) -> str:
+    """
+    :param chr_lst: provide your own char list with direction indices that correspond to the arrows on a numeric keypad
+    :param emoji: use predefined emoji arrows
+    :param bearing: orienteering bearing (0° is North, clockwise)
+    :return: compass direction
+    """
+    sections: int = 8
+    interval: float = 360 / sections
+    offset: float = interval / 2
+    bearing = (bearing - offset) % 360  # normalize the if statements
+    if not chr_lst:
+        chr_lst = (
+            ["💣", "↙️", "⬇️", "↘️", "⬅️️", "🚏", "➡️", "↖️", "⬆️", "↗️"]
+            if emoji
+            else ["", "SW", "S", "SE", "W", "here", "E", "NW", "N", "NE"]
+        )
+    if 0 * interval <= bearing <= 1 * interval:
+        return chr_lst[9]  # northeast
+    if 1 * interval <= bearing <= 2 * interval:
+        return chr_lst[6]  # east
+    if 2 * interval <= bearing <= 3 * interval:
+        return chr_lst[3]  # southeast
+    if 3 * interval <= bearing <= 4 * interval:
+        return chr_lst[2]  # south
+    if 4 * interval <= bearing <= 5 * interval:
+        return chr_lst[1]  # southwest
+    if 5 * interval <= bearing <= 6 * interval:
+        return chr_lst[4]  # west
+    if 6 * interval <= bearing <= 7 * interval:
+        return chr_lst[7]  # northwest
+    if bearing >= 7 * interval:
+        return chr_lst[8]  # north
+    return chr_lst[0]  # error
