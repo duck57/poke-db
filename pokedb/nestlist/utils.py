@@ -4,12 +4,14 @@
 # vim: set fileencoding=UTF-8 :
 
 from datetime import datetime
+from math import cos, sin, atan2, degrees, radians, sqrt, log
+
 from dateutil.parser import *
 from dateutil.relativedelta import *
 from collections import defaultdict
 import readline
 import pytz
-from typing import Union, Optional, Collection, List
+from typing import Union, Optional, Collection, List, Tuple, Callable
 
 """
 Module of miscellaneous static helper functions that are re-used between modules.
@@ -269,6 +271,10 @@ def compare_classes(c1, c2) -> set:
     return class_lookup(c1) & class_lookup(c2)
 
 
+def constrain_degrees(m: float) -> float:
+    return (m + 180) % 360 - 180
+
+
 def cardinal_direction_from_bearing(
     bearing: float, *, emoji: bool = False, chr_lst: Optional[List[str]] = None
 ) -> str:
@@ -305,3 +311,50 @@ def cardinal_direction_from_bearing(
     if bearing >= 7 * interval:
         return chr_lst[8]  # north
     return chr_lst[0]  # error
+
+
+def cv_geo_tuple(t: Tuple[float, float], f: Callable) -> Tuple[float, float]:
+    return f(t[0]), f(t[1])
+
+
+def initial_bearing(
+    here: Tuple[float, float], there: Tuple[float, float], *, in_radians: bool = False
+) -> float:
+    if not in_radians:
+        here = cv_geo_tuple(here, radians)
+        there = cv_geo_tuple(there, radians)
+    # d_lat: float = there[0] - here[0]
+    d_lon: float = there[1] - here[1]
+    numerator = sin(d_lon) * cos(there[0])
+    denominator = cos(here[0]) * sin(there[0]) - sin(here[0]) * cos(there[0]) * cos(
+        d_lon
+    )
+    out = atan2(numerator, denominator)
+    return out if in_radians else degrees(out) % 360
+
+
+def angle_between_points_on_sphere(
+    here: Tuple[float, float], there: Tuple[float, float], *, in_radians: bool = True
+) -> float:
+    if not in_radians:
+        here = cv_geo_tuple(here, radians)
+        there = cv_geo_tuple(there, radians)
+    d_lat: float = there[0] - here[0]
+    d_lon: float = there[1] - here[1]
+    a = pow(sin(d_lat / 2), 2) + cos(here[0]) * cos(there[0]) * pow(sin(d_lon / 2), 2)
+    out = 2 * atan2(sqrt(a), sqrt(1 - a))
+    return out if in_radians else degrees(out)
+
+
+def number_format(x: float, d: int) -> str:
+    """
+    Formats a number such that adding a digit to the left side of the decimal
+    subtracts a digit from the right side
+    :param x: number to be formatter
+    :param d: number of digits with only one number to the left of the decimal point
+    :return: the formatted number
+    """
+    assert d >= 0, f"{d} is a negative number and won't work"
+    x_size: int = 0 if not x else int(log(abs(x), 10))  # prevent error on x=0
+    n: int = 0 if x_size > d else d - x_size  # number of decimal points
+    return f"{x:,.{n}f}"
