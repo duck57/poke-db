@@ -2,7 +2,7 @@ from django.db import models
 from django.db.models import Q
 from nestlist.utils import str_int
 from django.db.models.query import QuerySet
-from typing import Union, Dict, Optional, List, Iterable
+from typing import Union, Dict, Optional, List, Iterable, Any
 
 
 # Create your models here.
@@ -332,9 +332,61 @@ class Pokemon(models.Model):
         if self.egg1 == 13:
             return input_list.all()
 
+    def family_root(self):
+        return (
+            self
+            if self.previous_evolution.previous_evolution == self.previous_evolution
+            else self.previous_evolution.family_root()
+        )
+
+    def other_forms(self):
+        return Pokemon.objects.filter(dex_number=self.dex_number).exclude(
+            form=self.form
+        )
+
+    def prior_stages(self):
+        return (
+            []
+            if self == self.previous_evolution
+            else self.previous_evolution.prior_stages().append(self)
+        )
+
+    def psqs(self):
+        return self_as_qs(self.prior_stages())
+
+    def future_stages(self):
+        """Different from evolves_to, as this checks those for future evolutions as well"""
+        # It's just a specialized breadth-first non-recursive tree traversal
+        out: List[Pokemon] = []
+        queue: List[Pokemon] = [self]
+        while queue:
+            current = queue[0]
+            queue = queue[1:]
+            out.append(current)
+            for p in current.evolves_to.all():
+                queue.append(p)
+        return out
+
+    def full_lineage(self):
+        return self.family_root().future_stages()
+
+    def full_family_tree(self):
+        out: List[Pokemon] = self.full_lineage()
+        for pkmn in out:
+            alts = pkmn.other_forms()
+            for alt in alts:
+                if alt in out:
+                    continue
+                parallel_fam = alt.full_lineage()
+                for x in parallel_fam:
+                    if x in out:
+                        continue
+                    out.append(x)
+        return out
+
 
 def match_species_by_name_or_number(
-    sp_txt: Union[str, int],
+    sp_txt: Union[str, int, Pokemon],
     input_set: "QuerySet[Pokemon]" = Pokemon.objects.all(),
     age_up: bool = False,
     previous_evolution_search: bool = False,
@@ -357,6 +409,11 @@ def match_species_by_name_or_number(
                     set to true to return those; otherwise assumes you exact matches match
     :return: a QuerySet of pokémon matching the input string
     """
+
+    if isinstance(sp_txt, Pokemon):
+        if not loose_search and not only_one:
+            return self_as_qs(sp_txt)
+        sp_txt = sp_txt.name
 
     def return_me(tentative_list: "QuerySet[Pokemon]") -> "QuerySet[Pokemon]":
         """Inner function to clean up the result list"""
@@ -439,7 +496,7 @@ def match_species_by_name_or_number(
     # using this dict as a way to be extensible and comment why these functions get called
     attribute_match: Dict[str, QuerySet[Pokemon]] = {
         "region": input_set.filter(generation__region__icontains=sp_txt),
-        "type": match_species_by_type(sp_txt, input_set),
+        "type": match_species_by_type(sp_txt, input_list=input_set),
         "egg group": (
             match_species_by_egg_group(sp_txt[4:], input_set)
             if len(sp_txt) > 7 and sp_txt[:4] == "egg:"
@@ -529,11 +586,34 @@ def match_species_by_egg_group(
 
 
 def match_species_by_type(
-    target_type: str, input_list: "QuerySet[Pokemon]" = Pokemon.objects.all()
+    target_type: Union[str, Type],
+    *,
+    input_list: "QuerySet[Pokemon]" = Pokemon.objects.all(),
+    second_type: Union[str, Type, None] = None,
 ) -> "QuerySet[Pokemon]":
-    return input_list.filter(
-        Q(type1__name__icontains=target_type) | Q(type1__name__icontains=target_type)
-    ).order_by("dex_number")
+    mono_type: bool = True if isinstance(
+        second_type, str
+    ) and second_type.lower().strip() in ["none", "mono"] else False
+    q1, q2 = Q(), Q()
+    if isinstance(target_type, str):
+        q1 = Q(type1__name__icontains=target_type)
+        q2 = Q(type2__name__icontains=target_type)
+    if isinstance(target_type, Type):
+        q1 = Q(type1=target_type)
+        q2 = Q(type2=target_type)
+    if mono_type:
+        q2 = Q(type2__isnull=True)
+        return input_list.filter(q1 & q2).order_by("dex_number")
+    if not second_type:
+        return input_list.filter(q1 | q2).order_by("dex_number")
+    q3, q4 = Q(), Q()
+    if isinstance(second_type, Type):
+        q3 = Q(type1=second_type)
+        q4 = Q(type2=second_type)
+    if isinstance(second_type, str):
+        q3 = Q(type1__name__icontains=second_type)
+        q4 = Q(type2__name__icontains=second_type)
+    return input_list.filter((q1 & q4) | (q2 & q3)).order_by("dex_number")
 
 
 def match_species_by_body_plan(
@@ -555,7 +635,9 @@ def get_surrounding_species(
     }
 
 
-def self_as_qs(s, model: Optional[models.Model] = None) -> "QuerySet[models.Model]":
+def self_as_qs(
+    s: Any, model: "Optional[Type[models.Model]]" = None
+) -> "QuerySet[models.Model]":
     """
     Takes the input and returns it wrapped in a QuerySet
     :param s: the thing you want to transform
@@ -579,6 +661,9 @@ def self_as_qs(s, model: Optional[models.Model] = None) -> "QuerySet[models.Mode
     if not s:
         return generic_empty
     if model and not isinstance(s, type(model.objects.all()[0])):
+        return generic_empty
+
+    if not hasattr(s, "pk"):
         return generic_empty
 
     # for future extensibility
