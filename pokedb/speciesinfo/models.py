@@ -2,7 +2,7 @@ from django.db import models
 from django.db.models import Q
 from nestlist.utils import str_int
 from django.db.models.query import QuerySet
-from typing import Union, Dict, Optional, List, Iterable, Any
+from typing import Union, Dict, Optional, List, Iterable, Any, Set
 
 
 # Create your models here.
@@ -29,6 +29,9 @@ class Generation(models.Model):
 
     def __str__(self):
         return f"{self.pk}: {self.region}"
+
+    def __lt__(self, other):
+        return self.pk < other.pk
 
 
 class EggGroup(models.Model):
@@ -333,56 +336,85 @@ class Pokemon(models.Model):
             return input_list.all()
 
     def family_root(self):
-        return (
-            self
-            if self.previous_evolution.previous_evolution == self.previous_evolution
-            else self.previous_evolution.family_root()
-        )
+        p = self.previous_evolution
+        if not p:
+            return self
+        if p.previous_evolution == p:
+            return self
+        return p.family_root()
 
-    def other_forms(self):
+    def other_forms(self) -> "QuerySet[Pokemon]":
         return Pokemon.objects.filter(dex_number=self.dex_number).exclude(
             form=self.form
         )
 
-    def prior_stages(self):
-        return (
-            []
-            if self == self.previous_evolution
-            else self.previous_evolution.prior_stages().append(self)
-        )
+    def prior_stages(self) -> "List[Pokemon]":
+        """
+        Unrolled from a recursive function
+        :return: the prior evolutionary stages
+        """
+
+        out: "List[Pokemon]" = []
+        p = self
+        while p and p.previous_evolution != p:  # guard against None db data errors
+            if p in out:
+                print(p)
+                break  # prevent infinite loops
+            out.append(p)
+            p = p.previous_evolution
+        return out
 
     def psqs(self):
         return self_as_qs(self.prior_stages())
 
-    def future_stages(self):
+    def future_stages(self, *, surpress_excess: bool = True) -> "List[Pokemon]":
         """Different from evolves_to, as this checks those for future evolutions as well"""
         # It's just a specialized breadth-first non-recursive tree traversal
-        out: List[Pokemon] = []
-        queue: List[Pokemon] = [self]
+        out: "List[Pokemon]" = []
+        queue: "List[Pokemon]" = [self]
+        if self.dex_number == 0 and surpress_excess:
+            return queue  # prevent returning every family unless specifically asked
         while queue:
             current = queue[0]
             queue = queue[1:]
             out.append(current)
             for p in current.evolves_to.all():
-                queue.append(p)
+                if p not in out:  # prevent recursive references
+                    queue.append(p)
         return out
 
-    def full_lineage(self):
+    def full_lineage(self) -> "List[Pokemon]":
         return self.family_root().future_stages()
 
-    def full_family_tree(self):
-        out: List[Pokemon] = self.full_lineage()
-        for pkmn in out:
+    def full_family_tree(self) -> "Set[Pokemon]":
+        queue: List[Pokemon] = self.full_lineage()
+        out: Set[Pokemon] = set()
+        while queue:
+            pkmn = queue[0]
+            queue = queue[1:]
+            out.add(pkmn)
             alts = pkmn.other_forms()
             for alt in alts:
-                if alt in out:
+                if alt in queue or alt in out:
                     continue
                 parallel_fam = alt.full_lineage()
                 for x in parallel_fam:
-                    if x in out:
+                    if x in out or x in queue:
                         continue
-                    out.append(x)
+                    queue.append(x)
         return out
+
+    def __lt__(self, other):
+        if self.dex_number < other.dex_number:
+            return True
+        if self.dex_number > other.dex_number:
+            return False
+        # identical 'dex numbers
+        if self.generation < other.generation:
+            return True
+        if self.generation > other.generation:
+            return False
+        return self.name < other.name
 
 
 def match_species_by_name_or_number(
@@ -560,6 +592,7 @@ def enabled_in_pogo(
             ]
         )
         | Q(form="Alola")  # Will become unnecessary once Gen 7 is released
+        | Q(form="Galar")  # Special case for G-series species
         | Q(dex_number__in=[808, 809])  # Nutto (Meltan) & Melmetal special casing
     ).exclude(
         Q(form__icontains="Mega")  # delete me if megas are ever released
@@ -591,6 +624,13 @@ def match_species_by_type(
     input_list: "QuerySet[Pokemon]" = Pokemon.objects.all(),
     second_type: Union[str, Type, None] = None,
 ) -> "QuerySet[Pokemon]":
+    """
+    Filters a QS of Pokemon by their type and doesn't care about order
+    :param target_type: what do you want to find?
+    :param input_list: Starting list to filter down
+    :param second_type: set to "none" or "mono" to search for singly-typed
+    :return:
+    """
     mono_type: bool = True if isinstance(
         second_type, str
     ) and second_type.lower().strip() in ["none", "mono"] else False
