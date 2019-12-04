@@ -336,7 +336,7 @@ class Pokemon(models.Model):
             return input_list.all()
 
     def family_root(self):
-        p = self.previous_evolution
+        p: Pokemon = self.previous_evolution
         if not p:
             return self
         if p.previous_evolution == p:
@@ -347,6 +347,24 @@ class Pokemon(models.Model):
         return Pokemon.objects.filter(dex_number=self.dex_number).exclude(
             form=self.form
         )
+
+    def pv_poke_name(self) -> str:
+        form = self.form.lower().strip().replace(" ", "_")
+        if form == "normal" and "deoxys" not in self.name.lower():
+            return self.name
+        try:
+            n = Pokemon.objects.get(
+                dex_number=self.dex_number, form="Normal"
+            ).name.lower()
+            if "deoxys" in n:
+                n = "deoxys"
+        except Pokemon.DoesNotExist:
+            return f"{self.name.split(' ')[0]}_{form}"
+        if form == "alola":
+            return f"{n}_alolan"
+        if form == "galar":
+            return f"{n}_galaran"
+        return f"{n}_{form}"
 
     def prior_stages(self) -> "List[Pokemon]":
         """

@@ -62,22 +62,22 @@ def headers(txt: str) -> str:
 
 species_file.write(headers("Shapeshifter Core"))
 for sp in sorted((shapeshift & set(everyone)) - pure_psychic):
-    species_file.write(str(sp) + "\n")
+    species_file.write(sp.pv_poke_name() + ",\n")
 
 species_file.write(headers("Errors"))
 for err in sorted(errors):
-    species_file.write(str(err) + "\n")
+    species_file.write(err.pv_poke_name() + ",\n")
 
 species_file.write(headers("Banned Psychics"))
 for p in sorted(pure_psychic & shapeshift):
-    species_file.write(str(p) + "\n")
+    species_file.write(p.pv_poke_name() + ",\n")
 
 species_file.write(headers("Spooky Ghosts"))
 for g in sorted(ghosts - shapeshift):
-    species_file.write(str(g) + "\n")
+    species_file.write(g.pv_poke_name() + ",\n")
 
 species_file.write(headers("N/A"))
 for g in sorted(ineligible - pure_psychic):
-    species_file.write(str(g) + "\n")
+    species_file.write(g.pv_poke_name() + ",\n")
 
 species_file.close()
