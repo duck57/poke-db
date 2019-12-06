@@ -14,14 +14,16 @@ urlpatterns = [
     path(
         "<int:city_id>/",
         views.NestListView.as_view(),
-        {"scope": "city", "pk_name": "city_id"},
+        # 288 km ≈ 180 miles, a dedicated day trip
+        {"scope": "city", "pk_name": "city_id", "radius": 288},
         name="city",
     ),
     # Nest Details + Hx
     path(
         "<int:city_id>/nest/<int:nest_id>/",
         views.NestHistoryView.as_view(),
-        {"scope": "nest", "pk_name": "nest_id", "history": True},
+        # 1.6 km chosen as a reasonable easy walking distance
+        {"scope": "nest", "pk_name": "nest_id", "history": True, "radius": 1.6},
         name="nest_history",
     ),
     # Neighborhood Index
@@ -29,12 +31,13 @@ urlpatterns = [
         "<int:city_id>/neighborhood/",
         views.NeighborhoodIndex.as_view(),
         name="neighborhood_list",
-    ),
+    ),  # only kept because it's already here
     # Neighborhood Detail
     path(
         "<int:city_id>/neighborhood/<int:neighborhood_id>/",
         views.NeighborhoodView.as_view(),
-        {"scope": "neighborhood", "pk_name": "neighborhood_id"},
+        # 12.34 km ≈ 7.7 miles (a quick drive)
+        {"scope": "neighborhood", "pk_name": "neighborhood_id", "radius": 12.34},
         name="neighborhood",
     ),
     # Rotation-specific permalink
@@ -44,7 +47,7 @@ urlpatterns = [
         {"scope": "city", "pk_name": "city_id"},
         name="city_historic_date",
     ),
-    # Region index
+    # Region index  # only kept because it's already here
     path("<int:city_id>/region/", views.RegionalIndex.as_view(), name="region_index"),
     # Region Detail
     path(
@@ -82,25 +85,46 @@ urlpatterns = [
     # ~~~~~~~~~~~~~
     #
     # City overview
-    path("<int:city_id>/nests/", views.ParkViewSet.as_view(), name="city_park_list"),
+    path(
+        "<int:city_id>/nests/",
+        views.NestListAPI.as_view(),
+        {"scope": "city", "pk_name": "city_id"},
+        name="city_api_view",
+    ),
     # Nest detail + history
     path(
         "<int:city_id>/nests/<int:nest_id>/",
-        views.NestDetail.as_view(),
-        name="nest_detail_view",
+        views.NestListAPI.as_view(),
+        {"scope": "nest", "pk_name": "nest_id"},
+        name="nest_api_detail",
     ),
-    # Neighborhood Index # TODO
+    # Neighborhood Index  # not necessary
     # path("<int:city_id>/neighborhoods/"),
-    # Neighborhood Detail # TODO
-    # path("<int:city_id>/neighborhoods/<int:neighborhood_id>/"),
-    # region index # TODO
+    # Neighborhood Detail
+    path(
+        "<int:city_id>/neighborhoods/<int:neighborhood_id>/",
+        views.NestListAPI.as_view(),
+        {"scope": "neighborhood", "pk_name": "neighborhood_id"},
+        name="neighborhood_api",
+    ),
+    # region index  # not necessary
     # path("<int:city_id>/regions/"),
-    # region detail # TODO
-    # path("regions/<int:region_id>/"),
-    # PS index # TODO
+    # region detail
+    path(
+        "regions/<int:region_id>/",
+        views.NestListAPI.as_view(),
+        {"scope": "region", "pk_name": "region_id"},
+        name="region_api",
+    ),
+    # PS index  # not necessary
     # path("<int:city_id>/park_systems/"),
-    # PS detail # TODO
-    # path("park_systems/<int:ps_id>/"),
+    # PS detail
+    path(
+        "park_systems/<int:ps_id>/",
+        views.NestListAPI.as_view(),
+        {"scope": "ps", "pk_name": "ps_id"},
+        name="ps_api",
+    ),
     # Sp Hx # TODO
     # path("<int:city_id>/species/<str:poke>/"),
     # reporting API # TODO

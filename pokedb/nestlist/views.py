@@ -13,13 +13,19 @@ from django.http import (
 )
 from django.urls import reverse
 from urllib.parse import urlencode
-from django.views import generic
+from django.views import generic, View
 from rest_framework import viewsets
 from rest_framework.generics import ListAPIView, CreateAPIView, RetrieveAPIView
+from drf_multiple_model.views import ObjectMultipleModelAPIView
 
 # Create your views here.
-from nestlist.utils import str_int, parse_date, nested_dict
-from speciesinfo.models import Pokemon, match_species_by_name_or_number, enabled_in_pogo
+from nestlist.utils import str_int, parse_date, nested_dict, number_format
+from speciesinfo.models import (
+    Pokemon,
+    match_species_by_name_or_number,
+    enabled_in_pogo,
+    self_as_qs,
+)
 from .models import (
     NstSpeciesListArchive,
     NstMetropolisMajor,
@@ -36,14 +42,22 @@ from .models import (
     NstRotationDate,
     add_a_report,
     query_nests,
-    which_regions,
-    which_ps,
-    which_cities,
-    which_neighborhoods,
-    which_parks,
 )
-from .serializers import ParkSerializer
+from .serializers import (
+    ParkSerializer,
+    CitySerializer,
+    NeighborhoodSerializer,
+    ModelTypeSerializer,
+    ParkSysSerializer,
+    RegionSerializer,
+    ReportSerializer,
+)
 from .forms import NestReportForm
+
+
+"""
+Stand-alone methods
+"""
 
 
 def append_search_terms(url_base: str, terms: QueryDict):
@@ -96,14 +110,11 @@ def report_nest(request, **kwargs):
 
 
 """
-CBVs for the HTML display
+Mixins
 """
 
 
-class NestListView(generic.ListView):
-    model = NstSpeciesListArchive
-    context_object_name = "current_nest_list"
-    allow_empty = True
+class NestListMixin(View):
     model_list = {
         "city": NstMetropolisMajor,
         "neighborhood": NstNeighborhood,
@@ -111,14 +122,17 @@ class NestListView(generic.ListView):
         "nest": NstLocation,
         "ps": NstParkSystem,
     }
-    template_name = "nestlist/city.jinja"
 
     def get_raw_date(self) -> str:
         srg = self.request.GET
-        return self.kwargs.get("date", srg.get("date", srg.get("rotation", "t")))
+        return (
+            "t"
+            if self.kwargs.get("history")
+            else self.kwargs.get("date", srg.get("date", srg.get("rotation", "t")))
+        )
 
     def get_parsed_date(self):
-        return parse_date(self.get_raw_date())
+        return parse_date(str(self.get_raw_date()))
 
     def get_rot8(self) -> NstRotationDate:
         return get_rotation(self.get_raw_date())
@@ -138,11 +152,59 @@ class NestListView(generic.ListView):
     def get_scope(self) -> Optional[str]:
         return self.kwargs.get("scope")
 
+    def plural_scope(self) -> str:
+        return {
+            "neighborhood": "neighborhoods",
+            "city": "cities",
+            "region": "regions",
+            "ps": "park systems",
+            "nest": "parks",
+        }.get(self.get_scope(), "mysteries")
+
     def get_location(self):
         try:
             return self.model_list[self.get_scope()].objects.get(pk=self.get_pk())
         except ObjectDoesNotExist:
             return None
+
+    def get(self, request, *args, **kwargs):
+        scope: str = self.get_scope()
+        pk = self.get_pk()
+        location = self.get_location()
+        ss: str = self.get_sp()
+        if not location:
+            return HttpResponseNotFound(f"No {scope} with id {pk}")
+        if (
+            scope in ["neighborhood", "nest"]
+            and location.ct().pk != self.kwargs["city_id"]
+        ):  # always correct URLs for Neighborhoods & Nest
+            return HttpResponseRedirect(
+                append_search_terms(location.web_url(), self.request.GET)
+            )
+        try:
+            return super(NestListMixin, self).get(request, *args, **kwargs)
+        except ValueError:
+            return HttpResponseBadRequest(f"Try again with a valid date.")
+        except Http404:
+            err_str: str = f"🚫 No nests found for {scope} #{pk}"
+            if scope != "nest":
+                err_str += f" on {self.get_rot8()}"
+            if ss:
+                err_str += f" matching a search for {ss}"
+            err_str += f"."
+            return HttpResponseNotFound(err_str)
+
+
+"""
+CBVs for the HTML display
+"""
+
+
+class NestListView(generic.ListView, NestListMixin):
+    model = NstSpeciesListArchive
+    context_object_name = "current_nest_list"
+    allow_empty = True
+    template_name = "nestlist/city.jinja"
 
     def get_queryset(self) -> "QuerySet[NstSpeciesListArchive]":
         """
@@ -166,52 +228,49 @@ class NestListView(generic.ListView):
         else:  # error
             return NstSpeciesListArchive.objects.none()
 
-    def get(self, request, *args, **kwargs):
-        scope: str = self.get_scope()
-        pk = self.get_pk()
-        location = self.get_location()
-        ss: str = self.get_sp()
-        if not location:
-            return HttpResponseNotFound(f"No {scope} with id {pk}")
-        if (
-            scope in ["neighborhood", "nest"]
-            and location.ct().pk != self.kwargs["city_id"]
-        ):  # always correct URLs for Neighborhoods & Nest
-            return HttpResponseRedirect(
-                append_search_terms(location.web_url(), self.request.GET)
-            )
-        try:
-            return super(NestListView, self).get(request, *args, **kwargs)
-        except ValueError:
-            return HttpResponseBadRequest(f"Try again with a valid date.")
-        except Http404:
-            err_str: str = f"🚫 No nests found for {scope} #{pk}"
-            if scope != "nest":
-                err_str += f" on {self.get_rot8()}"
-            if ss:
-                err_str += f" matching a search for {ss}"
-            err_str += f"."
-            return HttpResponseNotFound(err_str)
-
     def get_context_data(self, **kwargs) -> Dict:
         """
         :return: context data for the templates
         """
         context: Dict = super().get_context_data(**kwargs)
-        context["location"] = self.get_location()
+        loc = self.get_location()
+        context["location"] = loc
         context["rotation"]: NstRotationDate = self.get_rot8()
         context["raw_date"]: str = self.get_raw_date()
         context["parsed_date"]: str = self.get_parsed_date()
         context["history"]: bool = True if self.kwargs.get("history") else False
         context["pk"] = self.get_pk()
         # these may be removed for performance later
-        context["cities_touched"] = which_cities(context["location"])
-        context["regions_touched"] = which_regions(context["location"])
-        context["neighborhoods"] = which_neighborhoods(context["location"])
-        context["all_parks"] = which_parks(context["location"])
-        context["ps_touched"] = which_ps(context["location"])
-        context["species_name"] = self.get_sp()
+        context["cities_touched"] = loc.city_list()
+        context["regions_touched"] = loc.region_list()
+        context["neighborhoods"] = loc.neighborhood_list()
+        context["all_parks"] = loc.park_list()
+        context["ps_touched"] = loc.park_system_list()
+        try:
+            context["species_search"]: Pokemon = (
+                match_species_by_name_or_number(
+                    sp_txt=self.get_sp(),
+                    age_up=True,
+                    previous_evolution_search=True,
+                    only_one=True,
+                    input_set=enabled_in_pogo(
+                        Pokemon.objects.all()
+                    ),  # prevent MultipleObjectsReturned
+                )
+                .exclude(pk="(Egg)")  # keeps things working smoothly (eggs don't nest)
+                .get()
+            )
+        except ObjectDoesNotExist:
+            pass
+        except MultipleObjectsReturned:
+            pass
+        context["species_name"]: str = context["species_search"].name if context.get(
+            "species_search"
+        ) else self.get_sp()
         context["scope"] = self.get_scope()
+        context["scope_plural"] = self.plural_scope()
+        context["number_format"] = number_format
+        context["nearby_radius"] = self.kwargs.get("radius", 0)
         return context
 
 
@@ -222,9 +281,7 @@ class NeighborhoodView(NestListView):
         context = super().get_context_data(**kwargs)
         context["neighbor_view"]: bool = True
         context["empties"]: "QuerySet[NstLocation]" = collect_empty_nests(
-            rotation=context["rotation"],
-            location_type="neighborhood",
-            location_pk=self.get_pk(),
+            rotation=context["rotation"], location_pk=context["location"]
         )
         return context
 
@@ -242,6 +299,10 @@ class NestHistoryView(NestListView):
         context["empty_rotations"] = rotations_without_report(
             self.get_pk(), str(self.get_sp())
         )
+        context["current_nest"] = NstSpeciesListArchive.objects.filter(
+            nestid=context["location"], rotation_num=context["rotation"]
+        )
+        context["scope_plural"] = "nests"
         return context
 
 
@@ -259,27 +320,6 @@ class SpeciesHistoryView(NestListView):
             ).distinct()
         )
         context["species_count"]: int = (context["species_links"].count())
-        try:
-            context["species_search"]: Pokemon = (
-                match_species_by_name_or_number(
-                    sp_txt=sp,
-                    age_up=True,
-                    previous_evolution_search=True,
-                    only_one=True,
-                    input_set=enabled_in_pogo(
-                        Pokemon.objects.all()
-                    ),  # prevent MultipleObjectsReturned
-                )
-                .exclude(pk="(Egg)")  # keeps things working smoothly (eggs don't nest)
-                .get()
-            )
-        except ObjectDoesNotExist:
-            pass
-        except MultipleObjectsReturned:
-            pass
-        context["species_name"]: str = context["species_search"].name if context.get(
-            "species_search"
-        ) else sp
         return context
 
 
@@ -377,12 +417,61 @@ API views
 """
 
 
-class ParkViewSet(ListAPIView):
-    model = NstLocation
-    serializer_class = ParkSerializer
+class NestListAPI(ObjectMultipleModelAPIView, NestListMixin):
+    serializers = {
+        NstMetropolisMajor: CitySerializer,
+        NstNeighborhood: NeighborhoodSerializer,
+        NstLocation: ParkSerializer,
+        NstParkSystem: ParkSysSerializer,
+        NstCombinedRegion: RegionSerializer,
+    }
+
+    def get_querylist(self):
+        loc = self.get_location()
+
+        querylist = [
+            {
+                "label": "self",
+                "queryset": self_as_qs(loc),
+                "serializer_class": self.serializers[type(loc)],
+            },
+            {
+                "label": "type",
+                "queryset": self_as_qs(loc),
+                "serializer_class": ModelTypeSerializer,
+            },
+            {
+                "label": "city",
+                "queryset": self_as_qs(loc.ct()),
+                "serializer_class": CitySerializer,
+            },
+            {
+                "label": "neighborhoods",
+                "queryset": loc.neighborhood_list(),
+                "serializer_class": NeighborhoodSerializer,
+            },
+            {
+                "label": "park systems",
+                "queryset": loc.park_system_list(),
+                "serializer_class": ParkSysSerializer,
+            },
+            {
+                "label": "regions",
+                "queryset": loc.region_list(),
+                "serializer_class": RegionSerializer,
+            },
+            {
+                "label": "current list",
+                "queryset": get_local_nsla_for_rotation(
+                    self.get_rot8(), location_pk=loc, species=self.get_sp()
+                ),
+                "serializer_class": ReportSerializer,
+            },
+        ]
+        return querylist
 
     def get_queryset(self):
-        return NstLocation.objects.filter(neighborhood=self.kwargs["city_id"])
+        return self_as_qs(self.get_location().ct())
 
 
 class NestDetail(RetrieveAPIView):

@@ -35,7 +35,7 @@ th:hover {
 	background-image: linear-gradient(#d9d9d9, #e8e8e8);
 }
 
-tr:hover {
+#nestList > tr:hover {
 		background-color: #d9d9d9;
 }
 tr.confirmed:hover {
@@ -315,4 +315,74 @@ nav {
 
 .empty-nest {
     background-image: linear-gradient(#00000000, #e8d9d9e8);
+}
+
+#mapTable {
+    background-image: radial-gradient(circle at center, #bbeebb 0%, #fedcb4 78%, transparent 100%);
+}
+
+#mapTable td {
+    width: 123px;
+    height: 123px;
+}
+
+.distance {
+    font-style: italic;
+    color: #994343;
+}
+
+#mapTable ul {
+    list-style: none;
+    margin: 0px;
+    padding: 0px;
+    font-size: x-small;
+    font-family: Futura, Gill Sans;
+}
+
+#northwest {
+    background-image: linear-gradient(to bottom right, #e8e8e884, #d9e8d9BB);
+}
+
+#north {
+    background-image: linear-gradient(to bottom, #e8e8e884, #d9e8d9BB);
+}
+
+#northeast {
+    background-image: linear-gradient(to bottom left, #e8e8e884, #d9e8d9BB);
+}
+
+#west {
+    background-image: linear-gradient(to right, #e8e8e884, #d9e8d9BB);
+}
+
+#east {
+    background-image: linear-gradient(to left, #e8e8e884, #d9e8d9BB);
+}
+
+#center {
+    background-color: #d9e8d9BB;
+    text-align: center;
+    font-family: Gill Sans, Futura;
+    font-size: small;
+    font-weight: bold;
+}
+
+#southwest {
+    background-image: linear-gradient(to top right, #e8e8e884, #d9e8d9BB);
+}
+
+#south {
+    background-image: linear-gradient(to top, #e8e8e884, #d9e8d9BB);
+}
+
+#southeast {
+    background-image: linear-gradient(to top left, #e8e8e884, #d9e8d9BB);
+}
+
+#mapTable caption {
+    margin: auto;
+    width: 350px;
+    font-family: Gill Sans;
+	border-radius: 100px 100px 0px 0px;
+    background-image: linear-gradient(#FEDCB800, #e8e8e888);
 }

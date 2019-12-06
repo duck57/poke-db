@@ -11,7 +11,7 @@
 	{% endblock %}
 	<meta name="viewport" content="width=device-width; user-scalable=yes">
     <link rel="stylesheet" type="text/css" href="{{ static('nestlist/css/style.css') }}">
-    <!-- TODO: update icon later -->
+    {# <!-- TODO: update icon later --> #}
     <link rel="icon" type="image/png" href="{{ static('nestlist/images/ballhead cc.png') }}">
 
     <style>
@@ -216,7 +216,7 @@
 		<span class="rotation">Today's rotation date is italic.</span>
 		{% endif %}
 	</p>
-	<p>Mid-rotation events may throw off the accuracy of the list.</p>
+	<p>⚠️Mid-rotation events may throw off the accuracy of the list.</p>
 	{{ self.report_button() }}
 	<p><a style="font-size: small;" href="https://github.com/duck57/poke-db/tree/master/pokedb/nestlist">source</a></p>
 	{% endblock %}
@@ -262,6 +262,39 @@
 	{% endif %}
 	{% endblock %}
 </div>
+{% block map_table %}
+{% set boxen = location.pretty_nearby_list(nearby_radius) %}
+{% if boxen %}
+	{% macro box_list(dir) -%}
+		<ul>
+			{% for D in boxen[dir] %}
+			{% set place = boxen[dir][D] %}
+			<li>
+				<a href="{{ place.web_url() }}">{{ place.get_name() }}</a>
+				<span class="distance">{{ number_format(D, 2) }} km</span>
+			</li>
+			{% endfor %}
+		</ul>
+	{%- endmacro %}
+<table id="mapTable"><caption><h3>Nearby {{ scope_plural|title }} to Enjoy</h3></caption><tbody>
+	<tr>
+		<td id="northwest">{{ box_list("NW") }}</td>
+		<td id="north">{{ box_list("N") }}</td>
+		<td id="northeast">{{ box_list("NE") }}</td>
+	</tr>
+	<tr>
+		<td id="west">{{ box_list("W") }}</td>
+		<td id="center">You are here!</td>
+		<td id="east">{{ box_list("E") }}</td>
+	</tr>
+	<tr>
+		<td id="southwest">{{ box_list("SW") }}</td>
+		<td id="south">{{ box_list("S") }}</td>
+		<td id="southeast">{{ box_list("SE") }}</td>
+	</tr>
+</tbody></table>
+{% endif %}
+{% endblock %}
 
 <script type="text/javascript">
 function sortKeyTable(e, column) {
