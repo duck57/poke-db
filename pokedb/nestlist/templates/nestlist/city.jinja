@@ -45,14 +45,17 @@
 	<p class="report-link">
 		<a href="{{ location.ct().report_form_url() }}">Report a nest</a>
 	</p>{% endblock %}
+	{% block search %}
+	{% if not history %}
 	<form action="{{ location.web_url() }}" method="get" class="search-party">
-		{% if not history %}
 		<span class="search-box">
+			<label for="pokésearch" class="off-screen">search for a specific pokémon</label>
 			<input
 					type="search"
 					name="pokémon"
 					placeholder="Charizard, 25, Water, egg:Monster, body:Kaijū"
 					class="search-field"
+					id="pokésearch"
 					value="{% if species_name %}{{ species_name }}{% endif %}"
 			>
 			<br>
@@ -62,12 +65,12 @@
 					class="search-button"
 			>
 		</span>
-		{% endif %}
-		{% if not history %}
 		<span class="search-box">
+			<label for="time-travel" class="off-screen">jump to a different rotation</label>
 			<input
 					type="search"
 					name="date"
+					id="time-travel"
 					placeholder="w-3, m-2, y-1, 1999-09-19"
 					class="search-field"
 					value="{% if raw_date != 't' %}{{ raw_date }}{% endif %}"
@@ -79,8 +82,9 @@
 					class="search-button"
 			>
 		</span>
-		{% endif %}
 	</form>
+	{% endif %}
+	{% endblock %}
 	{% block top_nav %}
 	{% endblock %}
 </header>
@@ -267,11 +271,13 @@
 {% if boxen %}
 	{% macro box_list(dir) -%}
 		<ul>
-			{% for D in boxen[dir] %}
-			{% set place = boxen[dir][D] %}
-			<li>
-				<a href="{{ place.web_url() }}">{{ place.get_name() }}</a>
-				<span class="distance">{{ number_format(D, 2) }} km</span>
+			{% for place in boxen[dir] %}
+			<li
+				title="{{ place.bearing_constant|round(1) }}° constant bearing"
+			>
+				<a href="{{ place.web_url() }}">{{ place.get_name() }}
+				<span class="distance">{{ number_format(place.rhumb_len, 2) }} km</span>
+				</a>
 			</li>
 			{% endfor %}
 		</ul>

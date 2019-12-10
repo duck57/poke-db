@@ -7,14 +7,27 @@ which will prove useful all over the place.
 
 from abc import abstractmethod
 from datetime import datetime
-from math import pi, pow, sin, cos, atan2, sqrt, radians, degrees
+from math import radians, pi
 from typing import Union, Optional, Tuple, NamedTuple, Dict, Type, List
 
 from django.conf import settings
 from django.db import models
 from django.db.models import Q, F
-from django.db.models.functions import Lower
-from django.db.models.functions import Power, Sin, Cos, ATan2, Sqrt, Radians
+from django.db.models.functions import (
+    Power,
+    Sin,
+    Cos,
+    ATan2,
+    Sqrt,
+    Radians,
+    Lower,
+    Degrees,
+    Mod,
+    Tan,
+    Ln,
+    Greatest,
+    Abs,
+)
 from django.db.models.query import QuerySet
 from django.urls import reverse
 from djchoices import DjangoChoices, ChoiceItem
@@ -35,12 +48,13 @@ from .utils import (
     initial_bearing,
     angle_between_points_on_sphere,
     cv_geo_tuple,
-    nested_dict,
     cardinal_direction_from_bearing,
+    EARTH_RADIUS,
+    loxo_len,
+    constant_bearing_between_points_on_sphere,
 )
 
 APP_PREFIX: str = "nestlist"  # is there some way to import this dynamically?
-EARTH_RADIUS: float = 6371
 
 
 def make_url_name(name: str) -> str:
@@ -164,28 +178,82 @@ class ComplicatedNameMixin:
 
 
 class LocationQuerySet(models.QuerySet):
-    def locations_within_y_km(
-        self, current_lat: float, current_long: float, y_km: float
+    def within_y_km(
+        self,
+        current_lat: float,
+        current_long: float,
+        y_km: float,
+        *,
+        use_rhumb: bool = False,
     ):
         """
+        Annotations are for orthodrome, loxodrome (rhumb) on both the bearing
+        (initial & constant) and the distance
+        :param use_rhumb: run these calculations with rhumb lines instead of great circles
+                      always a named param
         :param current_lat: IN DEGREES
         :param current_long: IN DEGREES
         :param y_km: set negative to create an exclusion radius instead
         :return: the other locations of the same type within y_km
         """
-        dlat = Radians(F("lat") - current_lat)
-        dlong = Radians(F("lon") - current_long)
 
-        a = Power(Sin(dlat / 2), 2) + Cos(Radians(current_lat)) * Cos(
-            Radians(F("lat"))
-        ) * Power(Sin(dlong / 2), 2)
+        # General set-up
+        current_lat = Radians(current_lat)
+        current_long = Radians(current_long)
+        test_lat = Radians(F("lat"))
+        test_long = Radians(F("lon"))
+        dlat = test_lat - current_lat
+        dlong = test_long - current_long
 
+        def to_bearing(x, y):
+            return Mod(Degrees(ATan2(x, y)) + 360, 360)
+
+        filter_func: Q = {
+            (True, True): Q(rhumb_len__gt=abs(y_km)),
+            (True, False): Q(distance__gt=abs(y_km)),
+            (False, True): Q(rhumb_len__lte=y_km),
+            (False, False): Q(distance__lte=y_km),
+        }.get((y_km < 0, use_rhumb), Q())
+
+        sort_field: str = "rhumb_len" if use_rhumb else "distance"
+
+        #
+        # Calculations
+        #
+
+        # Distance
+        a = Power(Sin(dlat / 2), 2) + Cos(current_lat) * Cos(test_lat) * Power(
+            Sin(dlong / 2), 2
+        )
         c = 2 * ATan2(Sqrt(a), Sqrt(1 - a))
-        d = EARTH_RADIUS * c
+        distance = EARTH_RADIUS * c
 
-        q: Q = Q(distance__gt=abs(y_km)) if y_km < 0 else Q(distance__lte=y_km)
+        # Initial bearing annotation
+        numerator = Sin(dlong) * Cos(test_lat)
+        denominator = Cos(current_lat) * Sin(test_lat) - Sin(current_lat) * Cos(
+            test_lat
+        ) * Cos(dlong)
+        forward_azimuth = to_bearing(numerator, denominator)
 
-        return self.annotate(distance=d).order_by("distance").filter(q)
+        # Loxo common calculations
+        d_lon = Mod(dlong + 3 * pi, 2 * pi) - pi
+        dpsi = Ln(Tan(pi / 4 + test_lat / 2) / Tan(pi / 4 + current_lat / 2))
+
+        # Rhumb direction
+        constant_bearing = to_bearing(d_lon, dpsi)
+
+        # Loxodrome distance
+        q = dlat / dpsi
+        loxo_km = Sqrt(dlat * dlat + q * q * d_lon * d_lon) * EARTH_RADIUS
+
+        return (
+            self.annotate(distance=distance)
+            .annotate(rhumb_len=loxo_km)
+            .order_by(sort_field)
+            .filter(filter_func)
+            .annotate(bearing_initial=forward_azimuth)
+            .annotate(bearing_constant=constant_bearing)
+        )
 
 
 class GeoCoordMixin:
@@ -199,12 +267,9 @@ class GeoCoordMixin:
         abstract = True
 
     def coord_tuple(self) -> Optional[Tuple[float, float]]:
-        return (
-            self.lat,
-            self.lon
-            if isinstance(self.lat, float) and isinstance(self.lon, float)
-            else None,
-        )
+        if isinstance(self.lat, float) and isinstance(self.lon, float):
+            return self.lat, self.lon
+        return None
 
     def initial_bearing_deg(self, elsewhere) -> Optional[float]:
         """
@@ -217,18 +282,19 @@ class GeoCoordMixin:
             return None
         return initial_bearing(here, there)
 
-    def distance_to_rad(self, elsewhere):
+    def distance_to_rad(self, elsewhere) -> Optional[float]:
         here = cv_geo_tuple(self.coord_tuple(), radians)
         there = cv_geo_tuple(elsewhere.coord_tuple(), radians)
         if here is None or there is None:
             return None
         return angle_between_points_on_sphere(here, there, in_radians=True)
 
-    def distance_to_km(self, elsewhere):
+    def distance_to_km(self, elsewhere) -> Optional[float]:
         return self.distance_to_rad(elsewhere) * EARTH_RADIUS
 
-    def nearby(self, radius: float) -> QuerySet:
+    def nearby(self, radius: float, *, use_rhumb: bool = False) -> LocationQuerySet:
         """
+        :param use_rhumb:
         :param radius: search radius.  set negative to use an an exclusion radius
         :return: a QS of nearby objects of the same type
         """
@@ -236,17 +302,29 @@ class GeoCoordMixin:
             return self_as_qs(None)
         return (
             type(self)
-            .objects.locations_within_y_km(self.lat, self.lon, radius)
+            .objects.within_y_km(self.lat, self.lon, radius, use_rhumb=use_rhumb)
             .exclude(pk=self.pk)
         )
 
-    def pretty_nearby_list(self, radius) -> Dict:
-        n: QuerySet = self.nearby(radius)
-        o = nested_dict()
-        for p in n:
-            o[cardinal_direction_from_bearing(self.initial_bearing_deg(p))][
-                self.distance_to_km(p)
-            ] = p
+    def pretty_nearby_list(
+        self,
+        radius: float,
+        *,
+        use_rhumb_distance: bool = False,
+        use_rhumb_direction: bool = True,
+    ) -> "Dict[str, List]":
+        """
+        Pre-formats the nearby location square on the web page
+        """
+        o: Dict[str, List] = {}
+        for p in self.nearby(radius, use_rhumb=use_rhumb_distance):
+            d = cardinal_direction_from_bearing(
+                p.bearing_constant if use_rhumb_direction else p.direction
+            )
+            if not o.get(d):
+                o[d] = [p]
+            else:
+                o[d].append(p)
         return o
 
 

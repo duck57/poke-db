@@ -18,10 +18,10 @@ thead {
 	cursor: row-resize;
 	padding: 1 em;
 }
-th:focus, th.current-sort {
+th.current-sort {
 	background-color: #e8e8e8;
 }
-th:hover {
+th:hover, th:focus {
 	/*background-color: #e8e8d9;*/
 	box-shadow: inset 0px 0px 15px 5px #E8E8D9;
 }
@@ -219,8 +219,12 @@ nav {
 }
 
 /* Add a background color to the button if it is clicked on (add the .active class with JS), and when you move the mouse over it (hover) */
-.active, .collapsible:hover {
+.active {
 	background-image: linear-gradient(#d9d9d9, #e8e8e8, #d9d9d9, #e8e8e8);
+}
+
+.collapsible:hover, .collapsible:focus {
+    box-shadow: inset 5px 5px #123456;
 }
 
 /* Style the collapsible content. Note: hidden by default */
@@ -296,7 +300,7 @@ nav {
     box-shadow: inset 0px 5px 5px 0px #78C8F769;
 }
 
-.search-button:active {
+.search-button:active, .search-button:focus {
     border: inset;
     border-top: none;
 }
@@ -385,4 +389,15 @@ nav {
     font-family: Gill Sans;
 	border-radius: 100px 100px 0px 0px;
     background-image: linear-gradient(#FEDCB800, #e8e8e888);
+}
+
+.off-screen {
+  border: 0;
+  clip: rect(0 0 0 0);
+  height: 1px;
+  margin: -1px;
+  overflow: hidden;
+  padding: 0;
+  position: absolute;
+  width: 1px;
 }

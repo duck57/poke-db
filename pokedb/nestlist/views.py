@@ -1,7 +1,7 @@
-from typing import Dict, List, Union, Optional
+from typing import Dict, List, Union, Optional, Type
 
 from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
-from django.db.models import QuerySet
+from django.db.models import QuerySet, Model
 from django.shortcuts import render, get_object_or_404
 from django.http import (
     HttpResponseRedirect,
@@ -177,7 +177,7 @@ class NestListMixin(View):
         if (
             scope in ["neighborhood", "nest"]
             and location.ct().pk != self.kwargs["city_id"]
-        ):  # always correct URLs for Neighborhoods & Nest
+        ):  # always correct URLs for Neighborhoods & Nests
             return HttpResponseRedirect(
                 append_search_terms(location.web_url(), self.request.GET)
             )
@@ -472,6 +472,40 @@ class NestListAPI(ObjectMultipleModelAPIView, NestListMixin):
 
     def get_queryset(self):
         return self_as_qs(self.get_location().ct())
+
+
+class LocationSearchAPI(ObjectMultipleModelAPIView):
+    def distance_search(self, model: Type[Model], radius: float) -> QuerySet:
+        at: float = self.kwargs["lat"]
+        on: float = self.kwargs["lon"]
+        return model.objects.within_y_km(at, on, radius)
+
+    def get_querylist(self):
+        querylist = [
+            {
+                "label": "nests",
+                "queryset": self.distance_search(NstLocation, 5),  # 3 mi radius
+                "serializer_class": ParkSerializer,
+            },
+            {
+                "label": "cities",
+                "queryset": self.distance_search(
+                    NstMetropolisMajor, 256
+                ),  # 159 mi radius
+                "serializer_class": CitySerializer,
+            },
+            {
+                "label": "neighborhoods",
+                "queryset": self.distance_search(
+                    NstNeighborhood, 18.86
+                ),  # 11.7 mi radius
+                "serializer_class": NeighborhoodSerializer,
+            },
+        ]
+        return querylist
+
+    def get_queryset(self) -> QuerySet:
+        return self_as_qs(None)
 
 
 class NestDetail(RetrieveAPIView):

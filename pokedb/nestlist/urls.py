@@ -1,5 +1,7 @@
-from django.urls import path
-from . import views
+from django.urls import path, register_converter
+from . import converters, views
+
+register_converter(converters.FloatConverter, "float")
 
 app_name = "nestlist"
 urlpatterns = [
@@ -125,6 +127,12 @@ urlpatterns = [
         {"scope": "ps", "pk_name": "ps_id"},
         name="ps_api",
     ),
+    # Search by GPS coordinates
+    path(
+        "coord/lat=<float:lat>;lon=<float:lon>/",
+        views.LocationSearchAPI.as_view(),
+        name="location_search",
+    )
     # Sp Hx # TODO
     # path("<int:city_id>/species/<str:poke>/"),
     # reporting API # TODO

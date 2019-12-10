@@ -4,7 +4,7 @@
 # vim: set fileencoding=UTF-8 :
 
 from datetime import datetime
-from math import cos, sin, atan2, degrees, radians, sqrt, log
+from math import cos, sin, atan2, degrees, radians, sqrt, log, tan, pi
 
 from dateutil.parser import *
 from dateutil.relativedelta import *
@@ -276,14 +276,21 @@ def constrain_degrees(m: float) -> float:
 
 
 def cardinal_direction_from_bearing(
-    bearing: float, *, emoji: bool = False, chr_lst: Optional[List[str]] = None
+    bearing: float,
+    *,
+    emoji: bool = False,
+    chr_lst: Optional[List[str]] = None,
+    in_radians: bool = False,
 ) -> str:
     """
     :param chr_lst: provide your own char list with direction indices that correspond to the arrows on a numeric keypad
     :param emoji: use predefined emoji arrows
     :param bearing: orienteering bearing (0° is North, clockwise)
+    :param in_radians: it's in radians
     :return: compass direction
     """
+    if in_radians:
+        bearing = degrees(bearing)
     sections: int = 8
     interval: float = 360 / sections
     offset: float = interval / 2
@@ -294,6 +301,7 @@ def cardinal_direction_from_bearing(
             if emoji
             else ["", "SW", "S", "SE", "W", "here", "E", "NW", "N", "NE"]
         )
+    # there's got to be some more clever way to do this
     if 0 * interval <= bearing <= 1 * interval:
         return chr_lst[9]  # northeast
     if 1 * interval <= bearing <= 2 * interval:
@@ -317,14 +325,14 @@ def cv_geo_tuple(t: Tuple[float, float], f: Callable) -> Tuple[float, float]:
     return f(t[0]), f(t[1])
 
 
+EARTH_RADIUS: float = 6371
+
+
 def initial_bearing(
     here: Tuple[float, float], there: Tuple[float, float], *, in_radians: bool = False
 ) -> float:
-    if not in_radians:
-        here = cv_geo_tuple(here, radians)
-        there = cv_geo_tuple(there, radians)
-    # d_lat: float = there[0] - here[0]
-    d_lon: float = there[1] - here[1]
+    here, there, d_lat, d_lon, d_psi = rhumb_setup(here, there, in_radians)
+
     numerator = sin(d_lon) * cos(there[0])
     denominator = cos(here[0]) * sin(there[0]) - sin(here[0]) * cos(there[0]) * cos(
         d_lon
@@ -334,16 +342,59 @@ def initial_bearing(
 
 
 def angle_between_points_on_sphere(
-    here: Tuple[float, float], there: Tuple[float, float], *, in_radians: bool = True
+    here: Tuple[float, float],
+    there: Tuple[float, float],
+    *,
+    in_radians: bool = True,
+    out_radians: bool = True,
 ) -> float:
+    here, there, d_lat, d_lon, d_psi = rhumb_setup(here, there, in_radians)
+
+    a = pow(sin(d_lat / 2), 2) + cos(here[0]) * cos(there[0]) * pow(sin(d_lon / 2), 2)
+    out = 2 * atan2(sqrt(a), sqrt(1 - a))
+    return out if out_radians else degrees(out)
+
+
+def rhumb_setup(
+    here: Tuple[float, float], there: Tuple[float, float], in_radians: bool = True
+) -> Tuple[Tuple[float, float], Tuple[float, float], float, float, float]:
     if not in_radians:
         here = cv_geo_tuple(here, radians)
         there = cv_geo_tuple(there, radians)
     d_lat: float = there[0] - here[0]
     d_lon: float = there[1] - here[1]
-    a = pow(sin(d_lat / 2), 2) + cos(here[0]) * cos(there[0]) * pow(sin(d_lon / 2), 2)
-    out = 2 * atan2(sqrt(a), sqrt(1 - a))
-    return out if in_radians else degrees(out)
+
+    d_psi: float = log(tan(pi / 4 + there[0] / 2) / tan(pi / 4 + here[0] / 2))
+    if abs(d_lon) > pi:  # take the shortest way
+        d_lon = -(2 * pi - d_lon) if d_lon > 0 else 2 * pi + d_lon
+
+    return here, there, d_lat, d_lon, d_psi
+
+
+def loxo_len(
+    here: Tuple[float, float],
+    there: Tuple[float, float],
+    *,
+    in_radians: bool = True,
+    radius: float = EARTH_RADIUS,
+) -> float:
+    here, there, d_lat, d_lon, d_psi = rhumb_setup(here, there, in_radians)
+
+    q: float = d_lat / d_psi if abs(d_psi) > 10e-12 else cos(here[0])
+    return sqrt(d_lat * d_lat + q * q * d_lon * d_lon) * radius
+
+
+def constant_bearing_between_points_on_sphere(
+    here: Tuple[float, float],
+    there: Tuple[float, float],
+    *,
+    in_radians: bool = True,
+    out_radians: bool = True,
+) -> float:
+    here, there, d_lat, d_lon, d_psi = rhumb_setup(here, there, in_radians)
+
+    bearing = atan2(d_lon, d_psi)  # radians in range[-π,π]
+    return bearing if out_radians else (degrees(bearing) + 360) % 360
 
 
 def number_format(x: float, d: int) -> str:
