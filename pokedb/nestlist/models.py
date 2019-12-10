@@ -12,7 +12,7 @@ from typing import Union, Optional, Tuple, NamedTuple, Dict, Type, List
 
 from django.conf import settings
 from django.db import models
-from django.db.models import Q, F
+from django.db.models import Q, F, Case, When
 from django.db.models.functions import (
     Power,
     Sin,
@@ -25,7 +25,6 @@ from django.db.models.functions import (
     Mod,
     Tan,
     Ln,
-    Greatest,
     Abs,
 )
 from django.db.models.query import QuerySet
@@ -198,12 +197,16 @@ class LocationQuerySet(models.QuerySet):
         """
 
         # General set-up
+        #
+        # current = _1 variables (here)
+        # test = _2 variables (there)
         current_lat = Radians(current_lat)
         current_long = Radians(current_long)
         test_lat = Radians(F("lat"))
         test_long = Radians(F("lon"))
         dlat = test_lat - current_lat
         dlong = test_long - current_long
+        sort_field: str = "rhumb_len" if use_rhumb else "distance"
 
         def to_bearing(x, y):
             return Mod(Degrees(ATan2(x, y)) + 360, 360)
@@ -214,8 +217,6 @@ class LocationQuerySet(models.QuerySet):
             (False, True): Q(rhumb_len__lte=y_km),
             (False, False): Q(distance__lte=y_km),
         }.get((y_km < 0, use_rhumb), Q())
-
-        sort_field: str = "rhumb_len" if use_rhumb else "distance"
 
         #
         # Calculations
@@ -243,7 +244,14 @@ class LocationQuerySet(models.QuerySet):
         constant_bearing = to_bearing(d_lon, dpsi)
 
         # Loxodrome distance
-        q = dlat / dpsi
+        q = Case(
+            When(
+                lat__lt=Degrees(current_lat) + 9e-9,
+                lat__gt=Degrees(current_lat) - 9e-9,
+                then=Cos(current_lat),
+            ),
+            default=dlat / dpsi,
+        )
         loxo_km = Sqrt(dlat * dlat + q * q * d_lon * d_lon) * EARTH_RADIUS
 
         return (

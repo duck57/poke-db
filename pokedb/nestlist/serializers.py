@@ -48,17 +48,22 @@ class CoordinateSerializer(serializers.Serializer):
         # use as shortcut for instance being from a LocationQuerySet
         if hasattr(instance, "rhumb_len"):
             nav: Dict = nested_dict()
-            nav["bearing"]["initial"] = instance.bearing_initial
-            nav["bearing"]["constant"] = instance.bearing_constant
-            nav["distance"]["rhumb"] = instance.rhumb_len
-            nav["distance"]["direct"] = instance.distance
-            nav["general_direction"] = cardinal_direction_from_bearing(
-                instance.bearing_constant
-            )
-            nav["loxodrome"]["distance"] = instance.rhumb_len
-            nav["loxodrome"]["bearing"] = instance.bearing_constant
-            nav["aviation"]["forward_azimuth"] = instance.bearing_initial
-            nav["aviation"]["distance"] = instance.distance
+            ib = round(instance.bearing_initial, 3)
+            cb = round(instance.bearing_constant, 3)
+            rl = round(instance.rhumb_len, 3)
+            gd = round(instance.distance, 3)
+
+            nav["bearing"]["initial"] = ib
+            nav["bearing"]["constant"] = cb
+            nav["distance"]["rhumb"] = rl
+            nav["distance"]["direct"] = gd
+
+            nav["general_direction"] = cardinal_direction_from_bearing(cb)
+
+            nav["loxodrome"]["distance"] = rl
+            nav["loxodrome"]["bearing"] = cb
+            nav["aviation"]["forward_azimuth"] = ib
+            nav["aviation"]["distance"] = gd
             ret["nav"] = nav
         return ret
 
