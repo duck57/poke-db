@@ -1,6 +1,7 @@
 from typing import Any, Dict
 
 from rest_framework import serializers
+from django.core.exceptions import ObjectDoesNotExist
 
 from nestlist.models import (
     NstLocation,
@@ -8,6 +9,7 @@ from nestlist.models import (
     NstNeighborhood,
     NstCombinedRegion,
     NstParkSystem,
+    get_rotation,
 )
 from nestlist.utils import nested_dict, cardinal_direction_from_bearing
 
@@ -98,9 +100,27 @@ class ParkSysSerializer(LinkedPlaceSerializer):
 class ParkSerializer(LinkedPlaceSerializer, CoordinateSerializer):
     def to_representation(self, instance: Any) -> Any:
         ret = super().to_representation(instance)
+
+        # fancy stuff for names
         ret["other names"] = [instance.official_name] if instance.short_name else []
         for name in instance.alternate_name.exclude(hide_me=True):
             ret["other names"].append(name.name)
+
+        # current resident
+        try:
+            rot = instance.rot
+        except AttributeError:
+            rot = get_rotation("t")
+        try:
+            rpt = instance.nstspecieslistarchive_set.get(rotation_num=rot)
+            cr = {
+                "species": rpt.species_txt,
+                "dex": rpt.species_no,
+                "confirmation": bool(rpt.confirmation),
+            }
+        except ObjectDoesNotExist:
+            cr = None
+        ret["current resident"] = cr
         return ret
 
 

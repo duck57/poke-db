@@ -1,7 +1,7 @@
 from typing import Dict, List, Union, Optional, Type
 
 from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
-from django.db.models import QuerySet, Model
+from django.db.models import QuerySet, Model, Value, F, ForeignKey, IntegerField
 from django.shortcuts import render, get_object_or_404
 from django.http import (
     HttpResponseRedirect,
@@ -465,7 +465,7 @@ class NestListAPI(ObjectMultipleModelAPIView, NestListMixin):
                 "label": "current list",
                 "queryset": get_local_nsla_for_rotation(
                     self.get_rot8(), location_pk=loc, species=self.get_sp()
-                ),
+                ).annotate(rot=Value(self.get_rot8().pk, output_field=IntegerField())),
                 "serializer_class": ReportSerializer,
             },
         ]
