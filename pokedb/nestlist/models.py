@@ -25,10 +25,10 @@ from django.db.models.functions import (
     Mod,
     Tan,
     Ln,
-    Abs,
 )
 from django.db.models.query import QuerySet
 from django.urls import reverse
+from django.core.validators import MaxValueValidator, MinValueValidator
 from djchoices import DjangoChoices, ChoiceItem
 
 from speciesinfo.models import (
@@ -110,7 +110,7 @@ class Place:
         return place_filter(NstRotationDate, self.rot_q())
 
     # not static to prevent errors
-    def pretty_nearby_list(self, radius) -> Dict:
+    def pretty_nearby_list(self, radius: float) -> "Dict[str, List]":
         return {}
 
 
@@ -265,9 +265,22 @@ class LocationQuerySet(models.QuerySet):
 
 
 class GeoCoordMixin:
+    """
+    Mixin for dealing with objects with coordinates
+    """
+
     # Both are stored as degrees
-    lat = models.FloatField(blank=True, null=True)
-    lon = models.FloatField(blank=True, null=True)
+    # Validators are to prevent trig functions from dividing by zero
+    lat = models.FloatField(
+        blank=True,
+        null=True,
+        validators=[MaxValueValidator(90), MinValueValidator(-90)],
+    )
+    lon = models.FloatField(
+        blank=True,
+        null=True,
+        validators=[MaxValueValidator(180), MinValueValidator(-180)],
+    )
     objects = LocationQuerySet.as_manager()
     pk: int
 
@@ -296,6 +309,36 @@ class GeoCoordMixin:
         if here is None or there is None:
             return None
         return angle_between_points_on_sphere(here, there, in_radians=True)
+
+    def nav_to(self, elsewhere: "GeoCoordMixin") -> Optional[Dict[str, float]]:
+        """This could be rewritten as a nasty one-liner"""
+        here = cv_geo_tuple(self.coord_tuple(), radians)
+        there = cv_geo_tuple(elsewhere.coord_tuple(), radians)
+        if here is None or there is None:
+            return None
+        return {
+            "angle_between_radians": angle_between_points_on_sphere(
+                here, there, out_radians=True
+            ),
+            "angle_between_degrees": angle_between_points_on_sphere(
+                here, there, out_radians=False
+            ),
+            "initial_bearing_degrees": initial_bearing(
+                here, there, in_radians=True, out_radians=False
+            ),
+            "initial_bearing_radians": initial_bearing(
+                here, there, in_radians=True, out_radians=True
+            ),
+            "great_circle_km": angle_between_points_on_sphere(here, there)
+            * EARTH_RADIUS,
+            "loxodrome_km": loxo_len(here, there),
+            "constant_bearing_degrees": constant_bearing_between_points_on_sphere(
+                here, there, out_radians=False
+            ),
+            "constant_bearing_radians": constant_bearing_between_points_on_sphere(
+                here, there, out_radians=True
+            ),
+        }
 
     def distance_to_km(self, elsewhere) -> Optional[float]:
         return self.distance_to_rad(elsewhere) * EARTH_RADIUS

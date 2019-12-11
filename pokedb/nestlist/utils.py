@@ -329,7 +329,11 @@ EARTH_RADIUS: float = 6371
 
 
 def initial_bearing(
-    here: Tuple[float, float], there: Tuple[float, float], *, in_radians: bool = False
+    here: Tuple[float, float],
+    there: Tuple[float, float],
+    *,
+    in_radians: bool = False,
+    out_radians: bool = False,
 ) -> float:
     here, there, d_lat, d_lon, d_psi = rhumb_setup(here, there, in_radians)
 
@@ -338,7 +342,7 @@ def initial_bearing(
         d_lon
     )
     out = atan2(numerator, denominator)
-    return out if in_radians else degrees(out) % 360
+    return out if out_radians else degrees(out) % 360
 
 
 def angle_between_points_on_sphere(
