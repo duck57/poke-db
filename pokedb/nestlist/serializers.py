@@ -96,14 +96,6 @@ class ParkSysSerializer(LinkedPlaceSerializer):
 
 
 class ParkSerializer(LinkedPlaceSerializer, CoordinateSerializer):
-    def __init__(self, *args, **kwargs):
-        super().__init__()
-        self.neighborhood = (
-            NeighborhoodSerializer()
-            if not kwargs.get("summary")
-            else serializers.CharField(read_only=True)
-        )
-
     def to_representation(self, instance: Any) -> Any:
         ret = super().to_representation(instance)
         ret["other names"] = [instance.official_name] if instance.short_name else []
@@ -112,13 +104,12 @@ class ParkSerializer(LinkedPlaceSerializer, CoordinateSerializer):
         return ret
 
 
-class ReportSerializer(serializers.Serializer):
-    park = ParkSerializer(source="nestid", summary=True)
+class ParkDetailSerializer(ParkSerializer):
+    pass
 
-    def to_representation(self, instance: Any) -> Any:
-        ret = super().to_representation(instance)
-        ret["species"] = instance.species_txt
-        ret["dex"] = instance.species_no
-        # ret["park"] = instance.nestid.get_name()
-        # ret["neighborhood"] = instance.nestid.neighborhood.get_name()
-        return ret
+
+class ReportSerializer(serializers.Serializer):
+    park = ParkSerializer(source="nestid")
+    species = serializers.CharField(source="species_txt")
+    dex = serializers.IntegerField(source="species_no")
+    confirmation = serializers.BooleanField()

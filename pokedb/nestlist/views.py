@@ -51,6 +51,7 @@ from .serializers import (
     ParkSysSerializer,
     RegionSerializer,
     ReportSerializer,
+    ParkDetailSerializer,
 )
 from .forms import NestReportForm
 
@@ -421,7 +422,7 @@ class NestListAPI(ObjectMultipleModelAPIView, NestListMixin):
     serializers = {
         NstMetropolisMajor: CitySerializer,
         NstNeighborhood: NeighborhoodSerializer,
-        NstLocation: ParkSerializer,
+        NstLocation: ParkDetailSerializer,
         NstParkSystem: ParkSysSerializer,
         NstCombinedRegion: RegionSerializer,
     }
@@ -468,6 +469,16 @@ class NestListAPI(ObjectMultipleModelAPIView, NestListMixin):
                 "serializer_class": ReportSerializer,
             },
         ]
+        if type(loc) in [NstNeighborhood, NstParkSystem] and not self.get_sp():
+            querylist.append(
+                {
+                    "label": "empties",
+                    "queryset": collect_empty_nests(
+                        location_pk=loc, rotation=self.get_rot8()
+                    ),
+                    "serializer_class": ParkSerializer,
+                }
+            )
         return querylist
 
     def get_queryset(self):
