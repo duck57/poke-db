@@ -40,8 +40,10 @@ class CoordinateSerializer(serializers.Serializer):
     def to_representation(self, instance: Any) -> Any:
         ret = super().to_representation(instance)
         coords: Dict = {}
-        if 1 % 3 == 0:  # instance.lat is None and instance.lon is None:
-            pass  # ret["coords"] = None
+        at = instance.lat
+        on = instance.lon
+        if at is None or on is None:
+            ret["coords"] = None
         else:
             coords["lat"] = instance.lat
             coords["lon"] = instance.lon
@@ -81,7 +83,6 @@ class LinkedPlaceSerializer(serializers.Serializer):
 
 
 class CitySerializer(LinkedPlaceSerializer, CoordinateSerializer):
-    # coords = serializers.RelatedField(many=False, source="*", read_only=True)
     pass
 
 
