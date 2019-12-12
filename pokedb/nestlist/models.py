@@ -869,21 +869,20 @@ class NstRotationDate(models.Model, Place):
     def date_priority_display(self) -> str:
         return f"{self.date.strftime('%Y-%m-%d')} (rotation {self.num})"
 
-    # TODO: implement these if they're ever needed
     def city_q(self) -> Q:
-        pass
+        return Q(neighborhoods__nests__rotations=self)
 
     def neighborhood_q(self) -> Q:
-        pass
+        return Q(nests__rotations=self)
 
     def region_q(self) -> Q:
-        pass
+        return Q(neighborhoods__nests__rotations=self)
 
     def ps_q(self) -> Q:
-        pass
+        return Q(nests__rotations=self)
 
     def nest_q(self) -> Q:
-        pass
+        return Q(rotations=self)
 
     def active_rotations(self) -> "QuerySet[NstRotationDate]":
         return self_as_qs(self)

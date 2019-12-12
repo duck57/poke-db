@@ -89,14 +89,14 @@ urlpatterns = [
     # City overview
     path(
         "<int:city_id>/nests/",
-        views.NestListAPI.as_view(),
+        views.CityAPI.as_view(),
         {"scope": "city", "pk_name": "city_id"},
         name="city_api_view",
     ),
     # Nest detail + history
     path(
         "<int:city_id>/nests/<int:nest_id>/",
-        views.NestListAPI.as_view(),
+        views.NestDetailAPI.as_view(),
         {"scope": "nest", "pk_name": "nest_id"},
         name="nest_api_detail",
     ),
@@ -105,7 +105,7 @@ urlpatterns = [
     # Neighborhood Detail
     path(
         "<int:city_id>/neighborhoods/<int:neighborhood_id>/",
-        views.NestListAPI.as_view(),
+        views.NeighborhoodAPI.as_view(),
         {"scope": "neighborhood", "pk_name": "neighborhood_id"},
         name="neighborhood_api",
     ),
@@ -114,7 +114,7 @@ urlpatterns = [
     # region detail
     path(
         "regions/<int:region_id>/",
-        views.NestListAPI.as_view(),
+        views.RegionalAPI.as_view(),
         {"scope": "region", "pk_name": "region_id"},
         name="region_api",
     ),
@@ -123,7 +123,7 @@ urlpatterns = [
     # PS detail
     path(
         "park_systems/<int:ps_id>/",
-        views.NestListAPI.as_view(),
+        views.PsAPI.as_view(),
         {"scope": "ps", "pk_name": "ps_id"},
         name="ps_api",
     ),

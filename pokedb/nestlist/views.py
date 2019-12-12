@@ -1,7 +1,16 @@
 from typing import Dict, List, Union, Optional, Type
 
 from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
-from django.db.models import QuerySet, Model, Value, F, ForeignKey, IntegerField
+from django.db.models import (
+    QuerySet,
+    Model,
+    Value,
+    F,
+    ForeignKey,
+    IntegerField,
+    CharField,
+    BooleanField,
+)
 from django.shortcuts import render, get_object_or_404
 from django.http import (
     HttpResponseRedirect,
@@ -14,7 +23,7 @@ from django.http import (
 from django.urls import reverse
 from urllib.parse import urlencode
 from django.views import generic, View
-from rest_framework import viewsets
+from rest_framework import viewsets, serializers
 from rest_framework.generics import ListAPIView, CreateAPIView, RetrieveAPIView
 from drf_multiple_model.views import ObjectMultipleModelAPIView
 
@@ -50,8 +59,9 @@ from .serializers import (
     ModelTypeSerializer,
     ParkSysSerializer,
     RegionSerializer,
-    ReportSerializer,
     ParkDetailSerializer,
+    RotationSerializer,
+    StringSerializer,
 )
 from .forms import NestReportForm
 
@@ -138,7 +148,7 @@ class NestListMixin(View):
     def get_rot8(self) -> NstRotationDate:
         return get_rotation(self.get_raw_date())
 
-    def get_sp(self) -> Union[int, str]:
+    def get_sp(self) -> Optional[Union[int, str]]:
         srg = self.request.GET
         return self.kwargs.get(
             "poke", srg.get("pokemon", srg.get("species", srg.get("pokémon", None)))
@@ -419,70 +429,179 @@ API views
 
 
 class NestListAPI(ObjectMultipleModelAPIView, NestListMixin):
-    serializers = {
-        NstMetropolisMajor: CitySerializer,
-        NstNeighborhood: NeighborhoodSerializer,
-        NstLocation: ParkDetailSerializer,
-        NstParkSystem: ParkSysSerializer,
-        NstCombinedRegion: RegionSerializer,
-    }
-
-    def get_querylist(self):
+    def get_querylist(
+        self,
+        *,
+        list_parts: bool = False,
+        self_serializer: "Optional[Type[serializers.Serializer]]" = None,
+        hide_neighborhood: bool = False,
+        hide_ps: bool = False,
+    ):
+        if not self_serializer:
+            return []
         loc = self.get_location()
+        rot = self.get_rot8()
+        sp = self.get_sp()
+
+        queries: Dict[str, Dict[str]] = {
+            "city": {
+                "label": "city",
+                "queryset": self_as_qs(loc.ct()),
+                "serializer_class": CitySerializer,
+            },
+            "neighborhood": {
+                "label": "neighborhoods",
+                "queryset": loc.neighborhood_list(),
+                "serializer_class": NeighborhoodSerializer,
+            },
+            "park system": {
+                "label": "park systems",
+                "queryset": loc.park_system_list(),
+                "serializer_class": ParkSysSerializer,
+            },
+            "region": {
+                "label": "regions",
+                "queryset": loc.region_list(),
+                "serializer_class": RegionSerializer,
+            },
+            "nestlist": {
+                "label": "current list",
+                "queryset": loc.park_list()
+                .filter(
+                    nstspecieslistarchive__in=get_local_nsla_for_rotation(
+                        rot, loc, species=sp
+                    )
+                )
+                .annotate(rot=Value(rot.pk, output_field=IntegerField()))
+                .annotate(
+                    hide_neighborhood=Value(
+                        hide_neighborhood, output_field=BooleanField()
+                    )
+                )
+                .annotate(hide_ps=Value(hide_ps, output_field=BooleanField())),
+                "serializer_class": ParkSerializer,
+            },
+            "empties": {
+                "label": "empties",
+                "queryset": collect_empty_nests(location_pk=loc, rotation=rot)
+                .annotate(
+                    hide_neighborhood=Value(
+                        hide_neighborhood, output_field=BooleanField()
+                    )
+                )
+                .annotate(hide_ps=Value(hide_ps, output_field=BooleanField()))
+                .annotate(hide_sp=Value(True, output_field=BooleanField())),
+                "serializer_class": ParkSerializer,
+            },
+            "all parks": {
+                "label": "all parks",
+                "queryset": loc.park_list()
+                .annotate(
+                    hide_neighborhood=Value(
+                        hide_neighborhood, output_field=BooleanField()
+                    )
+                )
+                .annotate(hide_ps=Value(hide_ps, output_field=BooleanField())),
+                "serializer_class": ParkSerializer,
+            },
+        }
 
         querylist = [
             {
                 "label": "self",
                 "queryset": self_as_qs(loc),
-                "serializer_class": self.serializers[type(loc)],
+                "serializer_class": self_serializer,
+            },
+            {
+                "label": "rotation",
+                "queryset": self_as_qs(rot),
+                "serializer_class": RotationSerializer,
             },
             {
                 "label": "type",
                 "queryset": self_as_qs(loc),
                 "serializer_class": ModelTypeSerializer,
             },
-            {
-                "label": "city",
-                "queryset": self_as_qs(loc.ct()),
-                "serializer_class": CitySerializer,
-            },
-            {
-                "label": "neighborhoods",
-                "queryset": loc.neighborhood_list(),
-                "serializer_class": NeighborhoodSerializer,
-            },
-            {
-                "label": "park systems",
-                "queryset": loc.park_system_list(),
-                "serializer_class": ParkSysSerializer,
-            },
-            {
-                "label": "regions",
-                "queryset": loc.region_list(),
-                "serializer_class": RegionSerializer,
-            },
-            {
-                "label": "current list",
-                "queryset": get_local_nsla_for_rotation(
-                    self.get_rot8(), location_pk=loc, species=self.get_sp()
-                ).annotate(rot=Value(self.get_rot8().pk, output_field=IntegerField())),
-                "serializer_class": ReportSerializer,
-            },
         ]
-        if type(loc) in [NstNeighborhood, NstParkSystem] and not self.get_sp():
+
+        if sp or sp == 0:
             querylist.append(
                 {
-                    "label": "empties",
-                    "queryset": collect_empty_nests(
-                        location_pk=loc, rotation=self.get_rot8()
+                    "label": "species restriction",
+                    "queryset": self_as_qs(loc).annotate(
+                        str=Value(str(sp), output_field=CharField())
                     ),
-                    "serializer_class": ParkSerializer,
+                    "serializer_class": StringSerializer,
                 }
             )
-        return querylist
+
+        return querylist, queries if list_parts else querylist
 
     def get_queryset(self):
         return self_as_qs(self.get_location().ct())
+
+
+class CityAPI(NestListAPI):
+    def get_querylist(self):
+        querylist, parts = super().get_querylist(
+            list_parts=True, self_serializer=CitySerializer
+        )
+        querylist.extend(
+            [
+                parts["nestlist"],
+                parts["neighborhood"],
+                parts["park system"],
+                parts["region"],
+            ]
+        )
+        return querylist
+
+
+class NestDetailAPI(NestListAPI):
+    def get_querylist(self):
+        return super().get_querylist(self_serializer=ParkDetailSerializer)
+
+
+class NeighborhoodAPI(NestListAPI):
+    def get_querylist(self):
+        querylist, parts = super().get_querylist(
+            list_parts=True, self_serializer=CitySerializer, hide_neighborhood=True
+        )
+        querylist.extend([parts["city"], parts["region"], parts["nestlist"]])
+        sp = self.get_sp()
+        if sp != 0 and not self.get_sp():
+            querylist.append(parts["empties"])
+        querylist.append(parts["park system"])
+        return querylist
+
+
+class RegionalAPI(NestListAPI):
+    def get_querylist(self):
+        querylist, parts = super().get_querylist(
+            list_parts=True, self_serializer=RegionSerializer
+        )
+        querylist.extend(
+            [
+                parts["neighborhood"],
+                parts["city"],
+                parts["nestlist"],
+                parts["park system"],
+            ]
+        )
+        return querylist
+
+
+class PsAPI(NestListAPI):
+    def get_querylist(self):
+        querylist, parts = super().get_querylist(
+            list_parts=True, self_serializer=ParkSysSerializer, hide_ps=True
+        )
+        sp = self.get_sp()
+        querylist.append(
+            parts["all parks"] if sp != 0 and not self.get_sp() else parts["nestlist"]
+        )
+        querylist.extend([parts["city"], parts["region"], parts["neighborhood"]])
+        return querylist
 
 
 class LocationSearchAPI(ObjectMultipleModelAPIView):
@@ -517,9 +636,3 @@ class LocationSearchAPI(ObjectMultipleModelAPIView):
 
     def get_queryset(self) -> QuerySet:
         return self_as_qs(None)
-
-
-class NestDetail(RetrieveAPIView):
-    model = NstLocation
-    serializer_class = ParkSerializer
-    pass

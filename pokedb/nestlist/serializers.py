@@ -23,19 +23,6 @@ class TypeField(serializers.Field):
         return type(value)
 
 
-class LocationTypeField(serializers.Field):
-    typeNames = {
-        NstMetropolisMajor: "Major City",
-        NstNeighborhood: "Neighborhood or Suburb",
-        NstLocation: "Park",
-        NstParkSystem: "Park System",
-        NstCombinedRegion: "Combined Region",
-    }
-
-    def to_representation(self, value: Any) -> Any:
-        return self.typeNames.get(type(value), type(value))
-
-
 class CoordinateSerializer(serializers.Serializer):
     def to_representation(self, instance: Any) -> Any:
         ret = super().to_representation(instance)
@@ -73,11 +60,21 @@ class CoordinateSerializer(serializers.Serializer):
 
 
 class ModelTypeSerializer(serializers.Serializer):
-    type = LocationTypeField(source="*")
+    typeNames = {
+        NstMetropolisMajor: "Major City",
+        NstNeighborhood: "Neighborhood or Suburb",
+        NstLocation: "Park",
+        NstParkSystem: "Park System",
+        NstCombinedRegion: "Combined Region",
+    }
+
+    def to_representation(self, value: Any) -> Any:
+        return self.typeNames.get(type(value), type(value))
 
 
 class LinkedPlaceSerializer(serializers.Serializer):
     name = serializers.CharField(source="get_name")
+    pk = serializers.IntegerField()
     api_url = serializers.URLField()
     web_url = serializers.URLField()
 
@@ -99,6 +96,9 @@ class ParkSysSerializer(LinkedPlaceSerializer):
 
 
 class ParkSerializer(LinkedPlaceSerializer, CoordinateSerializer):
+    address = serializers.CharField()
+    private = serializers.BooleanField()
+
     def to_representation(self, instance: Any) -> Any:
         ret = super().to_representation(instance)
 
@@ -108,20 +108,29 @@ class ParkSerializer(LinkedPlaceSerializer, CoordinateSerializer):
             ret["other names"].append(name.name)
 
         # current resident
-        try:
-            rot = instance.rot
-        except AttributeError:
-            rot = get_rotation("t")
-        try:
-            rpt = instance.nstspecieslistarchive_set.get(rotation_num=rot)
-            cr = {
-                "species": rpt.species_txt,
-                "dex": rpt.species_no,
-                "confirmation": bool(rpt.confirmation),
-            }
-        except ObjectDoesNotExist:
-            cr = None
-        ret["current resident"] = cr
+        if not hasattr(instance, "hide_sp"):
+            try:
+                rot = instance.rot
+            except AttributeError:
+                rot = get_rotation("t")
+            try:
+                rpt = instance.nstspecieslistarchive_set.get(rotation_num=rot)
+                cr = {
+                    "species": rpt.species_txt,
+                    "dex": rpt.species_no,
+                    "confirmation": bool(rpt.confirmation),
+                }
+            except ObjectDoesNotExist:
+                cr = None
+            ret["current resident"] = cr
+        if not hasattr(instance, "hide_neighborhood") or not instance.hide_neighborhood:
+            ret["neighborhood"] = (
+                instance.neighborhood.pk if instance.neighborhood else None
+            )
+        if not hasattr(instance, "hide_ps") or not instance.hide_ps:
+            ret["park system"] = (
+                instance.park_system.pk if instance.park_system else None
+            )
         return ret
 
 
@@ -130,7 +139,20 @@ class ParkDetailSerializer(ParkSerializer):
 
 
 class ReportSerializer(serializers.Serializer):
-    park = ParkSerializer(source="nestid")
     species = serializers.CharField(source="species_txt")
     dex = serializers.IntegerField(source="species_no")
     confirmation = serializers.BooleanField()
+
+
+class ReportHistoricSerializer(ReportSerializer):
+    pass
+
+
+class RotationSerializer(serializers.Serializer):
+    def to_representation(self, instance: Any) -> Any:
+        return str(instance)
+
+
+class StringSerializer(serializers.Serializer):
+    def to_representation(self, instance: Any) -> Any:
+        return instance.str
