@@ -135,7 +135,22 @@ class ParkSerializer(LinkedPlaceSerializer, CoordinateSerializer):
 
 
 class ParkDetailSerializer(ParkSerializer):
-    pass
+    permanent_species = serializers.CharField()
+    osm_id = serializers.IntegerField()
+    primary_silph_id = serializers.IntegerField()
+    # prior_entries = ParkSerializer()
+    duplicated_to = ParkSerializer(source="duplicate_of")
+
+    def to_representation(self, instance: Any) -> Any:
+        rep = super().to_representation(instance)
+        if instance.neighborhood:
+            rep["neighborhood"] = NeighborhoodSerializer().to_representation(
+                instance.neighborhood
+            )
+            rep["city"] = CitySerializer().to_representation(
+                instance.neighborhood.major_city
+            )
+        return rep
 
 
 class ReportSerializer(serializers.Serializer):

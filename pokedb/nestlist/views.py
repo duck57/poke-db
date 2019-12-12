@@ -535,7 +535,7 @@ class NestListAPI(ObjectMultipleModelAPIView, NestListMixin):
                 }
             )
 
-        return querylist, queries if list_parts else querylist
+        return (querylist, queries) if list_parts else querylist
 
     def get_queryset(self):
         return self_as_qs(self.get_location().ct())
