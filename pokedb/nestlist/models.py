@@ -8,7 +8,7 @@ which will prove useful all over the place.
 from abc import abstractmethod
 from datetime import datetime
 from math import radians, pi
-from typing import Union, Optional, Tuple, NamedTuple, Dict, Type, List
+from typing import Union, Optional, Tuple, NamedTuple, Dict, Type, List, Set
 
 from django.conf import settings
 from django.db import models
@@ -654,6 +654,34 @@ class NstLocation(
 
     def s2id(self, level: int = 14) -> CellId:
         return super().s2id(level)
+
+    def get_true_self(self) -> "NstLocation":
+        """
+        Follows a nest.duplicate_of trail to reveal the canonical current nest
+        Spiritually similar to Pokemon.family_root()
+        """
+        return (
+            self.duplicate_of.get_true_self()
+            if isinstance(self.duplicate_of, NstLocation)
+            else self
+        )
+
+    def all_old_duplicates(self) -> "Set[NstLocation]":
+        """
+        It's just like future_evolutions from Pokémon
+        :return: a set of all old duplicates
+        """
+        # It's just a specialized breadth-first non-recursive tree traversal
+        out: "Set[NstLocation]" = set()
+        queue: "List[NstLocation]" = [self]
+        while queue:
+            current = queue[0]
+            queue = queue[1:]
+            out.add(current)
+            for p in current.prior_entries.all():
+                out.add(p)
+        out.remove(self)
+        return out
 
 
 class NstMetropolisMajor(
@@ -1620,8 +1648,3 @@ def delete_rotation(
         input(confirmation_prompt), insist_case="UPPER", spell_it=True
     )
     return deletion_dance() if accept_consequences else None
-
-
-def get_true_self(nest: NstLocation) -> NstLocation:
-    """Follows a nest.duplicate_of trail to reveal the canonical current nest"""
-    return get_true_self(nest.duplicate_of) if nest.duplicate_of else nest

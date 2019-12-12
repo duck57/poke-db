@@ -385,12 +385,12 @@ class Pokemon(models.Model):
     def psqs(self):
         return self_as_qs(self.prior_stages())
 
-    def future_stages(self, *, surpress_excess: bool = True) -> "List[Pokemon]":
+    def future_stages(self, *, suppress_excess: bool = True) -> "List[Pokemon]":
         """Different from evolves_to, as this checks those for future evolutions as well"""
         # It's just a specialized breadth-first non-recursive tree traversal
         out: "List[Pokemon]" = []
         queue: "List[Pokemon]" = [self]
-        if self.dex_number == 0 and surpress_excess:
+        if self.dex_number == 0 and suppress_excess:
             return queue  # prevent returning every family unless specifically asked
         while queue:
             current = queue[0]

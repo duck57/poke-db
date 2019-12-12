@@ -138,8 +138,8 @@ class ParkDetailSerializer(ParkSerializer):
     permanent_species = serializers.CharField()
     osm_id = serializers.IntegerField()
     primary_silph_id = serializers.IntegerField()
-    # prior_entries = ParkSerializer()
     duplicated_to = ParkSerializer(source="duplicate_of")
+    notes = serializers.CharField()
 
     def to_representation(self, instance: Any) -> Any:
         rep = super().to_representation(instance)
@@ -150,6 +150,9 @@ class ParkDetailSerializer(ParkSerializer):
             rep["city"] = CitySerializer().to_representation(
                 instance.neighborhood.major_city
             )
+        rep["prior_entries"] = []
+        for p in instance.all_old_duplicates():
+            rep["prior_entries"].append(ParkSerializer().to_representation(p))
         return rep
 
 
