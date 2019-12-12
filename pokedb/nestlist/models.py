@@ -518,7 +518,9 @@ class NstCombinedRegion(models.Model, ComplicatedNameMixin, HasURLMixin, Place):
         return Q(pk__in=self.neighborhood_list())
 
     def neighborhood_list(self) -> "QuerySet[NstNeighborhood]":
-        return self.neighborhoods.all()
+        if hasattr(self, "neighborhoods"):  # make the lint shut up
+            return self.neighborhoods.all()
+        return NstNeighborhood.objects.none()
 
     def region_q(self) -> Q:
         return Q(pk=self)
@@ -782,7 +784,9 @@ class NstNeighborhood(
         return Q(neighborhood=self)
 
     def park_list(self) -> "QuerySet[NstLocation]":
-        return self.nstlocation_set.all()
+        if hasattr(self, "nstlocation_set"):
+            return self.nstlocation_set.all()
+        return NstLocation.objects.none()
 
     def s2id(self, level: int = 12) -> CellId:
         return super().s2id(level)
@@ -832,7 +836,9 @@ class NstParkSystem(models.Model, HasURLMixin, ComplicatedNameMixin, Place):
         return Q(park_system=self)
 
     def park_list(self) -> "QuerySet[NstLocation]":
-        return self.nstlocation_set.all()
+        if hasattr(self, "nstlocation_set"):
+            return self.nstlocation_set.all()
+        return NstLocation.objects.none()
 
 
 class NstRotationDate(models.Model, Place):
@@ -860,7 +866,7 @@ class NstRotationDate(models.Model, Place):
     def __lt__(self, other):
         return self.date < other.date
 
-    def date_priority_display(self):
+    def date_priority_display(self) -> str:
         return f"{self.date.strftime('%Y-%m-%d')} (rotation {self.num})"
 
     # TODO: implement these if they're ever needed
