@@ -1,4 +1,4 @@
-django-debug-toolbar
+s2sphere
 djchoices
 django-choices
 django-jinja
@@ -16,5 +16,4 @@ airtable-python-wrapper
 scrapy
 readline
 pyperclip
-djdt_flamegraph
 django-rest-multiple-models

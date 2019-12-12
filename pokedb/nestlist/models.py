@@ -53,6 +53,8 @@ from .utils import (
     constant_bearing_between_points_on_sphere,
 )
 
+from s2sphere import CellId, LatLng
+
 APP_PREFIX: str = "nestlist"  # is there some way to import this dynamically?
 
 
@@ -109,9 +111,13 @@ class Place:
     def active_rotations(self) -> "QuerySet[NstRotationDate]":
         return place_filter(NstRotationDate, self.rot_q())
 
-    # not static to prevent errors
     def pretty_nearby_list(self, radius: float) -> "Dict[str, List]":
-        return {}
+        """
+        This is only here to prevent errors.
+        GeoCoordMixin has the correct implementation.
+        :param radius: set negative to use as an exclusion zone
+        """
+        return dict(self_as_qs(self).exclude(pk=self.pk)[: int(radius)])
 
 
 def place_filter(model: Type[models.Model], q: Q) -> "QuerySet":
@@ -378,6 +384,25 @@ class GeoCoordMixin:
                 o[d].append(p)
         return o
 
+    def s2id(self, level: int = 17) -> CellId:
+        if level < 0:
+            level = 10
+        if level > 30:
+            level = 20
+        at = self.lat
+        on = self.lon
+        if hasattr(self, "neighborhood"):
+            if at is None:
+                at = self.neighborhood.lat
+            if on is None:
+                on = self.neighborhood.lon
+        if hasattr(self, "city"):
+            if at is None:
+                at = self.city.lat
+            if on is None:
+                on = self.city.lon
+        return CellId.from_lat_lng(LatLng.from_degrees(at, on)).parent(level)
+
 
 class NstAdminEmail(models.Model, ComplicatedNameMixin, HasCityMixin):
     class UserType(DjangoChoices):
@@ -625,6 +650,9 @@ class NstLocation(
     def region_list(self) -> "QuerySet[NstCombinedRegion]":
         return self.neighborhood.region_list()
 
+    def s2id(self, level: int = 14) -> CellId:
+        return super().s2id(level)
+
 
 class NstMetropolisMajor(
     models.Model, HasCityMixin, HasURLMixin, ComplicatedNameMixin, GeoCoordMixin, Place
@@ -683,6 +711,9 @@ class NstMetropolisMajor(
 
     def nest_q(self) -> Q:
         return Q(neighborhood__major_city=self)
+
+    def s2id(self, level: int = 10) -> CellId:
+        return super().s2id(level)
 
 
 class NstNeighborhood(
@@ -752,6 +783,9 @@ class NstNeighborhood(
 
     def park_list(self) -> "QuerySet[NstLocation]":
         return self.nstlocation_set.all()
+
+    def s2id(self, level: int = 12) -> CellId:
+        return super().s2id(level)
 
 
 class NstParkSystem(models.Model, HasURLMixin, ComplicatedNameMixin, Place):

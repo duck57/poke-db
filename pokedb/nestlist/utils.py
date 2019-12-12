@@ -21,6 +21,21 @@ Importing readline here makes click act up in the all the modules that rely on t
 however, I've only noticed this with the rewrite, since I never encounter the circumstances leading to the bug in
 my normal use of these programs (I always use the command line flags)
 tl;dr: readline causes newlines not to happen when accepting a default value by entering nothing in click
+
+TODO:
+Break into smaller modules in a utils package
+time.py
+s2.py  # or just use the s2sphere package
+coords.py
+cli.py
+
+Reminder for s2 faces:
+0. Africa & Atlantic
+1. Indian Ocean
+2. Russia & Canada
+3. Pacific Ocean
+4. Americas
+5. Antarctica
 """
 
 
