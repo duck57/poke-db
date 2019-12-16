@@ -14,7 +14,7 @@ urlpatterns = [
     path("", views.CityIndex.as_view(), name="list_of_cities"),
     # City view
     path(
-        "<int:city_id>/",
+        "city/<int:city_id>/",
         views.NestListView.as_view(),
         # 288 km ≈ 180 miles, a dedicated day trip
         {"scope": "city", "pk_name": "city_id", "radius": 288},
@@ -22,7 +22,7 @@ urlpatterns = [
     ),
     # Nest Details + Hx
     path(
-        "<int:city_id>/nest/<int:nest_id>/",
+        "nest/<int:nest_id>/",
         views.NestHistoryView.as_view(),
         # 1.6 km chosen as a reasonable easy walking distance
         {"scope": "nest", "pk_name": "nest_id", "history": True, "radius": 1.6},
@@ -30,13 +30,13 @@ urlpatterns = [
     ),
     # Neighborhood Index
     path(
-        "<int:city_id>/neighborhood/",
+        "city/<int:city_id>/neighborhoods/",
         views.NeighborhoodIndex.as_view(),
         name="neighborhood_list",
     ),  # only kept because it's already here
     # Neighborhood Detail
     path(
-        "<int:city_id>/neighborhood/<int:neighborhood_id>/",
+        "neighborhood/<int:neighborhood_id>/",
         views.NeighborhoodView.as_view(),
         # 12.34 km ≈ 7.7 miles (a quick drive)
         {"scope": "neighborhood", "pk_name": "neighborhood_id", "radius": 12.34},
@@ -44,13 +44,17 @@ urlpatterns = [
     ),
     # Rotation-specific permalink
     path(
-        "<int:city_id>/rotation/<int:date>/",
+        "city/<int:city_id>/rotation/<int:date>/",
         views.NestListView.as_view(),
         {"scope": "city", "pk_name": "city_id"},
         name="city_historic_date",
     ),
     # Region index  # only kept because it's already here
-    path("<int:city_id>/region/", views.RegionalIndex.as_view(), name="region_index"),
+    path(
+        "city/<int:city_id>/regions/",
+        views.RegionalIndex.as_view(),
+        name="region_index",
+    ),
     # Region Detail
     path(
         "region/<int:region_id>/",
@@ -69,7 +73,7 @@ urlpatterns = [
     ),
     # Species history
     path(
-        "<int:city_id>/species-history/<str:poke>/",
+        "city/<int:city_id>/species-history/<str:poke>/",
         views.SpeciesHistoryView.as_view(),
         {
             "scope": "city",
@@ -80,7 +84,7 @@ urlpatterns = [
         name="species_history",
     ),
     # Report a nest
-    path("<int:city_id>/report/", views.report_nest, name="report_nest"),
+    path("report/<int:city_id>/", views.report_nest, name="report_nest"),
     #
     # ~~~~~~~~~~~~~
     # API views
@@ -88,14 +92,14 @@ urlpatterns = [
     #
     # City overview
     path(
-        "<int:city_id>/nests/",
+        "cities/<int:city_id>/",
         views.CityAPI.as_view(),
         {"scope": "city", "pk_name": "city_id"},
         name="city_api_view",
     ),
     # Nest detail + history
     path(
-        "<int:city_id>/nests/<int:nest_id>/",
+        "nests/<int:nest_id>/",
         views.NestDetailAPI.as_view(),
         {"scope": "nest", "pk_name": "nest_id"},
         name="nest_api_detail",
@@ -104,7 +108,7 @@ urlpatterns = [
     # path("<int:city_id>/neighborhoods/"),
     # Neighborhood Detail
     path(
-        "<int:city_id>/neighborhoods/<int:neighborhood_id>/",
+        "neighborhoods/<int:neighborhood_id>/",
         views.NeighborhoodAPI.as_view(),
         {"scope": "neighborhood", "pk_name": "neighborhood_id"},
         name="neighborhood_api",
@@ -129,12 +133,18 @@ urlpatterns = [
     ),
     # Search by GPS coordinates
     path(
-        "coord/lat=<float:lat>;lon=<float:lon>/",
+        "nearby/lat=<float:lat>;lon=<float:lon>/",
         views.LocationSearchAPI.as_view(),
         name="location_search",
     )
     # Sp Hx # TODO
-    # path("<int:city_id>/species/<str:poke>/"),
+    # path("cities/<int:city_id>/species-history/<str:poke>/",),
     # reporting API # TODO
-    # path("<int:city_id>/rpt/",),
+    # path("api-report/",),
+    # search by name (authenticated only) # TODO
+    # path("find/<str:search>/",),
+    # history for authenticated # TODO
+    # path("history/<str:species>/",),
+    # default if authenticated bot and nothing specified # TODO
+    # path("/",),
 ]

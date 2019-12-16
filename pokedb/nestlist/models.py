@@ -610,14 +610,10 @@ class NstLocation(
         return self.neighborhood.major_city
 
     def web_url(self):
-        return url_reverser(
-            "nest_history", {"city_id": self.ct().pk, "nest_id": self.pk}
-        )
+        return url_reverser("nest_history", {"nest_id": self.pk})
 
     def api_url(self):
-        return url_reverser(
-            "nest_api_detail", {"city_id": self.ct().pk, "nest_id": self.pk}
-        )
+        return url_reverser("nest_api_detail", {"nest_id": self.pk})
 
     def active_rotations(self) -> "QuerySet[NstRotationDate]":
         return park_nesting_history(self).values_list("rotation_num")
@@ -771,15 +767,10 @@ class NstNeighborhood(
         return self.name
 
     def web_url(self):
-        return url_reverser(
-            "neighborhood", {"city_id": self.major_city.pk, "neighborhood_id": self.pk}
-        )
+        return url_reverser("neighborhood", {"neighborhood_id": self.pk})
 
     def api_url(self):
-        return url_reverser(
-            "neighborhood_api",
-            {"city_id": self.major_city.pk, "neighborhood_id": self.pk},
-        )
+        return url_reverser("neighborhood_api", {"neighborhood_id": self.pk})
 
     def ct(self):
         return self.major_city
@@ -1025,13 +1016,10 @@ class NstRawRpt(models.Model, HasCityMixin, HasURLMixin):
         return self.timestamp, self.raw_species_num, hex(hsh)[offset - 5 : offset - 1]
 
     def web_url(self):
-        return url_reverser(
-            "nest_history",
-            {"city_id": self.nsla_pk.nestid.ct(), "nest_id": self.nsla_pk.nestid.pk},
-        )
+        return url_reverser("nest_history", {"nest_id": self.nsla_pk.nestid.pk})
 
     def api_url(self):
-        return url_reverser("", {})
+        return url_reverser("nest_api_detail", {"nest_id"})
 
     def ct(self):
         return self.bot.city

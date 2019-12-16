@@ -5,5 +5,5 @@ urlpatterns = [
     path("admin2/", admin.site.urls),
     path("pokedex/", include("speciesinfo.urls", namespace="pokedex")),
     # path("cp/", include("pokeperfect.urls", namespace="perfect")),
-    path("city/", include("nestlist.urls", namespace="nestlist")),
+    path("", include("nestlist.urls", namespace="nestlist")),
 ]

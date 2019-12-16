@@ -185,13 +185,6 @@ class NestListMixin(View):
         ss: str = self.get_sp()
         if not location:
             return HttpResponseNotFound(f"No {scope} with id {pk}")
-        if (
-            scope in ["neighborhood", "nest"]
-            and location.ct().pk != self.kwargs["city_id"]
-        ):  # always correct URLs for Neighborhoods & Nests
-            return HttpResponseRedirect(
-                append_search_terms(location.web_url(), self.request.GET)
-            )
         try:
             return super(NestListMixin, self).get(request, *args, **kwargs)
         except ValueError:
