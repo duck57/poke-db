@@ -150,10 +150,26 @@ class ParkDetailSerializer(ParkSerializer):
             rep["city"] = CitySerializer().to_representation(
                 instance.neighborhood.major_city
             )
-        rep["prior_entries"] = []
+        rep["prior entries"] = []
         for p in instance.all_old_duplicates():
-            rep["prior_entries"].append(ParkSerializer().to_representation(p))
+            rep["prior entries"].append(ParkSerializer().to_representation(p))
+        if rep["duplicated_to"]:
+            chain = instance.duplicate_chain()
+            rep["current entry"] = ParkSerializer().to_representation(chain[-1])
+            rep["duplicate chain"] = []
+            for p in chain:
+                rep["duplicate chain"].append(ParkSerializer().to_representation(p))
+        rep["species history"] = []
+        for r in instance.nstspecieslistarchive_set.all():
+            rep["species history"].append(
+                ReportHistoricSerializer().to_representation(r)
+            )
         return rep
+
+
+class RotationSerializer(serializers.Serializer):
+    def to_representation(self, instance: Any) -> Any:
+        return str(instance)
 
 
 class ReportSerializer(serializers.Serializer):
@@ -163,12 +179,7 @@ class ReportSerializer(serializers.Serializer):
 
 
 class ReportHistoricSerializer(ReportSerializer):
-    pass
-
-
-class RotationSerializer(serializers.Serializer):
-    def to_representation(self, instance: Any) -> Any:
-        return str(instance)
+    rotation = RotationSerializer(source="rotation_num")
 
 
 class StringSerializer(serializers.Serializer):

@@ -662,6 +662,22 @@ class NstLocation(
             else self
         )
 
+    def duplicate_chain(
+        self, chain: "Optional[List[NstLocation]]" = None
+    ) -> "List[NstLocation]":
+        """
+        chain[-1] should be the same as get_true_self() on completion
+        :param chain: used for recursion
+        :return: list of duplicated nests
+        """
+        if chain is None:
+            chain = []
+        # no more duplicates or there's a loop in there
+        if not self.duplicate_of or self.duplicate_of in chain:
+            return chain
+        chain.append(self)
+        return self.duplicate_of.duplicate_chain(chain)
+
     def all_old_duplicates(self) -> "Set[NstLocation]":
         """
         It's just like future_evolutions from Pokémon
@@ -671,7 +687,7 @@ class NstLocation(
         out: "Set[NstLocation]" = set()
         queue: "List[NstLocation]" = [self]
         while queue:
-            current = queue[0]
+            current: NstLocation = queue[0]
             queue = queue[1:]
             out.add(current)
             for p in current.prior_entries.all():
