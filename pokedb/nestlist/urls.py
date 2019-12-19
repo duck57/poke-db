@@ -11,7 +11,7 @@ urlpatterns = [
     # ~~~~~~~~~~~~~
     #
     # List of Cities (web-only)
-    path("", views.CityIndex.as_view(), name="list_of_cities"),
+    # path("", views.CityIndex.as_view(), name="list_of_cities"),
     # City view
     path(
         "city/<int:city_id>/",
@@ -66,7 +66,7 @@ urlpatterns = [
     # path("<int:city_id>/park_sys/", views.ParkSysIndex.as_view(), name="ps_idx"),
     # Park System detail
     path(
-        "park_system/<int:ps_id>/",
+        "park-system/<int:ps_id>/",
         views.ParkSystemView.as_view(),
         {"scope": "ps", "pk_name": "ps_id"},
         name="park_sys",
@@ -126,7 +126,7 @@ urlpatterns = [
     # path("<int:city_id>/park_systems/"),
     # PS detail
     path(
-        "park_systems/<int:ps_id>/",
+        "park-systems/<int:ps_id>/",
         views.PsAPI.as_view(),
         {"scope": "ps", "pk_name": "ps_id"},
         name="ps_api",
@@ -136,15 +136,16 @@ urlpatterns = [
         "nearby/lat=<float:lat>;lon=<float:lon>/",
         views.LocationSearchAPI.as_view(),
         name="location_search",
-    )
+    ),
     # Sp Hx # TODO
-    # path("cities/<int:city_id>/species-history/<str:poke>/",),
+    # path("cities/<int:city_id>/species-history/<str:poke>/",
+    # views.SpHxAPI.as_view(), name="species_history"),
     # reporting API # TODO
-    # path("api-report/",),
+    # path("api-report/", views.report_API(), name="report_api"),
     # search by name (authenticated only) # TODO
-    # path("find/<str:search>/",),
+    # path("find/<str:search>/", views.LocationSearchAPI.as_view(), name="search_api"),
     # history for authenticated # TODO
-    # path("history/<str:species>/",),
-    # default if authenticated bot and nothing specified # TODO
-    # path("/",),
+    # path("history/<str:species>/", views.LocalSpeciesHx.as_view(), name="local_species_hist"),
+    # default if authenticated bot and nothing specified
+    path("", views.LocalCity.as_view(), name="local_view"),
 ]

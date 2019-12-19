@@ -1,70 +1,18 @@
-from typing import Dict, List, Union, Optional, Type
-
-from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
-from django.db.models import (
-    QuerySet,
-    Model,
-    Value,
-    F,
-    ForeignKey,
-    IntegerField,
-    CharField,
-    BooleanField,
-)
-from django.shortcuts import render, get_object_or_404
-from django.http import (
-    HttpResponseRedirect,
-    HttpResponseBadRequest,
-    Http404,
-    HttpResponseNotFound,
-    QueryDict,
-    HttpResponse,
-)
-from django.urls import reverse
 from urllib.parse import urlencode
+
+from django.core.exceptions import MultipleObjectsReturned
+from django.db.models import Model, Value, IntegerField, CharField, BooleanField
+from django.http import HttpResponseBadRequest, Http404, HttpResponseNotFound, QueryDict
+from django.shortcuts import render
 from django.views import generic, View
-from rest_framework import viewsets, serializers
-from rest_framework.generics import ListAPIView, CreateAPIView, RetrieveAPIView
 from drf_multiple_model.views import ObjectMultipleModelAPIView
+from rest_framework.permissions import IsAuthenticated
 
 # Create your views here.
-from nestlist.utils import str_int, parse_date, nested_dict, number_format
-from speciesinfo.models import (
-    Pokemon,
-    match_species_by_name_or_number,
-    enabled_in_pogo,
-    self_as_qs,
-)
-from .models import (
-    NstSpeciesListArchive,
-    NstMetropolisMajor,
-    NstLocation,
-    NstCombinedRegion,
-    get_local_nsla_for_rotation,
-    NstNeighborhood,
-    collect_empty_nests,
-    rotations_without_report,
-    get_rotation,
-    park_nesting_history,
-    NstParkSystem,
-    species_nesting_history,
-    NstRotationDate,
-    add_a_report,
-    query_nests,
-)
-from .serializers import (
-    ParkSerializer,
-    CitySerializer,
-    NeighborhoodSerializer,
-    ModelTypeSerializer,
-    ParkSysSerializer,
-    RegionSerializer,
-    ParkDetailSerializer,
-    RotationSerializer,
-    StringSerializer,
-)
+from nestlist.utils import number_format
 from .forms import NestReportForm
-
+from .models import *
+from .serializers import *
 
 """
 Stand-alone methods
@@ -126,15 +74,23 @@ Mixins
 
 
 class NestListMixin(View):
-    model_list = {
-        "city": NstMetropolisMajor,
-        "neighborhood": NstNeighborhood,
-        "region": NstCombinedRegion,
-        "nest": NstLocation,
-        "ps": NstParkSystem,
+    model_list: "Dict[str, Tuple[Place, str]]" = {
+        "city": (NstMetropolisMajor, "city_id"),
+        "neighborhood": (NstNeighborhood, "neighborhood_id"),
+        "region": (NstCombinedRegion, "region_id"),
+        "nest": (NstLocation, "nest_id"),
+        "ps": (NstParkSystem, "ps_id"),
+    }
+    scope_names: "Dict[Type[Place], Tuple[str, str]]" = {
+        NstMetropolisMajor: ("city", "city_id"),
+        NstNeighborhood: ("neighborhood", "neighborhood_id"),
+        NstCombinedRegion: ("region", "region_id"),
+        NstLocation: ("nest", "nest_id"),
+        NstParkSystem: ("ps", "ps_id"),
     }
 
-    def get_raw_date(self) -> str:
+    @property
+    def raw_date(self) -> str:
         srg = self.request.GET
         return (
             "t"
@@ -142,27 +98,33 @@ class NestListMixin(View):
             else self.kwargs.get("date", srg.get("date", srg.get("rotation", "t")))
         )
 
-    def get_parsed_date(self):
-        return parse_date(str(self.get_raw_date()))
+    @property
+    def parsed_date(self):
+        return parse_date(self.raw_date)
 
-    def get_rot8(self) -> NstRotationDate:
-        return get_rotation(self.get_raw_date())
+    @property
+    def rot8(self) -> NstRotationDate:
+        return get_rotation(self.raw_date)
 
-    def get_sp(self) -> Optional[Union[int, str]]:
+    @property
+    def species_search(self) -> Optional[Union[int, str]]:
         srg = self.request.GET
         return self.kwargs.get(
             "poke", srg.get("pokemon", srg.get("species", srg.get("pokémon", None)))
         )
 
-    def get_pk(self):
+    @property
+    def loc_pk(self):
         return self.kwargs[self.kwargs["pk_name"]]
 
     def eligible_parks(self) -> "QuerySet[NstLocation]":
-        return query_nests("", self.get_pk(), self.kwargs["pk_name"])
+        return query_nests("", self.loc_pk, self.kwargs["pk_name"])
 
-    def get_scope(self) -> Optional[str]:
-        return self.kwargs.get("scope")
+    @property
+    def scope(self) -> str:
+        return self.kwargs.get("scope", "unknown")
 
+    @property
     def plural_scope(self) -> str:
         return {
             "neighborhood": "neighborhoods",
@@ -170,31 +132,34 @@ class NestListMixin(View):
             "region": "regions",
             "ps": "park systems",
             "nest": "parks",
-        }.get(self.get_scope(), "mysteries")
+        }.get(self.scope, "mysteries")
 
-    def get_location(self):
+    @property
+    def location(self):
         try:
-            return self.model_list[self.get_scope()].objects.get(pk=self.get_pk())
+            return self.model_list[self.scope][0].objects.get(pk=self.loc_pk)
         except ObjectDoesNotExist:
             return None
 
+    @location.setter
+    def location(self, place: Place):
+        self.kwargs["pk_name"] = self.scope_names.get(type(place), "")[1]
+        self.kwargs["scope"] = self.scope_names.get(type(place), "")[0]
+        self.kwargs[self.kwargs["pk_name"]] = place.pk
+
     def get(self, request, *args, **kwargs):
-        scope: str = self.get_scope()
-        pk = self.get_pk()
-        location = self.get_location()
-        ss: str = self.get_sp()
-        if not location:
-            return HttpResponseNotFound(f"No {scope} with id {pk}")
+        if not self.location:
+            return HttpResponseNotFound(f"No {self.scope} with id {self.loc_pk}")
         try:
             return super(NestListMixin, self).get(request, *args, **kwargs)
         except ValueError:
             return HttpResponseBadRequest(f"Try again with a valid date.")
         except Http404:
-            err_str: str = f"🚫 No nests found for {scope} #{pk}"
-            if scope != "nest":
-                err_str += f" on {self.get_rot8()}"
-            if ss:
-                err_str += f" matching a search for {ss}"
+            err_str: str = f"🚫 No nests found for {self.scope} #{self.loc_pk}"
+            if self.scope != "nest":
+                err_str += f" on {self.rot8}"
+            if self.species_search:
+                err_str += f" matching a search for {self.species_search}"
             err_str += f"."
             return HttpResponseNotFound(err_str)
 
@@ -215,20 +180,19 @@ class NestListView(generic.ListView, NestListMixin):
         Unified method for generating a the Nest List
         :return: the NSLA Q set
         """
-        scope = self.get_scope()
-        pk = self.get_pk()
-        species = self.get_sp()
         if self.kwargs.get("species_detail"):
-            return species_nesting_history(sp=species, city=self.eligible_parks())
-        if scope in ["neighborhood", "city", "ps", "region"]:
-            return get_local_nsla_for_rotation(
-                rotation=self.get_rot8(),
-                location_pk=pk,
-                location_type=scope,
-                species=species,
+            return species_nesting_history(
+                sp=self.species_search, city=self.eligible_parks()
             )
-        elif scope == "nest":
-            return park_nesting_history(nest=pk, species=species)
+        if self.scope in ["neighborhood", "city", "ps", "region"]:
+            return get_local_nsla_for_rotation(
+                rotation=self.rot8,
+                location_pk=self.loc_pk,
+                location_type=self.scope,
+                species=self.species_search,
+            )
+        elif self.scope == "nest":
+            return park_nesting_history(nest=self.loc_pk, species=self.species_search)
         else:  # error
             return NstSpeciesListArchive.objects.none()
 
@@ -237,23 +201,22 @@ class NestListView(generic.ListView, NestListMixin):
         :return: context data for the templates
         """
         context: Dict = super().get_context_data(**kwargs)
-        loc = self.get_location()
-        context["location"] = loc
-        context["rotation"]: NstRotationDate = self.get_rot8()
-        context["raw_date"]: str = self.get_raw_date()
-        context["parsed_date"]: str = self.get_parsed_date()
+        context["location"] = self.location
+        context["rotation"]: NstRotationDate = self.rot8
+        context["raw_date"]: str = self.raw_date
+        context["parsed_date"]: str = self.parsed_date
         context["history"]: bool = True if self.kwargs.get("history") else False
-        context["pk"] = self.get_pk()
+        context["pk"] = self.loc_pk
         # these may be removed for performance later
-        context["cities_touched"] = loc.city_list()
-        context["regions_touched"] = loc.region_list()
-        context["neighborhoods"] = loc.neighborhood_list()
-        context["all_parks"] = loc.park_list()
-        context["ps_touched"] = loc.park_system_list()
+        context["cities_touched"] = self.location.city_list()
+        context["regions_touched"] = self.location.region_list()
+        context["neighborhoods"] = self.location.neighborhood_list()
+        context["all_parks"] = self.location.park_list()
+        context["ps_touched"] = self.location.park_system_list()
         try:
             context["species_search"]: Pokemon = (
                 match_species_by_name_or_number(
-                    sp_txt=self.get_sp(),
+                    sp_txt=self.species_search,
                     age_up=True,
                     previous_evolution_search=True,
                     only_one=True,
@@ -270,8 +233,8 @@ class NestListView(generic.ListView, NestListMixin):
             pass
         context["species_name"]: str = context["species_search"].name if context.get(
             "species_search"
-        ) else self.get_sp()
-        context["scope"] = self.get_scope()
+        ) else self.species_search
+        context["scope"] = self.scope
         context["scope_plural"] = self.plural_scope()
         context["number_format"] = number_format
         context["nearby_radius"] = self.kwargs.get("radius", 0)
@@ -301,7 +264,7 @@ class NestHistoryView(NestListView):
         for name in nest.alternate_name.exclude(hide_me=True):
             context["other_names"].append(name.name)
         context["empty_rotations"] = rotations_without_report(
-            self.get_pk(), str(self.get_sp())
+            self.loc_pk, self.species_search
         )
         context["current_nest"] = NstSpeciesListArchive.objects.filter(
             nestid=context["location"], rotation_num=context["rotation"]
@@ -315,11 +278,10 @@ class SpeciesHistoryView(NestListView):
 
     def get_context_data(self, **kwargs) -> Dict:
         context: Dict = super().get_context_data(**kwargs)
-        sp: str = self.get_sp()
         context["species_links"]: "QuerySet[Pokemon]" = (
             Pokemon.objects.filter(
                 nstspecieslistarchive__in=species_nesting_history(
-                    sp=sp, city=self.eligible_parks()
+                    sp=self.species_search, city=self.eligible_parks()
                 )
             ).distinct()
         )
@@ -426,46 +388,41 @@ class NestListAPI(ObjectMultipleModelAPIView, NestListMixin):
         self,
         *,
         list_parts: bool = False,
-        self_serializer: "Optional[Type[serializers.Serializer]]" = None,
+        self_serializer: "Type[serializers.Serializer]" = ParkDetailSerializer,
         hide_neighborhood: bool = False,
         hide_ps: bool = False,
     ):
-        if not self_serializer:
-            return []
-        loc = self.get_location()
-        rot = self.get_rot8()
-        sp = self.get_sp()
 
         queries: Dict[str, Dict[str]] = {
             "city": {
                 "label": "city",
-                "queryset": self_as_qs(loc.ct()),
+                "queryset": self.location.city_list(),
                 "serializer_class": CitySerializer,
             },
             "neighborhood": {
                 "label": "neighborhoods",
-                "queryset": loc.neighborhood_list(),
+                "queryset": self.location.neighborhood_list(),
                 "serializer_class": NeighborhoodSerializer,
             },
             "park system": {
                 "label": "park systems",
-                "queryset": loc.park_system_list(),
+                "queryset": self.location.park_system_list(),
                 "serializer_class": ParkSysSerializer,
             },
             "region": {
                 "label": "regions",
-                "queryset": loc.region_list(),
+                "queryset": self.location.region_list(),
                 "serializer_class": RegionSerializer,
             },
             "nestlist": {
                 "label": "current list",
-                "queryset": loc.park_list()
+                "queryset": self.location.park_list()
                 .filter(
                     nstspecieslistarchive__in=get_local_nsla_for_rotation(
-                        rot, loc, species=sp
+                        self.rot8, self.location, species=self.species_search
                     )
                 )
-                .annotate(rot=Value(rot.pk, output_field=IntegerField()))
+                .annotate(rot=Value(self.rot8.pk, output_field=IntegerField()))
                 .annotate(
                     hide_neighborhood=Value(
                         hide_neighborhood, output_field=BooleanField()
@@ -476,7 +433,9 @@ class NestListAPI(ObjectMultipleModelAPIView, NestListMixin):
             },
             "empties": {
                 "label": "empties",
-                "queryset": collect_empty_nests(location_pk=loc, rotation=rot)
+                "queryset": collect_empty_nests(
+                    location_pk=self.location, rotation=self.rot8
+                )
                 .annotate(
                     hide_neighborhood=Value(
                         hide_neighborhood, output_field=BooleanField()
@@ -488,7 +447,7 @@ class NestListAPI(ObjectMultipleModelAPIView, NestListMixin):
             },
             "all parks": {
                 "label": "all parks",
-                "queryset": loc.park_list()
+                "queryset": self.location.park_list()
                 .annotate(
                     hide_neighborhood=Value(
                         hide_neighborhood, output_field=BooleanField()
@@ -502,27 +461,27 @@ class NestListAPI(ObjectMultipleModelAPIView, NestListMixin):
         querylist = [
             {
                 "label": "self",
-                "queryset": self_as_qs(loc),
+                "queryset": self_as_qs(self.location),
                 "serializer_class": self_serializer,
             },
             {
                 "label": "rotation",
-                "queryset": self_as_qs(rot),
+                "queryset": self_as_qs(self.rot8),
                 "serializer_class": RotationSerializer,
             },
             {
                 "label": "type",
-                "queryset": self_as_qs(loc),
+                "queryset": self_as_qs(self.location),
                 "serializer_class": ModelTypeSerializer,
             },
         ]
 
-        if sp or sp == 0:
+        if self.species_search or self.species_search == 0:
             querylist.append(
                 {
                     "label": "species restriction",
-                    "queryset": self_as_qs(loc).annotate(
-                        str=Value(str(sp), output_field=CharField())
+                    "queryset": self_as_qs(self.location).annotate(
+                        str=Value(str(self.species_search), output_field=CharField())
                     ),
                     "serializer_class": StringSerializer,
                 }
@@ -531,7 +490,7 @@ class NestListAPI(ObjectMultipleModelAPIView, NestListMixin):
         return (querylist, queries) if list_parts else querylist
 
     def get_queryset(self):
-        return self_as_qs(self.get_location().ct())
+        return self_as_qs(None)
 
 
 class CityAPI(NestListAPI):
@@ -561,8 +520,7 @@ class NeighborhoodAPI(NestListAPI):
             list_parts=True, self_serializer=CitySerializer, hide_neighborhood=True
         )
         querylist.extend([parts["city"], parts["region"], parts["nestlist"]])
-        sp = self.get_sp()
-        if sp != 0 and not self.get_sp():
+        if self.species_search != 0 and not self.species_search:
             querylist.append(parts["empties"])
         querylist.append(parts["park system"])
         return querylist
@@ -589,9 +547,10 @@ class PsAPI(NestListAPI):
         querylist, parts = super().get_querylist(
             list_parts=True, self_serializer=ParkSysSerializer, hide_ps=True
         )
-        sp = self.get_sp()
         querylist.append(
-            parts["all parks"] if sp != 0 and not self.get_sp() else parts["nestlist"]
+            parts["all parks"]
+            if self.species_search != 0 and not self.species_search
+            else parts["nestlist"]
         )
         querylist.extend([parts["city"], parts["region"], parts["neighborhood"]])
         return querylist
@@ -629,3 +588,20 @@ class LocationSearchAPI(ObjectMultipleModelAPIView):
 
     def get_queryset(self) -> QuerySet:
         return self_as_qs(None)
+
+
+class CityAuthMixin(NestListMixin):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, *args, **kwargs):
+        try:
+            self.location = request.user.nest_user.city
+        except AttributeError:
+            return HttpResponseNotFound  # improperly configured user
+        return super().get(request, args, kwargs)
+
+
+class LocalCity(CityAuthMixin, CityAPI):
+    """
+    CityAPI but with an auth token indirectly providing the city ID instead of the URL
+    """
