@@ -235,7 +235,7 @@ class NestListView(generic.ListView, NestListMixin):
             "species_search"
         ) else self.species_search
         context["scope"] = self.scope
-        context["scope_plural"] = self.plural_scope()
+        context["scope_plural"] = self.plural_scope
         context["number_format"] = number_format
         context["nearby_radius"] = self.kwargs.get("radius", 0)
         return context

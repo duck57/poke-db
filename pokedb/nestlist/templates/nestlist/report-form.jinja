@@ -15,17 +15,22 @@
 </head>
 <body>
 <main class="center">
-<nav><a href="{{ location.ct().web_url() }}">◀📓 Return to List</a></nav>
-<form action="{{ url('nestlist:report_nest', city_id=location.ct().pk) }}" method="post">
-    {% csrf_token %}
-    <table>
-        {{ form.as_table() }}
-        <tr>
-            <th>➡️{# blank cell for spacing #}</th>
-            <td><input type="submit" value="Submit" width="100%" height="100%" class="fancy-button"></td>
-        </tr>
-    </table>
-</form>
+    <nav><a href="{{ location.ct().web_url() }}">◀📓 Return to List</a></nav>
+    <form action="{{ url('nestlist:report_nest', city_id=location.ct().pk) }}" method="post">
+        {% csrf_token %}
+        <table>
+            {{ form.as_table() }}
+            <tr>
+                <th>➡️{# blank cell for spacing #}</th>
+                <td><input type="submit" value="Submit" width="100%" height="100%" class="fancy-button"></td>
+            </tr>
+        </table>
+    </form>
+    {% if location.ct().alternate_report_url %}
+    <footer>
+        <a href="{{ location.ct().alternate_report_url }}">🗒️ Alternate Report Form 📋</a>
+    </footer>
+    {% endif %}
 </main>
 <script type="text/javascript">
     window.onload = linebreak();

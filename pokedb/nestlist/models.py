@@ -709,6 +709,7 @@ class NstMetropolisMajor(
     admin_names = models.CharField(max_length=255, blank=True, null=True)
     airtable_base_id = models.CharField(max_length=30, blank=True, null=True)
     airtable_bot = models.ForeignKey(NstAdminEmail, models.SET_NULL, null=True)
+    alternate_report_url = models.URLField(null=True, blank=True)
     active = models.BooleanField(default=False)
     objects = LocationQuerySet.as_manager()
 
