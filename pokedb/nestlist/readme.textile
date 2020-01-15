@@ -29,7 +29,7 @@ Use the @-f@ parameter to specify which formatting regimen to use.
 
 *This is no longer actively supported now that the web interface exists*
 
-h3. airtable.py
+h3. importers/airtable.py
 
 Imports from AirTable bases.  Expected format of the @summary@ field is 
 @#420 Cherubi at 69. Fint Park by Somepony at 2020-04-20T04:20:14@ so the 

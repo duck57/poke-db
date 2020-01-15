@@ -137,11 +137,11 @@ urlpatterns = [
         views.LocationSearchAPI.as_view(),
         name="location_search",
     ),
-    # Sp Hx # TODO
+    # Sp Hx API # TODO
     # path("cities/<int:city_id>/species-history/<str:poke>/",
     # views.SpHxAPI.as_view(), name="species_history"),
     # reporting API # TODO
-    # path("api-report/", views.report_API(), name="report_api"),
+    # path("report-api_1/", views.report_API(), name="report_api"),
     # search by name (authenticated only) # TODO
     # path("find/<str:search>/", views.LocationSearchAPI.as_view(), name="search_api"),
     # history for authenticated # TODO

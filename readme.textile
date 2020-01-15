@@ -10,19 +10,17 @@ Please blacken your Python files before sending in a PR.
 h2. pokedb
 
 A Django project containing several apps.
+Recently upgraded to Django 3.0 (with Python 3.8)
 
 h3. nestlist 
 
 Apps for editing and displaying data for various nest migrations.  
 This is the main part of the repo and "has its own readme":pokedb/nestlist/readme.textile.
 
-h3. typeedit 
-
-Demonstration-only TUI app for editing the Pokémon types.
-
 h3. speciesinfo
 
 Editor for editing and adding new Pokémon when they get released.
+Also contains the Type editor demo.
 
 h3. pokeperfect
 
@@ -32,6 +30,8 @@ h2. pokescrape
 
 @scrapy@ scrapers for wikis of Pokémon fangames to gather the data from custom
 species to add to the database.
+
+As of 14 Jan 2020, this portion has been dropped from future plans.
 
 h2. stats_source
 

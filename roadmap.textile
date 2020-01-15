@@ -1,32 +1,26 @@
 h1. Future Plans (all modules)
 
-h2. pokescrape
+h2. -pokescrape-
 
 This will eventually be replaced with scrapy scripts to create tables for
 import from wikis.  Challenges include looping to the next pokémon, filtering
 out canonical pokémon, and mega evolutions.
 
-At this point, it may make more sense to manually scrape and enter the data.
+At this point, _it may make more sense to manually scrape and enter the data_.
 
 h2. nestlist
 
 * Add a TUI editor for nests 
-* Make the web output prettier
-* Have separate webpage and copypage views
-* Discord bot hooks
 
 h2. pokeperfect
 
-* Include support for non-defualt settings (old CP values, weather boost restrictions, etc…)
+* Actually make it
 
 h2. speciesinfo
 
 * Add pokémon species TUI editor
+* Pokémon species Django admin (make it usable)
 * All the web stuff here has been done better elsewhere
-
-h2. typeedit
-
 * TUI type editor
-* Probably no web UI
-
+* Search by CP (use db CP functions)
 
