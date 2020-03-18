@@ -1,0 +1,41 @@
+h1. API documentation
+
+h2. Authentication
+
+The nest list uses Token authentication under SSL.  Send a HTTPS header with a
+key of @Authentication@ and value of @Token abcd18ef69your420api8key@.  Note
+the capital @A@ and @T@ as well as the space between @Token@ and the API key.
+
+h2. Endpoints
+
+Content is expected to be in JSON.
+
+h3. @/<place type>/<id>/@
+
+Non-authenticated read-only endpoints.  @<id>@ is an integer.  Changing these
+URLs to use the singular form of the place type will give the corresponding
+HTML output.
+
+h4. Place Types
+
+* @cities@
+* @neighborhoods@
+* @nests@
+* @regions@
+* @park-systems@
+
+h3. @/nearby/lat=-42.69;lon=69.420/@
+
+Non-authenticated endpoint that returns nearby cities, nests, & neighborhoods
+to the given coordinates.
+
+h3. @/cities/<id>/species-history/<pokémon>/@
+
+Non-authenticated endpoint to search a city's species history.
+
+h3. @/report-api_1/@
+
+Authenticated reporting endpiont.
+
+TODO: describe the proper format
+

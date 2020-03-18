@@ -1,5 +1,4 @@
 s2sphere
-djchoices
 django-choices
 django-jinja
 asciimatics
@@ -17,3 +16,4 @@ scrapy
 readline
 pyperclip
 django-rest-multiple-models
+django-memcache-status

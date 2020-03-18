@@ -142,10 +142,4 @@ urlpatterns = [
     # views.SpHxAPI.as_view(), name="species_history"),
     # reporting API # TODO
     # path("report-api_1/", views.report_API(), name="report_api"),
-    # search by name (authenticated only) # TODO
-    # path("find/<str:search>/", views.LocationSearchAPI.as_view(), name="search_api"),
-    # history for authenticated # TODO
-    # path("history/<str:species>/", views.LocalSpeciesHx.as_view(), name="local_species_hist"),
-    # default if authenticated bot and nothing specified
-    path("", views.LocalCity.as_view(), name="local_view"),
 ]
